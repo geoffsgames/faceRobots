@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <title>Face Robots!</title>
+    <style>
+
+</style>
+
+<script src="lib/fabric.js"></script>
+<script src="lib/jquery-1.11.1.min.js"></script>
+
+
+
+</head>
+<body>
+
+<img src="images/block.png" id="wall" hidden>
+<img src="images/blockDark.png" id="wallDark" hidden>
+<img src="images/knife.png" id="knife" hidden>
+<img src="images/motor.png" id="motor" hidden>
+<img src="images/motorBroke.png" id="motorBroke" hidden>
+
+<img src="images/stoneSmall.png" id="obstacle" hidden>
+<img src="images/stairs2.png" id="stairs" hidden>
+<img src="images/spawnsite.png" id="spawn" hidden>
+<img src="images/fan.png" id="fan" hidden>
+<img src="images/hook.png" id="hook" hidden>
+<img src="images/chain.png" id="chain" hidden>
+<img src="images/chainDark.png" id="chainDark" hidden>
+<img src="images/spring.png" id="spring" hidden>
+<img src="images/springblock.png" id="springBlock" hidden>
+<img src="images/hand.png" id="hand" hidden>
+<img src="images/handClosed.png" id="hand" hidden>
+<img src="images/blinder.png" id="blinder" hidden>
+<img src="images/delete.png" id="delete" hidden>
+
+
+<img src="images/faces/badface.png" id="badface" hidden>
+<img src="images/faces/badfaceIgnore.png" id="badfaceIgnore" hidden>
+<img src="images/faces/badfaceDead.png" id="badfaceDead" hidden>
+
+<img src="images/faces/badfaceHurt.png" id="badfaceHurt" hidden>
+<img src="images/faces/badfaceDown.png" id="badfaceDown" hidden>
+<img src="images/faces/badfaceUp.png" id="badfaceUp" hidden>
+<img src="images/faces/badfaceLeft.png" id="badfaceLeft" hidden>
+<img src="images/faces/badfaceRight.png" id="badfaceRight" hidden>
+<img src="images/faces/badfaceScared.png" id="badfaceScared" hidden>
+
+
+<img src="images/faces/goodface.png" id="goodface" hidden>
+<img src="images/faces/goodfaceDead.png" id="goodfaceDead" hidden>
+<img src="images/faces/goodfaceHurt.png" id="goodfaceHurt" hidden>
+<img src="images/faces/goodfaceDown.png" id="goodfaceDown" hidden>
+<img src="images/faces/goodfaceUp.png" id="goodfaceUp" hidden>
+<img src="images/faces/goodfaceLeft.png" id="goodfaceLeft" hidden>
+<img src="images/faces/goodfaceRight.png" id="goodfaceRight" hidden>
+
+<img src="images/faces/thief.png" id="thiefFace" hidden>
+<img src="images/faces/thiefScared.png" id="thieffaceScared" hidden>
+
+<img src="images/grass.jpg" id="grass" hidden>
+
+
+<canvas id="canvas" width="1200" height="600" style="z-index: 2;
+position:absolute;
+left:0px;
+top:0px;
+"></canvas>
+<canvas id="canvasBG" width="1200" height="600" style="z-index: 1;
+position:absolute;
+left:0px;
+top:0px;
+"></canvas>
+
+<!--<script src="test.js"></script>-->
+
+  <script src="util/replay.js"></script>
+<script src="util/maths.js"></script>
+<script src="util/loadSave.js"></script>
+
+<script src="display.js"></script>
+<script src="landscape.js"></script>
+<script src="enemyFactory.js"></script>
+
+
+<script src="robots/person.js"></script>
+<script src="robots/enemy.js"></script>
+<script src="robots/thief.js"></script>
+<script src="robots/handyThief.js"></script>
+<script src="robots/handyThief2.js"></script>
+<script src="robots/player.js"></script>
+
+<script src="blocks/block.js"></script>
+<script src="blocks/heart.js"></script>
+<script src="blocks/knife.js"></script>
+<script src="blocks/obstacle.js"></script>
+
+<script src="blocks/specials/motor.js"></script>
+<script src="blocks/specials/fan.js"></script>
+<script src="blocks/specials/chain.js"></script>
+<script src="blocks/specials/spring.js"></script>
+<script src="blocks/specials/magicBlock.js"></script>
+<script src="blocks/specials/hand.js"></script>
+<script src="blocks/specials/blinder.js"></script>
+
+<script src="test.js"></script>
+
+
+</body>
+
+</html>

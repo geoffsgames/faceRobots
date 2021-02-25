@@ -1,0 +1,161 @@
+Defeating Troll bots - much bigger, much bigger face, Mystery blocks all around,
+Bigger landscape
+
+Take over block = allows you control of enemy robot. It has limited control of
+Regrow blocks = when destroyed will regrow double in 5 seconds if zombie state is not destroyed
+
+Damage one of my sides so can't move
+
+Mines
+
+Guns
+
+Screwy magnet - will randomly send me wrong way
+Disarming block - removes all weapons
+Screwier magnet - will randomly jump me to the other side
+Portable teleport 
+Disabler (message first time round) - left side disabled
+Rule book - I can declare one weapon forbidden.
+Magnet to attract other robot (e.g. roll over mine). Activated by hitting wall.
+*Tetris land (have to tetris block hug others to destroy - but what do I win?) PROBABLY NO
+*Torture Chamber (blinder etc.)
+*Giant land
+	-some giants have pincers - not so much a single block as two chain connected motors that clamp on you and sometimes another which pops up from middle.
+	-design giants based on structures of various size rather than randomly choosing blocks.
+*The woods (lots of indestructable scenary densely arranged - small enemy with thruster)
+Some enemies thrusters all round, undefeatable, keep on going til find defeatable one
+Invisible maker
+*Packlands - ally blocks. When push against wall ally appears on opposite side and copies my movement (disabled after long time)
+Everywhere else. Motors and fans but nothing fancier.
+	-Allies live in packlands. Robots who just want to make friends with you by connecting ally block with ally block. If you kill them you are transported to a place where you face "Justicebot" (massive giantbot) and can only return when you defeat him.
+*The plains - basic country. Every exotic block appears occasionally here. Just rarely. Mostly just knives and motors.
+-Can be hard to find these lands and so gain map blocks. These have messages "giant country - 50 lands right, 5 up" when you hit right wall
+Wall knives
+Wall mover
+"Stop hitting yourself!" block- turns your own weapons against you. In hostpital.
+
+Indstructable blocks in the woods organised into large areas but never outer 4 or so most squares in landscape
+
+GUNS = like knives but can be fired. Can be stacked on top for multiple ammo - some way of controlling so not firing all at once
+
+Giant land and woods organised into large regions
+
+NEXT STEP = message
+
+Square where there is an unlimited supply of knives but also giant robot guarding it.
+
+Some squares can't be nailable.
+
+Block to temporarily disable all his weapons
+
+Block to permanently scramble his movement controls - recovery block of some sort
+"You've been hit by scrambleblock! Your controls are now scrambled!". Motors are all question marks until you try. Every collision with scramble block swaps just two.
+
+Different colour of info text for each realm.
+
+Nothing (e.g. fans) works if blocked! Highlighting system shows this
+
+Jump! (e.g. 10 squares to left? More if more blocks?)
+Jump obstacle! Jumps to the opposite side of an obstacle (and flips). Can't work on outside walls. Can work on enemies.
+
+Mass block! Means I'll almost certainly be able to push him back! Also stronger!
+
+Jump has number attached. Will remove from overlap automatically.
+
+Skip blocks - kills the next block
+Blocks that kill you from inside out
+Make myself briefly invulnerable. Loses my block
+
+Remotely control others movement for limited time
+
+Thief steal my blocks and runs (wall of spikes, fans). I can steal back thiefs blocks and some of them have exotics. 
+
+Teleporter(in the forest) - bot takes a few nibbles of me and runs away and teleports. 
+Teleport my bashing teleporter against wall. I can also collect other half of teleport.
+
+Knife store = provides you 1 knife each time you visit it. 
+
+STARFISH = different face, completely surrounded by big springs and knives connected with chains. May be any shape (up to two compartments). May sometimes be GIANT STARFISH!!!
+May have gaps in springs.
+May have different personalities in how likely they are too attack
+
+TODO = 
+1) Multi motors /
+2) Belts /
+3) Fans look different when moving
+3) Info
+4) Plungers
+5) Jump
+6) Mines
+7) Magic fans
+8) Indestructible blocks
+9) Regrow blocks
+10) Regrow bigger blocks
+11) The woods
+12) Giant land
+13) Allies
+14) Packlands
+15) Two player
+
+
+Get badges for conquering (e.g. killing n enemies) in each zone
+Get badge for speed run
+ 
+If any exotic block is on the end of a motor prong it works if, if it was a knife it would damage the other guy
+
+Clonebots
+Packlandbots
+Me
+Giantbots
+Hospitalbots
+Woodlandbots
+Thiefbots
+Justicebot
+
+Giant robots shaped like faces etc.
+
+
+
+
+
+Change selection appearance to make brighter
+Text doesn't stand out
+Spring icons too small
+
+BUGS =
+Motor numbers changing whenever they feel like it
+A.I. When I'm stopped needs fixing
+Kill enemy with spring crash
+Weird offset with size 16 grid
+Size of enemy face - size 16 grid
+Trying to attack thief with motor
+Leaving grid when thief is about
+
+AWARDS = 
+Peaceful warrior badge = how many blocks can I aquire without killing a single robot?
+Speedy warrior = how fasn can I aquire blocks
+Killing x in each land
+Killing without losing a single block
+Capturing enemy - bringing them to another realm
+
+VISUAL = 
+Strong blocks move less when you hit them
+More dislodged the further you get out!
+
+
+Some Giants will have DEATH ARENAS - squares I can enter with springs coming up randomly all round me. Have some special blocks in them.
+
+WHEN I'M STUCK ON HIM = he will push me back with probability based on his/my size and speed! Also high prob of going nowhere!
+	Check with each, if bigger push the other one back then save fact changed so will reset.
+	this.jumpedBack = false but don't do any of the damage stuff!
+If I'm above a certain size threshold need more fans!
+
+NOTES FOR POLYGON = 
+Divided into grid
+will never appear within x squares of me.
+Disappearing, reappearing (fades out so get warning. Stays fixed time) common enough so always plenty of gaps.
+
+
+
+IF I PUSH AGAINST A WALL FOR LONG ENOUGH I BOUNCE BACK (possibly)
+SOME INDICATION I AM PUSHING!
