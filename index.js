@@ -15,7 +15,7 @@ var sokID = 0
 
 io.on('connection', function(socket){
   socket.on('newPlayer', state => {
-    console.log('New player joined with state:', state)
+    alert('New player joined with state:', state)
     players[socket.id] = sokID;
     sokID += 1;
   });
