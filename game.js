@@ -143,7 +143,7 @@ function start(){
 	
 	drawBlocks();
 	drawStairs();
-	//drawSpawns();
+	drawSpawns();
 	initInventory();
 
 	invBackground.bringToFront();
