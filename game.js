@@ -171,71 +171,24 @@ function drawSpawns(){//for enemies
 	};
 }
 
+function addStandardPlayerPieces(rob){
+	rob.addPiece(1,0,"wall");
+	rob.addPiece(2,0,"wall");
+	rob.addPiece(0,1,"wall");
+	rob.addPiece(1,1,"heart");
+	rob.addPiece(2,1,"wall");
+	rob.addPiece(0,2,"wall");
+	rob.addPiece(1,2,"wall");
+	rob.addPiece(2,2,"wall");
+	rob.addPiece(1,3,"knife");
+}
+
 function addPlayer(){
 	
 	if(playerStr == undefined){ //if aren't loading player from saved game
 		player = new Player(land.playerX,land.playerY,2);
-		
 
-		for(var i =0 ; i < 10; i += 1){
-			player.addBlockToInventory("wall");
-			
-			player.addBlockToInventory("knife");
-			player.addBlockToInventory("motor");
-			player.addBlockToInventory("spring");
-
-		}
-		/**	
-	
-		//motorised
-
-		player.addPiece(0,0,"fan");
-		player.addPiece(1,0,"fan");
-		//player.addPiece(2,3,"fan");
-		//player.addPiece(1,3,"fan");
-
-		//player.addPiece(2,0,"fan");
-		player.addPiece(0,1,"wall");
-		player.addPiece(1,1,"wall");
-		player.addPiece(2,1,"wall");
-		player.addPiece(0,2,"wall");
-		player.addPiece(0,3,"knife");
-		player.addPiece(1,2,"heart");
-		player.addPiece(2,2,"wall");
-		player.addPiece(3,2,"wall");
-		player.addPiece(4,2,"wall");
-		player.addPiece(4,3,"motor");
-		player.addPiece(4,4,"wall");
-		player.addPiece(3,4,"knife");
-
-		player.addPiece(0,1,"wall");
-		player.addPiece(0,2,"wall");
-		
-		player.addPiece(1,1,"heart");
-		player.addPiece(1,2,"wall");
-		
-		
-		player.addPiece(2,1,"wall");
-		player.addPiece(2,2,"wall");
-		player.addPiece(2,3,"motor");
-		player.addPiece(2,4,"wall");
-		player.addPiece(1,4,"knife");
-*/
-
-
-
-		player.addPiece(0,0,"blinder");
-		player.addPiece(1,0,"wall");
-		player.addPiece(2,0,"wall");
-		player.addPiece(0,1,"wall");
-		player.addPiece(1,1,"heart");
-		player.addPiece(2,1,"wall");
-		player.addPiece(0,2,"wall");
-		player.addPiece(1,2,"wall");
-		//player.addPiece(1,2,"spring");
-		//player.grid[1][2].increment(3);
-		player.addPiece(2,2,"wall");
-		player.addPiece(1,3,"scrambler");
+		addStandardPlayerPieces(player);
 
 		
 		player.totalNumBlocks = 10;
