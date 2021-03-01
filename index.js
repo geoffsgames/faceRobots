@@ -15,13 +15,13 @@ var sokID = 0
 
 io.on('connection', function(socket){
   socket.on('newPlayer', state => {
-    alert('New player joined with state:', state)
+    for(var i = 0; i < sokID; i+= 1){
+      io.emit('addRival', {s: players[i]});
+    }
     players[socket.id] = sokID;
     sokID += 1;
   });
-  socket.on('move', function(msg){
-    io.emit('animate', {m: msg, s: players[socket.id]});
-  });
+
 });
 
 http.listen(port, function(){
