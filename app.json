@@ -15,11 +15,6 @@
   },
   "addons": [
   ],
-  "buildpacks": [
-    {
-      "url": "heroku/node.js"
-    }
-  ],
   "env": {
     "BUILDPACK_URL": "https://github.com/heroku/heroku-buildpack-nodejs"
   }
