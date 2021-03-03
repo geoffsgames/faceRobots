@@ -286,7 +286,6 @@ Player.prototype.deleteBlock2 = function(tempBlock, block, x, y){
 Player.prototype.checkCollision = function() {
 	if(Person.prototype.checkCollision.call(this)) //if jumped back
 		return true;
-	this.checkOverRival();
 	//highlight stairs red when over them
 	if(this.stairsCollide != null && activatedStairs == null){
 		activatedStairs = this.stairsCollide;
