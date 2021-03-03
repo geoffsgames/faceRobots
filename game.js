@@ -5,7 +5,6 @@ var scrollingY = 0;
 
 
 Math.seed = Math.round(Math.random() * 1000);
-alert(Math.seed);
 var startGlobalSeed = Math.seededRandomDouble();
 var globalSeed = startGlobalSeed;
 var startSeed = Math.seededRandom(1000000,2000000);
