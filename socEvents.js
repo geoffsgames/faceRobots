@@ -24,10 +24,10 @@ socket.on('rivalChanged', function(msg){
 
 socket.on('newRival', function(msg){
 	alert(msg);
-	if(msg.m != uniqueID){
-		rivalGrids['' + msg.m] = msg.gr;
+	if(msg.uID != uniqueID){
+		rivalGrids['' + msg.uID] = msg.gr;
 		curRival = msg.gr
-		selectedRival = msg.m;
+		selectedRival = msg.uID;
 		msg.gr.opacity = 0.2;
 		msg.gr.width = msg.gr.width / 2;
 		msg.gr.height = msg.gr.height / 2;
