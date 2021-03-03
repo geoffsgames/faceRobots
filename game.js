@@ -172,7 +172,7 @@ function drawSpawns(){//for enemies
 function addStandardPlayerPieces(rob){
 	rob.addPiece(1,0,"wall");
 	rob.addPiece(2,0,"wall");
-	rob.addPiece(0,1,"wall");
+	rob.addPiece(0,0,"wall");
 	rob.addPiece(1,1,"heart");
 	rob.addPiece(2,1,"wall");
 	rob.addPiece(0,2,"wall");
