@@ -282,10 +282,11 @@ Player.prototype.deleteBlock2 = function(tempBlock, block, x, y){
 
 };
 
+
 Player.prototype.checkCollision = function() {
 	if(Person.prototype.checkCollision.call(this)) //if jumped back
 		return true;
-	
+	this.checkOverRival();
 	//highlight stairs red when over them
 	if(this.stairsCollide != null && activatedStairs == null){
 		activatedStairs = this.stairsCollide;
@@ -643,6 +644,20 @@ Player.prototype.addMarker = function(x, y) {
 
 };
 
+Player.prototype.respondToDamage = function() {
+	Person.prototype.respondToDamage.call(this);
+	this.updateRivals();
+};
+
+Player.prototype.collectAll = function() {
+	Person.prototype.collectAll.call(this);
+	this.updateRivals();
+};
+
+Player.prototype.updateRivals = function(){
+	socket.emit('playerShapeChanged', {gr:this.group,uID:uniqueID});
+}
+
 Player.prototype.setMovement = function(x, y) {
 	if(this.rects != undefined && this.rects != null){//I'm just resuming movement after being in edit mode
 		this.recreateable = true;
@@ -660,6 +675,7 @@ Player.prototype.setMovement = function(x, y) {
 		canvas.setActiveObject(delImg); //deselect currently selected (until I figure out how to do it properly)
 		canvas.remove(delImg);
 		this.setupWeapons();
+		this.updateRivals();
 	}
 	if(this.willRotate != 0){
 		if(this.movepartsSpeed > 1){//don't rotate when moving slider

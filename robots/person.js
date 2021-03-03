@@ -674,6 +674,7 @@ Person.prototype.addPiece = function(newX, newY, blocktype, fromTextGrid, recrea
 		this.grid[newX][newY].checkForWeapons();
 	}
 	return this.grid[newX][newY];
+	
 };
 
 
