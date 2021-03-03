@@ -4,7 +4,7 @@ var scrollingX = 0;
 var scrollingY = 0;
 
 
-Math.seed = 712 //Math.round(Math.random() * 1000);
+Math.seed = Math.round(Math.random() * 1000);
 alert(Math.seed);
 var startGlobalSeed = Math.seededRandomDouble();
 var globalSeed = startGlobalSeed;
@@ -67,8 +67,6 @@ updateGame();
 //enemy.extractFromOverlap();
 
 loading = false; //[DON'T CHANGE TO MAKE IT LOAD - go to loadSave.js] so doesn't load at the start of each level
-
-alert("loading: blinder really slow");
 
 //errorLoop();//- temporary fix for crashes of unknown cause
 
@@ -824,3 +822,33 @@ function reportMass(mass,fans,speed){
 	message.setText(fans + " boosters / mass of " + mass + " = speed: " + speed);
 	message.setColor('blue');
 };
+
+//when I discover I'm moving to rival - alert server
+function jumpToRival(){
+	socket.emit("jumping", {gr:player.group,myID:uniqueID,otherID:selectedRival});
+}
+
+//actually move into the rival's arena
+function moveToRival(msg){
+	clearLandscape();
+	canvas.clear();
+	land.grid = null;
+	
+	//save and load new "allLandscapes" because other rival's land occupies different universe/different complete set of landscapes
+	//universe determined by globalSeed while currentSeed determines this landscape so both now also change
+	land.allNeighbours = allLandscapes;
+	var newLand = msg.l
+	if(newLand.allNeighbours != undefined){
+		allLandscapes = newLand.allNeighbours;
+	}else{
+		allLandscapes = [];
+	
+	}
+	
+	//will be used to create landscape in start()
+	curSeed = newLand.seed;
+	globalSeed = newLand.globalSeed;
+	allLandscapes[curSeed] = newLand;
+	clearOldNeighbours(null);
+	start();
+}

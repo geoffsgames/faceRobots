@@ -14,13 +14,23 @@ const players = {}
 var sokID = 0
 
 io.on('connection', function(socket){
-  socket.on('newPlayer', state => {
-    for(var i = 0; i < sokID; i+= 1){
-      io.emit('addRival', {s: players[i]});
-    }
-    players[socket.id] = sokID;
+  socket.on('newPlayer', function(msg) {
+    players[socket.id] = msg;
     sokID += 1;
+    io.emit('newRival', {m: msg})
   });
+  
+  socket.on('playerShapeChanged', function(msg){
+    io.emit('rivalChanged', msg);
+  });
+  
+  socket.on('jumping', function(msg){
+	  io.emit("acceptJumpToPVP", msg)
+  });
+  
+  socket.on('jumpToPVPAccepted', function(msg){
+	  io.emit("jumpToPVP", msg)
+  })
 
 });
 

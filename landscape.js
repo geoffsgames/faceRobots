@@ -74,11 +74,10 @@ Landscape.prototype.makeGrid = function(){
 	this.wallHeights = new Array();
 
 	var init = this.initialLandscape()
-	this.enemyGrid = designEnemy(false,false,"blinder");
+	//this.enemyGrid = designEnemy(false,false,"blinder");
 	
 	//this.enemyGrid = designEnemy(false,false);
 
-	/**
 	if(init)
 		this.enemyGrid = designEnemy(true,false);
 	else{
@@ -95,7 +94,7 @@ Landscape.prototype.makeGrid = function(){
 		else
 			this.enemyGrid = designEnemy(false,false,"scrambler");
 	}
-	*/
+
 	
 	//adjust grid sizes for enemy size TODO make adjustments global
 	enemySize = this.enemyGrid[0].length;
