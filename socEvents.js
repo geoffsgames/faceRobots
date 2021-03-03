@@ -9,17 +9,17 @@ var curRival = null;
 var selectedRival = null;
 
 socket.on('rivalChanged', function(msg){
-	if(msg.uID != uniqueID)
+	if(msg.uID != uniqueID){
 		rivalGrids['' + msg.uID] = msg.gr
 	
-	if(selectedRival == undefined || msg.uID == selectedRival){
-		if(curRival != null)
-			canvas.remove(curRival)
-		canvas.add(msg.gr);
-		curRival = msg.gr
-		selectedRival = msg.uID;
+		if(selectedRival == undefined || msg.uID == selectedRival){
+			if(curRival != null)
+				canvas.remove(curRival)
+			canvas.add(msg.gr);
+			curRival = msg.gr
+			selectedRival = msg.uID;
+		}
 	}
-
 });
 
 socket.on('newRival', function(msg){
