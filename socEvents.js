@@ -6,6 +6,7 @@ player.updateRivals();
 
 var rivalGrids = []; //the ID codes
 var curRival = null;
+var selectedRival = null;
 
 socket.on('rivalChanged', function(msg){
 	if(msg.uID != uniqueID)
