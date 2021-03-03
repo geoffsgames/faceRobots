@@ -17,7 +17,7 @@ io.on('connection', function(socket){
   socket.on('newPlayer', function(msg) {
     players[socket.id] = msg;
     sokID += 1;
-    io.emit('newRival', {m: msg})
+    io.emit('newRival', msg)
   });
   
   socket.on('playerShapeChanged', function(msg){
