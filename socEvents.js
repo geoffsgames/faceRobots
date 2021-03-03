@@ -28,6 +28,7 @@ socket.on('rivalChanged', function(msg){
 });
 
 socket.on('newRival', function(msg){
+	alert(msg);
 	if(msg.m != uniqueID)
 		rivalGrids['' + msg.m] = null;
 });
