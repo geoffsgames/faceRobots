@@ -826,7 +826,7 @@ function reportMass(mass,fans,speed){
 
 //when I discover I'm moving to rival - alert server
 function jumpToRival(){
-	socket.emit("jumping", {gr:player.group,myID:uniqueID,otherID:selectedRival});
+	socket.emit("jumping", {gr:player.grid,myID:uniqueID,otherID:selectedRival});
 }
 
 //actually move into the rival's arena
