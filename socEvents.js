@@ -28,6 +28,8 @@ socket.on('rivalChanged', function(msg){
 });
 
 socket.on('newRival', function(msg){
+	alert("HOW MANY DO YOU FUCKING WANT??!? SHALL I ADD ANOTHER 5?!?!?");
+	alert("IT'S LITERALLY RIGHT FUCKING HERE WHAT THE FLYING FUCK IS WRONG WITH YOU");
 	alert(msg);
 	if(msg.uID != uniqueID){
 		msg.gr = convertGridToImage(msg.gr);
