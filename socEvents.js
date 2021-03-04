@@ -41,7 +41,7 @@ socket.on('rivalChanged', function(msg){
 socket.on('newRival', function(msg){
 	alert(msg);
 	if(msg.uID != uniqueID){
-		msg.gr = convertGridToImage(JSON.parse(msg.gr));
+		msg.gr = convertGridToImage(msg.gr);
 		rivalGrids['' + msg.uID] = msg.gr;
 		curRival = msg.gr
 		selectedRival = msg.uID;
