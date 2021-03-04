@@ -1,7 +1,7 @@
 var socket = io();
 
 var uniqueID = Math.random();
-socket.emit('newPlayer', {uID:uniqueID, gr:player.grid});
+socket.emit('newPlayer', {uID:uniqueID, gr:"do you want me to just send a message that says go fuck yourself is that it?!?!?!?!"});
 player.updateRivals();
 
 var rivalGrids = []; //the ID codes
