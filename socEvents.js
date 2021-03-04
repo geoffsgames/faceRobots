@@ -1,7 +1,7 @@
 var socket = io();
 
 var uniqueID = Math.random();
-socket.emit('newPlayer', {uID:uniqueID, gr:JSON.stringify(player.group)});
+socket.emit('newPlayer', {uID:uniqueID, gr:JSON.stringify(player.grid)});
 player.updateRivals();
 
 var rivalGrids = []; //the ID codes
@@ -28,11 +28,9 @@ socket.on('rivalChanged', function(msg){
 });
 
 socket.on('newRival', function(msg){
-	alert("HOW MANY DO YOU FUCKING WANT??!? SHALL I ADD ANOTHER 5?!?!?");
-	alert("IT'S LITERALLY RIGHT FUCKING HERE WHAT THE FLYING FUCK IS WRONG WITH YOU");
 	alert(msg);
 	if(msg.uID != uniqueID){
-		msg.gr = convertGridToImage(msg.gr);
+		msg.gr = convertGridToImage(JSON.parse(msg.gr));
 		rivalGrids['' + msg.uID] = msg.gr;
 		curRival = msg.gr
 		selectedRival = msg.uID;
