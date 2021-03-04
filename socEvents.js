@@ -1,7 +1,7 @@
 var socket = io();
 
 var uniqueID = Math.random();
-socket.emit('newPlayer', {uID:uniqueID, gr:player.group});
+socket.emit('newPlayer', {uID:uniqueID, gr:player.grid});
 player.updateRivals();
 
 var rivalGrids = []; //the ID codes
