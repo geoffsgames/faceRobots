@@ -1754,7 +1754,7 @@ function convertGridToImage(grid){
 	for(var x = 0; x < grid.length; x+= 1){
 		for(var y = 0; y < grid.length; y += 1){
 			if(grid[x][y] != undefined && grid[x][y] != null)
-				rob.addPiece(x,y,grid[x][y].type);
+				rob.addPiece(x,y,grid[x][y]);
 		}
 	}
 	return(rob.group);
