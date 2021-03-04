@@ -15,8 +15,6 @@ var sokID = 0
 
 io.on('connection', function(socket){
   socket.on('newPlayer', function(msg) {
-    players[socket.id] = msg;
-    sokID += 1;
     io.emit('newRival', msg)
   });
   
