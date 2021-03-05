@@ -653,11 +653,6 @@ Player.prototype.addMarker = function(x, y) {
 
 };
 
-Player.prototype.respondToDamage = function() {
-	Person.prototype.respondToDamage.call(this);
-	this.updateRivals();
-};
-
 Player.prototype.collectAll = function() {
 	Person.prototype.collectAll.call(this);
 	this.updateRivals();
@@ -886,6 +881,7 @@ Player.prototype.respondToDamage = function(){
 		clearMarkers(this.rects);
 		this.addAllMarkers();
 	}
+	this.updateRivals();
 };
 
 //spinning motion going down stairs
