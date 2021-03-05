@@ -2,6 +2,8 @@ Player.prototype = new Person();
 Player.prototype.constructor=Player;
 var editBlocks = new Array();
 
+var curRival = null;
+
 var edgeDetectDis = 3;//calculate landscape of adjacent grid when get this close to edge of current grid
 
 //stair animation
