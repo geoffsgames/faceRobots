@@ -664,7 +664,7 @@ Player.prototype.collectAll = function() {
 };
 
 Player.prototype.updateRivals = function(){
-	socket.emit('playerShapeChanged', {gr:this.group,uID:uniqueID});
+	socket.emit('playerShapeChanged', {gr:this.grid,uID:uniqueID});
 }
 
 Player.prototype.setMovement = function(x, y) {
