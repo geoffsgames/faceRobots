@@ -24,11 +24,11 @@ socket.on('rivalChanged', function(msg){
 	if(msg.uID != uniqueID){
 		msg.gr = convertGridToImage(msg.gr);
 		rivalGrids['' + msg.uID] = msg.gr
-		msg.gr.opacity = 0.2;
-		msg.gr.width = msg.gr.width / 2;
-		msg.gr.height = msg.gr.height / 2;
-		msg.gr.left = 100;
-		msg.gr.top = 100;
+		msg.gr.opacity = 0.5;
+		msg.gr.setScaleX(0.5);
+		msg.gr.setScaleY(0.5);
+		msg.gr.left = window.pageXOffset || document.documentElement.scrollLeft + (document.documentElement.clientWidth - 100);
+		msg.gr.top = window.pageYOffset || document.documentElement.scrollTop + 100;
 		if(selectedRival == undefined || msg.uID == selectedRival){
 			if(curRival != null)
 				canvas.remove(curRival)
