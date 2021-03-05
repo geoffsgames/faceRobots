@@ -617,6 +617,11 @@ Player.prototype.scrollInventory = function(absolute){
 		
 		message.left += scrollingX;
 		message.top += scrollingY;
+		
+		if(curRival != undefined && curRival != null){
+			curRival.left += scrollingX;
+			curRival.top += scrollingY;
+		}
 	}
 };
 
