@@ -1757,6 +1757,7 @@ function convertGridToImage(grid){
 				rob.addPiece(x,y,grid[x][y]);
 		}
 	}
+	rob.heart.image.bringToFront();
 	return(rob.group);
 }
 
