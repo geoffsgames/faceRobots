@@ -600,8 +600,8 @@ Player.prototype.scrollInventory = function(absolute){
 		message.left = scrollLeft + (displayWidth/2);
 		message.top = scrollTop + 30;
 		if(curRival != undefined && curRival != null){
-			curRival.left = scrollLeft + (document.documentElement.clientWidth - 30);
-			curRival.top = scrollTop + 30;
+			curRival.left = scrollLeft + (document.documentElement.clientWidth - 50);
+			curRival.top = scrollTop + 50;
 		}
 		
 	}
