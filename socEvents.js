@@ -51,8 +51,11 @@ socket.on('newRival', function(msg){
 		msg.gr.setScaleY(0.7);
 		msg.gr.left = (window.pageXOffset || document.documentElement.scrollLeft) + (document.documentElement.clientWidth - 50);
 		msg.gr.top = (window.pageYOffset || document.documentElement.scrollTop) + 50;
-		curRival = msg.gr
-		canvas.add(curRival)
+		curRival = msg.gr;
+		canvas.add(curRival);
+		
+		//so new rival/player knows about me in return
+		socket.emit('newPlayer', {uID:uniqueID, gr:getStringArray(player.grid)});
 	}
 });
 
