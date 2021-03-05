@@ -52,6 +52,7 @@ socket.on('newRival', function(msg){
 		msg.gr.left = (window.pageXOffset || document.documentElement.scrollLeft) + (document.documentElement.clientWidth - 50);
 		msg.gr.top = (window.pageYOffset || document.documentElement.scrollTop) + 50;
 		canvas.add(msg.gr);
+		canvas.renderAll();
 		curRival = msg.gr;
 
 		//so new rival/player knows about me in return
