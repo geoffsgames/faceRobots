@@ -9,8 +9,9 @@ var curRival = null;
 var selectedRival = null;
 
 function getStringArray(inArr){
-	var outArr = new Array[inArr.length][inArr.length]
+	var outArr = []
 	for(var x = 0; x < inArr.length; x += 1){
+		inArr[x] = []
 		for(var y = 0; y < inArr.length; y += 1){
 			if(inArr[x][y] != undefined && inArr[x][y] != null)
 				outArr[x][y] = inArr[x][y].type;
