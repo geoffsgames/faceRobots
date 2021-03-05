@@ -41,6 +41,8 @@ socket.on('rivalChanged', function(msg){
 
 socket.on('newRival', function(msg){
 	if(msg.uID != uniqueID){
+		if(curRival != null)
+			canvas.remove(curRival)
 		msg.gr = convertGridToImage(msg.gr);
 		rivalGrids['' + msg.uID] = msg.gr;
 		curRival = msg.gr
@@ -50,8 +52,6 @@ socket.on('newRival', function(msg){
 		msg.gr.setScaleY(0.7);
 		msg.gr.left = (window.pageXOffset || document.documentElement.scrollLeft) + (document.documentElement.clientWidth - 50);
 		msg.gr.top = (window.pageYOffset || document.documentElement.scrollTop) + 50;
-		if(curRival != null)
-			canvas.remove(curRival)
 		canvas.add(msg.gr)
 	}
 });
