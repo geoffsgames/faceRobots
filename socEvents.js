@@ -27,8 +27,8 @@ socket.on('rivalChanged', function(msg){
 		msg.gr.opacity = 0.5;
 		msg.gr.setScaleX(0.7);
 		msg.gr.setScaleY(0.7);
-		msg.gr.left = (window.pageXOffset || document.documentElement.scrollLeft) + (document.documentElement.clientWidth - 100);
-		msg.gr.top = (window.pageYOffset || document.documentElement.scrollTop) + 100;
+		msg.gr.left = (window.pageXOffset || document.documentElement.scrollLeft) + (document.documentElement.clientWidth - 10);
+		msg.gr.top = (window.pageYOffset || document.documentElement.scrollTop) + 10;
 		if(selectedRival == undefined || msg.uID == selectedRival){
 			if(curRival != null)
 				canvas.remove(curRival)
@@ -41,7 +41,7 @@ socket.on('rivalChanged', function(msg){
 
 socket.on('newRival', function(msg){
 	alert(msg);
-	//if(msg.uID != uniqueID){
+	if(msg.uID != uniqueID){
 		msg.gr = convertGridToImage(msg.gr);
 		rivalGrids['' + msg.uID] = msg.gr;
 		curRival = msg.gr
@@ -49,12 +49,12 @@ socket.on('newRival', function(msg){
 		msg.gr.opacity = 0.5;
 		msg.gr.setScaleX(0.7);
 		msg.gr.setScaleY(0.7);
-		msg.gr.left = (window.pageXOffset || document.documentElement.scrollLeft) + (document.documentElement.clientWidth - 100);
-		msg.gr.top = (window.pageYOffset || document.documentElement.scrollTop) + 100;
+		msg.gr.left = (window.pageXOffset || document.documentElement.scrollLeft) + (document.documentElement.clientWidth - 10);
+		msg.gr.top = (window.pageYOffset || document.documentElement.scrollTop) + 10;
 		if(curRival != null)
 			canvas.remove(curRival)
 		canvas.add(msg.gr)
-	//}
+	}
 });
 
 
