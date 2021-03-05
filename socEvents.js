@@ -52,8 +52,8 @@ socket.on('newRival', function(msg){
 		msg.gr.left = (window.pageXOffset || document.documentElement.scrollLeft) + (document.documentElement.clientWidth - 50);
 		msg.gr.top = (window.pageYOffset || document.documentElement.scrollTop) + 50;
 		canvas.add(msg.gr);
-		curRival = canvas._objects[canvas._objects.length - 1]; //you'd think curRival = msg.gr would work but there you go
-		canvas.remove(curRival);
+		var blah = canvas._objects.pop(); //you'd think curRival = msg.gr would work but there you go
+		canvas.remove(blah);
 		//so new rival/player knows about me in return
 		socket.emit('newPlayer', {uID:uniqueID, gr:getStringArray(player.grid)});
 	}
