@@ -68,6 +68,7 @@ Person.prototype.setup = function(myX, myY, facing) {
 	this.weapons = new Set();
 	
 	this.keyCodes = [];
+	this.isRivalIcon = false;
 	//scrambling key codes when hit with a scramble block
 	for (const [key, value] of Object.entries(origKeyCodes)) {
 		this.keyCodes[value] = key;
