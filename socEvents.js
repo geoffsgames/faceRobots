@@ -7,6 +7,7 @@ player.updateRivals();
 var rivalGrids = []; //the ID codes
 var curRival = null;
 var selectedRival = null;
+var rivalIconMargin = 20;
 
 function getStringArray(inArr){
 	var outArr = []
@@ -24,17 +25,11 @@ socket.on('rivalChanged', function(msg){
 	if(msg.uID != uniqueID){
 		msg.gr = convertGridToImage(msg.gr);
 		rivalGrids['' + msg.uID] = msg.gr
-		msg.gr.opacity = 0.5;
-		msg.gr.setScaleX(0.7);
-		msg.gr.setScaleY(0.7);
-		msg.gr.left = (window.pageXOffset || document.documentElement.scrollLeft) + (document.documentElement.clientWidth - 50);
-		msg.gr.top = (window.pageYOffset || document.documentElement.scrollTop) + 50;
 		if(selectedRival == undefined || msg.uID == selectedRival){
 			if(curRival != null)
 				canvas.remove(curRival)
 			canvas.add( msg.gr);
 			curRival = canvas._objects.pop(); //you'd think curRival = msg.gr would work but there you go
-			curRival.selectable = true;
 			curRival.setCoords();
 			selectedRival = msg.uID;
 		}
@@ -48,14 +43,8 @@ socket.on('newRival', function(msg){
 		msg.gr = convertGridToImage(msg.gr);
 		rivalGrids['' + msg.uID] = msg.gr;
 		selectedRival = msg.uID;
-		msg.gr.opacity = 0.5;
-		msg.gr.setScaleX(0.7);
-		msg.gr.setScaleY(0.7);
-		msg.gr.left = (window.pageXOffset || document.documentElement.scrollLeft) + (document.documentElement.clientWidth - 50);
-		msg.gr.top = (window.pageYOffset || document.documentElement.scrollTop) + 50;
 		canvas.add(msg.gr);
 		curRival = canvas._objects.pop(); //you'd think curRival = msg.gr would work but there you go
-		curRival.selectable = true;
 		curRival.setCoords();
 		//so new rival/player knows about me in return
 		socket.emit('newPlayer', {uID:uniqueID, gr:getStringArray(player.grid)});
@@ -75,3 +64,26 @@ socket.on('jumpToPVP', function(msg){
 		moveToRival(msg);
 	}
 })
+
+function convertGridToRivalIcon(grid){
+	var rob = new Player(0,0,0);
+	rob.isRivalIcon = true;
+	for(var x = 0; x < grid.length; x+= 1){
+		for(var y = 0; y < grid.length; y += 1){
+			if(grid[x][y] != undefined && grid[x][y] != null)
+				rob.addPiece(x,y,grid[x][y]);
+		}
+	}
+	if(rob.heart != undefined)
+		rob.heart.image.bringToFront();
+	var robImg = rob.group;
+	
+	robImg.opacity = 0.5;
+	robImg.setScaleX(0.7);
+	robImg.setScaleY(0.7);
+	robImg.left = (window.pageXOffset || document.documentElement.scrollLeft) + (document.documentElement.clientWidth - robImg.width - rivalIconMargin);
+	robImg.top = (window.pageYOffset || document.documentElement.scrollTop) + rivalIconMargin;
+	robImg.selectable = true;
+	
+	return(robImg);
+}
