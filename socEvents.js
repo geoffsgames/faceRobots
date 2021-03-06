@@ -35,6 +35,7 @@ socket.on('rivalChanged', function(msg){
 			canvas.add( msg.gr);
 			curRival = canvas._objects.pop(); //you'd think curRival = msg.gr would work but there you go
 			curRival.selectable = true;
+			curRival.setCoords();
 			selectedRival = msg.uID;
 		}
 	}
@@ -55,6 +56,7 @@ socket.on('newRival', function(msg){
 		canvas.add(msg.gr);
 		curRival = canvas._objects.pop(); //you'd think curRival = msg.gr would work but there you go
 		curRival.selectable = true;
+		curRival.setCoords();
 		//so new rival/player knows about me in return
 		socket.emit('newPlayer', {uID:uniqueID, gr:getStringArray(player.grid)});
 	}
