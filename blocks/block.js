@@ -182,8 +182,12 @@ Block.prototype.calculatePoints = function(){
 };
 
 Block.prototype.redraw = function(remove){
-	if(remove)
-		this.ownerImage.removeWithUpdate(this.image);
+	if(remove){
+		if(this.owner.isRivalIcon)
+			this.ownerImage.removeWithUpdate(this.image);
+		else
+			this.ownerImage.remove(this.image);
+	}
 	this.draw(this.type,this.offsetX,this.offsetY,this.pointAngle,this.pointOffsetX,this.pointOffsetY);
 };
 
@@ -220,7 +224,10 @@ Block.prototype.getPoints = function(){
 Block.prototype.draw = function(type,offsetX,offsetY,pointAngle,pointOffsetX,pointOffsetY){
 	this.makeImage(type,offsetX,offsetY,pointAngle,pointOffsetX,pointOffsetY);
 	if(this.ownerImage != undefined){
-		this.ownerImage.addWithUpdate(this.image);
+		if(this.owner.isRivalIcon) //icon for showing rival in top right corner TODO addWithUpdate would be better generally but don't want to break it
+			this.ownerImage.addWithUpdate(this.image);
+		else
+			this.ownerImage.add(this.image);
 	}
 	this.origLeft = this.image.left;
 	this.origTop = this.image.top;
