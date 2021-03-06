@@ -23,7 +23,7 @@ function getStringArray(inArr){
 
 socket.on('rivalChanged', function(msg){
 	if(msg.uID != uniqueID){
-		msg.gr = convertGridToImage(msg.gr);
+		msg.gr = convertGridToRivalIcon(msg.gr);
 		rivalGrids['' + msg.uID] = msg.gr
 		if(selectedRival == undefined || msg.uID == selectedRival){
 			if(curRival != null)
@@ -40,7 +40,7 @@ socket.on('newRival', function(msg){
 	if(msg.uID != uniqueID){
 		if(curRival != null)
 			canvas.remove(curRival)
-		msg.gr = convertGridToImage(msg.gr);
+		msg.gr = convertGridToRivalIcon(msg.gr);
 		rivalGrids['' + msg.uID] = msg.gr;
 		selectedRival = msg.uID;
 		canvas.add(msg.gr);
