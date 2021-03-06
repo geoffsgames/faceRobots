@@ -1752,6 +1752,7 @@ Person.prototype.unscramble = function(scrambler){
 
 function convertGridToImage(grid){
 	var rob = new Player(0,0,0);
+	ros.isRivalIcon = True;
 	for(var x = 0; x < grid.length; x+= 1){
 		for(var y = 0; y < grid.length; y += 1){
 			if(grid[x][y] != undefined && grid[x][y] != null)
