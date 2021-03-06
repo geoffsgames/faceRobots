@@ -1750,19 +1750,7 @@ Person.prototype.unscramble = function(scrambler){
 }
 
 
-function convertGridToImage(grid){
-	var rob = new Player(0,0,0);
-	rob.isRivalIcon = true;
-	for(var x = 0; x < grid.length; x+= 1){
-		for(var y = 0; y < grid.length; y += 1){
-			if(grid[x][y] != undefined && grid[x][y] != null)
-				rob.addPiece(x,y,grid[x][y]);
-		}
-	}
-	if(rob.heart != undefined)
-		rob.heart.image.bringToFront();
-	return(rob.group);
-}
+
 
 
 
