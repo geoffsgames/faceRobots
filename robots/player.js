@@ -602,6 +602,7 @@ Player.prototype.scrollInventory = function(absolute){
 		if(curRival != undefined && curRival != null){
 			curRival.left = scrollLeft + (document.documentElement.clientWidth - 50);
 			curRival.top = scrollTop + 50;
+			curRival.setCoords();
 		}
 		
 	}
@@ -621,6 +622,7 @@ Player.prototype.scrollInventory = function(absolute){
 		if(curRival != undefined && curRival != null){
 			curRival.left += scrollingX;
 			curRival.top += scrollingY;
+			curRival.setCoords();
 		}
 	}
 };
