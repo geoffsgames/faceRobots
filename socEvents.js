@@ -23,7 +23,7 @@ var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
 var leftArrow = new fabric.Image(document.getElementById("arrow"), {
 	left: scrollLeft + (document.documentElement.clientWidth - 100 - rivalIconMargin),
-	top: scrollTop + rivalIconMargin + curRival.height,
+	top: scrollTop + rivalIconMargin + 100,
 	lockScalingX: false,
 	lockScalingY: false,
 	lockMovementX: false,
