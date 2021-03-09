@@ -72,6 +72,7 @@ socket.on('jumpToPVP', function(msg){
 })
 
 function convertGridToRivalIcon(grid){
+	alert("new Rival!");
 	var rob = new Player(0,0,0);
 	rob.isRivalIcon = true;
 	for(var x = 0; x < grid.length; x+= 1){
