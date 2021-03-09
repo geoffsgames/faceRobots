@@ -56,8 +56,6 @@ var reallyWaitingForRotate = false; //after non intermediate has been confirmed,
 var startTime = 0;
 
 var delImg = new fabric.Image(document.getElementById("delete"), {
-	width: gridWidth,
-	height: gridHeight,
 	lockScalingX: false,
 	lockScalingY: false,
 	lockMovementX: false,
