@@ -235,7 +235,7 @@ canvas.on('selection:updated', function(e){
 
 function reactToSelection(e){
 	if(e.target == curRival){
-		if(ev.isMetaDown()){ //right mouse buttom - iterate onto next rival
+		if(e.isMetaDown()){ //right mouse buttom - iterate onto next rival
 			var keys = rivalGrids.keys();
 			var num = keys.indexOf('' + selectedRival)
 			num += 1;
