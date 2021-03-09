@@ -81,13 +81,17 @@ function convertGridToRivalIcon(grid){
 				rob.addPiece(x,y,grid[x][y]);
 		}
 	}
+	
 	if(rob.heart != undefined)
 		rob.heart.image.bringToFront();
 	var robImg = rob.group;
 
-	robImg.opacity = 0.5;
+	robImg.opacity = 0.8;
 	robImg.scaleX = 0.7;
 	robImg.scaleY = 0.7;
+	robImg.hasControls = false;
+	robImg.borderColor = 'red';
+	robImg.strokeWidth = 5;
 	robImg.left = (window.pageXOffset || document.documentElement.scrollLeft) + (document.documentElement.clientWidth - robImg.width - rivalIconMargin);
 	robImg.top = (window.pageYOffset || document.documentElement.scrollTop) + rivalIconMargin;
 	robImg.selectable = true;
