@@ -22,7 +22,7 @@ var scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
 var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
 var leftArrow = new fabric.Image(document.getElementById("arrow"), {
-	left: scrollLeft + (document.documentElement.clientWidth - curRival.width - rivalIconMargin),
+	left: scrollLeft + (document.documentElement.clientWidth - 100 - rivalIconMargin),
 	top: scrollTop + rivalIconMargin + curRival.height,
 	lockScalingX: false,
 	lockScalingY: false,
@@ -38,7 +38,7 @@ var leftArrow = new fabric.Image(document.getElementById("arrow"), {
 //add arrows for scrolling through rivals
 var rightArrow = new fabric.Image(document.getElementById("arrow"), {
 	left: scrollLeft + (document.documentElement.clientWidth - 30 - rivalIconMargin),
-	top: scrollTop + rivalIconMargin + curRival.height,
+	top: scrollTop + rivalIconMargin + 100,
 	lockScalingX: false,
 	lockScalingY: false,
 	lockMovementX: false,
