@@ -53,6 +53,9 @@ var rightArrow = new fabric.Image(document.getElementById("arrow"), {
 
 canvas.add(leftArrow);
 canvas.add(rightArrow);
+leftArrow.visible = false;
+rightArrow.visible = false;
+
 
 function getStringArray(inArr){
 	var outArr = []
@@ -107,7 +110,7 @@ function updateRivalShown(img, id){
 
 }
 
-function updateLeftRightArrows = function(){
+function updateLeftRightArrows(){
 	rightArrow.visible = curRivalIDind < rivalGridIDs.length;
 	leftArrow.visible = curRivalIDind > 0;
 
