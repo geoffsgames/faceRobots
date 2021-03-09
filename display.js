@@ -13,8 +13,8 @@ canvas.controlsAboveOverlay = true;
 var character;
 
 //character speed
-var initialInterval = 256;
-var minInt = 16;
+var initialInterval = 1024;
+var minInt = 64;
 var maxSpeed = initialInterval / minInt;
 var numSpeeds = (Math.log(maxSpeed) / Math.log(2));
 
@@ -84,7 +84,7 @@ var message = new fabric.Text("Face Robots!", {
 	strokeWidth: 2
 });
 
-message.setColor('green');
+message.set('fill','green');
 
 //used to guide landscape in creating player spawn site
 var playerStartSize = 5;
@@ -177,7 +177,8 @@ function initInventory(){
 	  fill: 'blue',
 	  width: clientWidth,
 	  height: gridHeight * 2,
-	  opacity: 0.3
+	  opacity: 0.3,
+	  selectable: false
 	});	
 	canvas.add(invBackground);
 	
@@ -224,7 +225,15 @@ function keyListener(e){
 	}
 }
 
-canvas.on('object:selected', function(e) {
+canvas.on('selection:created', function(e) {
+	reactToSelection(e);
+}); 
+
+canvas.on('selection:updated', function(e){
+	reactToSelection(e);
+});
+
+function reactToSelection(e){
 	if(e.target == curRival){
 		if(ev.isMetaDown()){ //right mouse buttom - iterate onto next rival
 			var keys = rivalGrids.keys();
@@ -242,7 +251,7 @@ canvas.on('object:selected', function(e) {
 	else{
 		handleBlockSelection(e.target);
 	}
-}); 
+}
 
 canvas.on('selection:cleared', function(e) {
 	player.deselected();
@@ -254,15 +263,15 @@ function handleBlockSelection(block){
 		deleting = true;
 	}
 	else if(block.isDamagedBlock){
-		message.setText("Can't modify broken block!");
-		message.setColor('red');
+		message.set("text","Can't modify broken block!");
+		message.set('fill','red');
 	}
 	else if(block.isAddPlace){
 		if(!deleting)
 			player.convertAddPlace(block); //TODO only player can add/remove blocks for now. 
 		else{								//when I give that functionality to enemies will need to redo and use "block.owner"
-			message.setText("Can't delete, No block selected!");
-			message.setColor('red');
+			message.set("text","Can't delete, No block selected!");
+			message.set('fill','red');
 		}
 		canvas.setActiveObject(player.tryToSelectWhatIHadSelectedBefore(lastSelectedBlock));
 	}
@@ -282,9 +291,10 @@ function handleBlockSelection(block){
 		}
 	}
 	else if(block.inventory != undefined){
-		player.selectFromInventory(block.inventory);
 		lastSelectedBlock = block.inventory;
 		deleting = false;
+		player.selectFromInventory(block.inventory);
+
 	}
 }
 

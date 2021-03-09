@@ -3,7 +3,6 @@ var randsSeeded =false; //debugMode;
 var scrollingX = 0;
 var scrollingY = 0;
 
-
 Math.seed = Math.round(Math.random() * 1000);
 alert(Math.seed);
 var startGlobalSeed = Math.seededRandomDouble();
@@ -184,6 +183,8 @@ function addStandardPlayerPieces(rob){
 
 function addPlayer(){
 	
+
+	
 	if(playerStr == undefined){ //if aren't loading player from saved game
 		player = new Player(land.playerX,land.playerY,2);
 
@@ -206,6 +207,17 @@ function addPlayer(){
 		stoppedPressingMotor = false;
 		player.motorWillStart = 0;
 	}
+	
+	for(var i =0 ; i < 10; i += 1){
+		player.addBlockToInventory("wall");
+		
+		player.addBlockToInventory("knife");
+		player.addBlockToInventory("motor");
+		player.addBlockToInventory("spring");
+
+	}
+	
+	player.group.bringToFront();
 }
 
 //for start of game
@@ -282,7 +294,7 @@ function addScenerySquare(x, y, blocktype, pointX, pointY){
 	}
 	//add it to display and to grid
 	var owner = canvas;
-	if(blocktype == "obstacle")//scenery not collecable = draw to background
+	if(blocktype == "obstacle")//scenery not collectable = draw to background
 		owner = context;
 	addGridSquare(x, y, blocktype, gameGrid, owner, null, 0 , 0,pointX,pointY);
 }
@@ -339,8 +351,8 @@ function updateGame(){
 	if(!reallyWaitingForRotate){
 		if(willAddThief && !player.partsMoving && !intermediate){
 			addThief();
-			message.setText("Thiefbot has appeared!");
-			message.setColor('blue');
+			message.set("text","Thiefbot has appeared!");
+			message.set('fill', 'blue');
 			messageTimer = 10;
 			player.changedDir = true;
 			player.changeDir(true);
@@ -353,7 +365,7 @@ function updateGame(){
 		}
 		messageTimer -= 1;
 		if(messageTimer == 0 && message.text == "Thiefbot has appeared!")
-			message.setText("");
+			message.set("text","");
 		
 		oldInterval = interval;
 		frozeWaitingForEnemy = false;//enemy fade in taking too long;
@@ -673,8 +685,7 @@ function addEnemy(){
 	
 		enemy.readyToMove = true;
 	};
-	
-
+	enemy.group.bringToFront();
 	
 }
 
@@ -704,7 +715,7 @@ function addCollectables(){
 }
 
 function renderLoop(){
-	canvas.renderAll();
+	canvas.requestRenderAll();
 	fabric.util.requestAnimFrame(renderLoop);
 }
 
@@ -820,13 +831,14 @@ function goDownStairs(){
 };
 
 function reportMass(mass,fans,speed){
-	message.setText(fans + " boosters / mass of " + mass + " = speed: " + speed);
-	message.setColor('blue');
+	message.set("text",fans + " boosters / mass of " + mass + " = speed: " + speed);
+	message.set('fill', 'blue');
 };
 
 //when I discover I'm moving to rival - alert server
 function jumpToRival(){
-	socket.emit("jumping", {gr:player.grid,myID:uniqueID,otherID:selectedRival});
+	if(usingSocket)
+		socket.emit("jumping", {gr:player.grid,myID:uniqueID,otherID:selectedRival});
 }
 
 //actually move into the rival's arena
