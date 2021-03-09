@@ -1,4 +1,4 @@
-var flyawaySpeed = 100;
+var flyawaySpeed = 500;
 
 var flyAwayMin = 5;
 var flyAwayOptimal = 10;
@@ -183,7 +183,7 @@ Block.prototype.calculatePoints = function(){
 
 Block.prototype.redraw = function(remove){
 	if(remove){
-		if(this.owner.isRivalIcon)
+		if(this.owner != undefined && this.owner != null && this.owner.isRivalIcon)
 			this.ownerImage.removeWithUpdate(this.image);
 		else
 			this.ownerImage.remove(this.image);
@@ -224,7 +224,7 @@ Block.prototype.getPoints = function(){
 Block.prototype.draw = function(type,offsetX,offsetY,pointAngle,pointOffsetX,pointOffsetY){
 	this.makeImage(type,offsetX,offsetY,pointAngle,pointOffsetX,pointOffsetY);
 	if(this.ownerImage != undefined){
-		if(this.owner.isRivalIcon) //icon for showing rival in top right corner TODO addWithUpdate would be better generally but don't want to break it
+		if(this.owner != undefined && this.owner != null && this.owner.isRivalIcon) //icon for showing rival in top right corner TODO addWithUpdate would be better generally but don't want to break it
 			this.ownerImage.addWithUpdate(this.image);
 		else
 			this.ownerImage.add(this.image);
@@ -244,7 +244,6 @@ Block.prototype.makeImage = function(type,offsetX,offsetY,pointAngle,pointOffset
 	
 	if(type == "chain" && this.owner != null && this.owner.isEnemy)
 		type = "chainDark";
-
 
 	
 	//pointOffset and offset- see above

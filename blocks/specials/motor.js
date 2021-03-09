@@ -279,7 +279,8 @@ Motor.prototype.animate = function() {
 		group.originX = "center";
 		group.originY = "center";
 		
-			if(movX != 0){				
+			if(movX != 0){
+				group.bringToFront();
 				group.animate('left', makeAnimateString(Math.round(gridWidth / dist) * movX), {
 		            onComplete: function(){
 		            	allComplete();
@@ -289,6 +290,7 @@ Motor.prototype.animate = function() {
 					});
 			}
 			else if(movY != 0){
+				group.bringToFront();
 				group.animate('top', makeAnimateString(Math.round(gridHeight / dist) * movY), {
 			            onComplete: function(){
 			            	allComplete();
@@ -389,7 +391,8 @@ Motor.prototype.startMoving = function(){
 		grow = this.topNeigh - this.dis - 1;
 	this.owner.growGrid(grow,grow);
 	
-
+	this.owner.actualWidth = gridWidth * this.owner.gridSize;
+	this.owner.actualHeight = gridHeight * this.owner.gridSize;
 	
 	interval = minInt;
 										//16,
@@ -698,7 +701,8 @@ Motor.prototype.makeImage = function(type, offsetX, offsetY, pointAngle, pointOf
 		originY: 'center'
 	});
 	
-	text.setColor('red');
+	message.set('fill', 'red')
+
 	
 	var l = this.image.left;
 	var t = this.image.top;

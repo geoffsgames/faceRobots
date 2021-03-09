@@ -19,7 +19,6 @@ Obstacle.prototype.drawBackground = function() {
 
 drawBackground = function(x,y,width,height){
 		
-	
 		var background = new fabric.Image(document.getElementById("grass"),{
 			  originX: "left",
 			  originY: "top",
@@ -27,9 +26,15 @@ drawBackground = function(x,y,width,height){
 			  top: 0
 			});
 		
-		background.clipTo = function (ctx) {
-		    ctx.rect (x - (background.width / 2) - (width/ 2), y - (background.height / 2) - (height / 2), width, height);
-		};
+		
+		var clipPath = new fabric.Rect({
+			height: height,
+			width: width,
+		    left: x - (background.width / 2) - (width/ 2), 
+		    top: y - (background.height / 2) - (height / 2)
+		  });
+
+		background.clipPath = clipPath;
 		
 		canvas.add(background);
 		background.moveTo(blackWallZindex + 1);

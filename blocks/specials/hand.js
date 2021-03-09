@@ -21,8 +21,8 @@ function Hand(type, ownerGrid, ownerImage,  owner, myX, myY, offsetX, offsetY, p
 
 Hand.prototype.specialEffect = function(){
 	if(this.victim == player){//remove all my inventory
-		message.setText("Thiefbot has robbed you!");
-		message.setColor('blue');
+		message.set("text", "Thiefbot has robbed you!");
+		message.set('fill', 'blue')
 		messageTimer = 10;
 
 		for(var i =0; i < player.inventoryImages.length; i+= 1){

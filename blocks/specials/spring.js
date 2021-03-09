@@ -1,7 +1,13 @@
 //Spring/////////////////////////////////////
 
 Spring.prototype = Object.create( Motor.prototype );
+var generalScaleX = 1;
+var generalScaleY = 1;
 
+var springExtendedImg = document.getElementById("spring");
+var springExtendedX = springExtendedImg.width;
+var springExtendedY = springExtendedImg.height;
+var springExtendedMax = Math.max(springExtendedX, springExtendedY)
 
 function Spring(type, ownerGrid, ownerImage,  owner, myX, myY, offsetX, offsetY, pointX, pointY){
 	this.setup(type, ownerGrid, ownerImage,  owner, myX, myY, offsetX, offsetY, pointX, pointY);
@@ -43,8 +49,8 @@ Spring.prototype.increment = function(val){
 		this.resistance += (val * 2);
 	}
 	else{
-		message.setText("Can't use more than 6 springs one block!");
-		message.setColor('red');
+		message.set("text","Can't use more than 6 springs one block!");
+		message.set('fill', 'red')
 	}
 	this.redraw(true);
 };
@@ -97,13 +103,15 @@ Spring.prototype.makeImage = function(type, offsetX, offsetY, pointAngle, pointO
 
 //for inventory
 function getBasicSpringGroup(){
-	var chain = new fabric.Image(document.getElementById("springBlock"), {
+	var img = document.getElementById("springBlock");
+	
+	var chain = new fabric.Image(img, {
 		left: gridWidth / 2,
 		top: gridHeight / 2,
 		originX:"center",
 		originY:"center",
-		width: gridWidth,
-		height: gridHeight
+		scaleX: gridWidth / img.width,
+		scaleY: gridHeight / img.height
 	});
 	var wall = new fabric.Image(document.getElementById("wall"), {
 		left: 0,
@@ -123,13 +131,18 @@ function getBasicSpringGroup(){
 }
 
 Spring.prototype.getSingleImage = function(){
-	return new fabric.Image(document.getElementById("springBlock"), {
+	var img = document.getElementById("springBlock");
+	
+	generalScaleX = gridWidth / img.width;
+	generalScaleY = gridHeight / img.height;
+	
+	return new fabric.Image(img, {
 		left: 0,
 		top: 0,
 		originX:"left",
 		originY:"top",
-		width: gridWidth,
-		height: gridHeight
+		scaleX: gridWidth / img.width,
+		scaleY: gridHeight / img.height
 	})
 }
 
@@ -141,18 +154,18 @@ Spring.prototype.getImageGroup = function(addNumber){
 			chains.push(this.getSingleImage());
 	
 	if(chains.length == 2){
-		chains[0].width = gridWidth/2;
-		chains[1].width = gridWidth/2;
+		chains[0].scaleX = generalScaleX/2;
+		chains[1].scaleX = generalScaleX/2;
 		chains[1].left = gridWidth/2;
 	}
 	else if(chains.length == 3){
-		chains[0].width = gridWidth/3;
-		chains[1].width = gridWidth/3;
-		chains[2].width = gridWidth/3;
+		chains[0].scaleX = generalScaleX/3;
+		chains[1].scaleX = generalScaleX/3;
+		chains[2].scaleX = generalScaleX/3;
 		
-		chains[0].height = gridHeight/2;
-		chains[1].height = gridHeight/2;
-		chains[2].height = gridHeight/2;
+		chains[0].scaleY = generalScaleY/2;
+		chains[1].scaleY = generalScaleY/2;
+		chains[2].scaleY = generalScaleY/2;
 
 		chains[1].top = gridHeight/2;
 
@@ -161,15 +174,15 @@ Spring.prototype.getImageGroup = function(addNumber){
 
 	}
 	else if(chains.length == 4){
-		chains[0].width = gridWidth/2;
-		chains[1].width = gridWidth/2;
-		chains[2].width = gridWidth/2;
-		chains[3].width = gridWidth/2;
+		chains[0].scaleX = generalScaleX/2;
+		chains[1].scaleX = generalScaleX/2;
+		chains[2].scaleX = generalScaleX/2;
+		chains[3].scaleX = generalScaleX/2;
 		
-		chains[0].height = gridHeight/2;
-		chains[1].height = gridHeight/2;
-		chains[2].height = gridHeight/2;
-		chains[3].height = gridHeight/2;
+		chains[0].scaleY = generalScaleY/2;
+		chains[1].scaleY = generalScaleY/2;
+		chains[2].scaleY = generalScaleY/2;
+		chains[3].scaleY = generalScaleY/2;
 
 		chains[2].top = gridHeight/2;
 		chains[3].top = gridHeight/2;
@@ -179,18 +192,18 @@ Spring.prototype.getImageGroup = function(addNumber){
 
 	}
 	else if(chains.length == 5){
-		chains[0].width = gridWidth/3;
-		chains[1].width = gridWidth/3;
-		chains[2].width = gridWidth/3;
-		chains[3].width = gridWidth/3;
-		chains[4].width = gridWidth/3;
+		chains[0].scaleX = generalScaleX/3;
+		chains[1].scaleX = generalScaleX/3;
+		chains[2].scaleX = generalScaleX/3;
+		chains[3].scaleX = generalScaleX/3;
+		chains[4].scaleX = generalScaleX/3;
 
 		
-		chains[0].height = gridHeight/3;
-		chains[1].height = gridHeight/3;
-		chains[2].height = gridHeight/3;
-		chains[3].height = gridHeight/3;
-		chains[4].height = gridHeight/3;
+		chains[0].scaleY = generalScaleY/3;
+		chains[1].scaleY = generalScaleY/3;
+		chains[2].scaleY = generalScaleY/3;
+		chains[3].scaleY = generalScaleY/3;
+		chains[4].scaleY = generalScaleY/3;
 
 		chains[2].top = gridHeight * (1/3);
 
@@ -203,20 +216,20 @@ Spring.prototype.getImageGroup = function(addNumber){
 		chains[2].left = gridWidth * (1/3);
 	}
 	else if(chains.length == 6){
-		chains[0].width = gridWidth/3;
-		chains[1].width = gridWidth/3;
-		chains[2].width = gridWidth/3;
-		chains[3].width = gridWidth/3;
-		chains[4].width = gridWidth/3;
-		chains[5].width = gridWidth/3;
+		chains[0].scaleX = generalScaleX/3;
+		chains[1].scaleX = generalScaleX/3;
+		chains[2].scaleX = generalScaleX/3;
+		chains[3].scaleX = generalScaleX/3;
+		chains[4].scaleX = generalScaleX/3;
+		chains[5].scaleX = generalScaleX/3;
 
 		
-		chains[0].height = gridHeight/2;
-		chains[1].height = gridHeight/2;
-		chains[2].height = gridHeight/2;
-		chains[3].height = gridHeight/2;
-		chains[4].height = gridHeight/2;
-		chains[5].height = gridHeight/2;
+		chains[0].scaleY = generalScaleY/2;
+		chains[1].scaleY = generalScaleY/2;
+		chains[2].scaleY = generalScaleY/2;
+		chains[3].scaleY = generalScaleY/2;
+		chains[4].scaleY = generalScaleY/2;
+		chains[5].scaleY = generalScaleY/2;
 
 
 		chains[3].top = gridHeight/2;
@@ -258,10 +271,8 @@ Spring.prototype.getImageGroup = function(addNumber){
 				originY: 'center'
 			});
 			
-			text.setColor('red');
-	
-			
-			
+			message.set('fill', 'red')
+
 			//wall not rotated so don't want the same rotation offset as spring
 	
 			return [wall, chain, text];
@@ -324,11 +335,13 @@ Spring.prototype.makeSpringImage = function(){
 		springLeft = 0;
 		springTop = gridHeight / 2;
 	}
-	this.springImage = new fabric.Image(document.getElementById("spring"), {
+	
+	//always horizontal then rotated
+	this.springImage = new fabric.Image(springExtendedImg , {
 		originX:"center",
 		originY:"center",
-		width: springWidth,
-		height: springHeight,
+		scaleX: (springWidth / springExtendedX),
+		scaleY: (springHeight / springExtendedY),		
 		left: springLeft + this.weapon.image.left,
 		top: springTop + this.weapon.image.top,
 		angle: this.pointAngle,
@@ -373,16 +386,16 @@ Spring.prototype.animateSpin = function(){//too fast to actually animate
 		adj = -1;
 	
 	if(this.movX != 0){
-		var diff = (gridWidth / (maxSpeed / this.movepartsSpeed_fixed)) * adj;
+		var diff = (gridWidth / (maxSpeed / this.movepartsSpeed_fixed)) * adj; //diff is how far the knife  is moving each time, negative if moving left or up
 		
-		this.springImage.width = this.springImage.width + diff;
-		this.springImage.left = this.springImage.left + ((diff / 2) * this.pointX);
+		this.springImage.scaleX += (((gridWidth / springExtendedMax) *  (this.movepartsSpeed_fixed / maxSpeed)) * adj)
+		this.springImage.left += ((diff / 2) * this.pointX); // div 5 because it's centred
 	}
 	else if(this.movY != 0){
 		var diff = (gridHeight / (maxSpeed / this.movepartsSpeed_fixed)) * adj;
 		
-		this.springImage.width = this.springImage.width + diff;
-		this.springImage.top = this.springImage.top + ((diff / 2) * this.pointY);
+		this.springImage.scaleX += ((gridWidth / springExtendedMax)  * (this.movepartsSpeed_fixed / maxSpeed)) * adj;
+		this.springImage.top += ((diff / 2) * this.pointY);
 
 	}
 };
@@ -390,17 +403,19 @@ Spring.prototype.animateSpin = function(){//too fast to actually animate
 Spring.prototype.drawGroup = function(){
 		this.group = new fabric.Group();
 		this.group.angle = 0;
-		this.group.originX = "this.left";
-		this.group.originY = "this.top";
+		this.group.originX = "left";
+		this.group.originY = "top";
 		this.owner.group.remove(this.weapon.image);
 		this.group.add(this.weapon.image);
 		this.makeSpringImage();
 		this.owner.group.add(this.springImage);
 		
 		this.owner.group.add(this.group);
+		this.owner.group.bringToFront();
 		
 		//canvas.renderAll();
 		this.group.selectable = false;
+		this.group.bringToFront();
 };
 
 Spring.prototype.isWorking = function(){
@@ -413,8 +428,9 @@ Spring.prototype.getDis = function(){
 
 Spring.prototype.canMove = function(){
 	if(this.weapon == null){ //(if my weapon has been lost at some point)
-		message.setText("Spring has no weapon to spring!");
-		message.setColor('red');
+		message.set("text","Spring has no weapon to spring!");
+		message.set('fill', 'red')
+
 		return false;
 	}
 	return true;
@@ -460,6 +476,8 @@ Spring.prototype.startMoving = function(){
 		grow = (this.dis * this.movY) + this.weapon.myY;
 	this.owner.growGrid(grow,grow);
 	
+	this.owner.actualWidth = gridWidth * this.owner.gridSize;
+	this.owner.actualHeight = gridHeight * this.owner.gridSize;
 
 	
 	interval = minInt;
