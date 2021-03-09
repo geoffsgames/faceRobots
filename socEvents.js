@@ -6,10 +6,7 @@ var socket = io();
 var uniqueID = Math.random();
 
 if(usingSocket){
-	alert("Right. We're emitting new fucking player. HOW HARD IS THIS FOR YOU TO FUCKING UNDERSTAND?!?!?!?!?!");
 	socket.emit('newPlayer', {uID:uniqueID, gr:getStringArray(player.grid)});
-	alert("FUCKING EMITTED NEW PLAYER!!!!!!!!!!!!!!!!!!!");
-
 }
 player.updateRivals();
 
@@ -46,7 +43,6 @@ socket.on('rivalChanged', function(msg){
 });
 
 socket.on('newRival', function(msg){
-	alert("Right. We have a new fucking rival. JUST HOW FUCKING COMPLEX IS THIS FOR YOU - THIS IS LITERALLY EXACTLY THE SAME AS YOU WERE DOING BEFORE!!!!!!");
 	if(msg.uID != uniqueID){
 		if(curRival != null)
 			canvas.remove(curRival)
