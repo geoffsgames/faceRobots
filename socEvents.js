@@ -69,15 +69,13 @@ function getStringArray(inArr){
 socket.on('rivalChanged', function(msg){
 	if(msg.uID != uniqueID){
 		msg.gr = convertGridToRivalIcon(msg.gr);
-		rivalGrids['' + msg.uID] = msg.gr
-		if(selectedRival == undefined || msg.uID == selectedRival){
+		rivalGrids['' + msg.uID] = curRivalID
+		if("" + msg.uID == curRivalID){ //if currently viewing this rival then update the image shown
 			if(curRival != null)
 				canvas.remove(curRival)
 			canvas.add( msg.gr);
 			curRival = canvas._objects.pop(); //you'd think curRival = msg.gr would work but there you go
 			curRival.setCoords();
-			curRivalID = msg.uID;
-			curRivalIDind = rivalGridIDs.indexOf(curRivalID);
 		}
 	}
 });
@@ -86,23 +84,28 @@ socket.on('rivalChanged', function(msg){
 
 socket.on('newRival', function(msg){
 	if(msg.uID != uniqueID && rivalGridIDs.indexOf(msg.uID) == -1){
-		if(curRival != null)
-			canvas.remove(curRival)
 		msg.gr = convertGridToRivalIcon(msg.gr);
-		rivalGrids['' + msg.uID] = msg.gr;
-		curRivalID = msg.uID;
-		canvas.add(msg.gr);
-		curRival = canvas._objects.pop(); //you'd think curRival = msg.gr would work but there you go
-		curRival.setCoords();
+		updateRivalShown(msg.gr, "" + msg.uID);
 		//so new rival/player knows about me in return
 		socket.emit('rivalChanged', {uID:uniqueID, gr:getStringArray(player.grid)});
-		
-		updateLeftRightArrows();
-		
 		curRivalIDind = rivalGridIDs.length;
 		rivalGridIDs.push('' + msg.uID);
+
 	}
 });
+
+function updateRivalShown(img, id){
+	if(curRival != null)
+		canvas.remove(curRival)
+	rivalGrids[id] = img;
+	curRivalID = id;
+	canvas.add(img);
+	curRival = canvas._objects.pop(); //you'd think curRival = msg.gr would work but there you go
+	curRival.setCoords();
+
+	updateLeftRightArrows();
+
+}
 
 function updateLeftRightArrows = function(){
 	rightArrow.visible = curRivalIDind < rivalGridIDs.length;
