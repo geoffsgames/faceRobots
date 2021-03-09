@@ -85,8 +85,8 @@ function convertGridToRivalIcon(grid){
 	var robImg = rob.group;
 
 	robImg.opacity = 0.5;
-	robImg.setScaleX(0.7);
-	robImg.setScaleY(0.7);
+	robImg.scaleX = 0.7;
+	robImg.scaleY = 0.7;
 	robImg.left = (window.pageXOffset || document.documentElement.scrollLeft) + (document.documentElement.clientWidth - robImg.width - rivalIconMargin);
 	robImg.top = (window.pageYOffset || document.documentElement.scrollTop) + rivalIconMargin;
 	robImg.selectable = true;
