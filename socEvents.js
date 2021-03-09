@@ -70,7 +70,6 @@ function getStringArray(inArr){
 }
 
 socket.on('rivalChanged', function(msg){
-	alert("changed 1");
 	if(msg.uID != uniqueID){
 		alert("changed 2");
 		msg.gr = convertGridToRivalIcon(msg.gr);
@@ -137,7 +136,6 @@ socket.on('jumpToPVP', function(msg){
 })
 
 function convertGridToRivalIcon(grid){
-	alert("new Rival!");
 	var rob = new Player(0,0,0);
 	rob.isRivalIcon = true;
 	for(var x = 0; x < grid.length; x+= 1){
