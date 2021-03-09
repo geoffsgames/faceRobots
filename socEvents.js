@@ -53,7 +53,7 @@ socket.on('newRival', function(msg){
 		curRival = canvas._objects.pop(); //you'd think curRival = msg.gr would work but there you go
 		curRival.setCoords();
 		//so new rival/player knows about me in return
-		socket.emit('newPlayer', {uID:uniqueID, gr:getStringArray(player.grid)});
+		socket.emit('rivalChanged', {uID:uniqueID, gr:getStringArray(player.grid)});
 	}
 });
 
