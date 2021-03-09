@@ -233,18 +233,19 @@ canvas.on('selection:updated', function(e){
 
 function reactToSelection(e){
 	if(e.target == curRival){
-		if(e.isMetaDown()){ //right mouse buttom - iterate onto next rival
-			var keys = rivalGrids.keys();
-			var num = keys.indexOf('' + selectedRival)
-			num += 1;
-			if(num == keys.length)
-				num = 0;
-			selectedRival = rivalGrids[keys[num]];
-		}
-		else{
-			alert("ENTERING PVP");
-			jumpToRival();
-		}
+		alert("ENTERING PVP");
+		jumpToRival();
+
+	}
+	else if(e.target == leftArrow){
+		curRivalIDind -= 1;
+		curRivalID = rivalGridIDs[curRivalIDind];
+		updateRivalShown(rivalGrids[curRivalID],curRivalID);
+	}
+	else if(e.target == rightArrow){
+		curRivalIDind += 1;
+		curRivalID = rivalGridIDs[curRivalIDind];
+		updateRivalShown(rivalGrids[curRivalID],curRivalID);
 	}
 	else{
 		handleBlockSelection(e.target);
