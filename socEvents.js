@@ -11,9 +11,48 @@ if(usingSocket){
 player.updateRivals();
 
 var rivalGrids = []; //the ID codes
+var rivalGridIDs = []; //codes used as indexes in rivalGrids
 var curRival = null;
-var selectedRival = null;
+var curRivalID = null;
+var curRivalIDind = 0;
 var rivalIconMargin = 20;
+
+//add arrows for scrolling through rivals
+var scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+var leftArrow = new fabric.Image(document.getElementById("arrow"), {
+	left: scrollLeft + (document.documentElement.clientWidth - curRival.width - rivalIconMargin),
+	top: scrollTop + rivalIconMargin + curRival.height,
+	lockScalingX: false,
+	lockScalingY: false,
+	lockMovementX: false,
+	lockMovementY: false,
+	hasControls: false,
+	offsetX: "left",
+	offsetY: "top",
+	borderColor: 'yellow',
+	strokeWidth: 5
+});
+
+//add arrows for scrolling through rivals
+var rightArrow = new fabric.Image(document.getElementById("arrow"), {
+	left: scrollLeft + (document.documentElement.clientWidth - 30 - rivalIconMargin),
+	top: scrollTop + rivalIconMargin + curRival.height,
+	lockScalingX: false,
+	lockScalingY: false,
+	lockMovementX: false,
+	lockMovementY: false,
+	hasControls: false,
+	offsetX: "left",
+	offsetY: "top",
+	borderColor: 'yellow',
+	strokeWidth: 5,
+	angle: 180
+});
+
+canvas.add(leftArrow);
+canvas.add(rightArrow);
 
 function getStringArray(inArr){
 	var outArr = []
@@ -37,25 +76,43 @@ socket.on('rivalChanged', function(msg){
 			canvas.add( msg.gr);
 			curRival = canvas._objects.pop(); //you'd think curRival = msg.gr would work but there you go
 			curRival.setCoords();
-			selectedRival = msg.uID;
+			curRivalID = msg.uID;
+			curRivalIDind = rivalGridIDs.indexOf(curRivalID);
 		}
 	}
 });
 
+
+
 socket.on('newRival', function(msg){
-	if(msg.uID != uniqueID){
+	if(msg.uID != uniqueID && rivalGridIDs.indexOf(msg.uID) == -1){
 		if(curRival != null)
 			canvas.remove(curRival)
 		msg.gr = convertGridToRivalIcon(msg.gr);
 		rivalGrids['' + msg.uID] = msg.gr;
-		selectedRival = msg.uID;
+		curRivalID = msg.uID;
 		canvas.add(msg.gr);
 		curRival = canvas._objects.pop(); //you'd think curRival = msg.gr would work but there you go
 		curRival.setCoords();
 		//so new rival/player knows about me in return
 		socket.emit('rivalChanged', {uID:uniqueID, gr:getStringArray(player.grid)});
+		
+		updateLeftRightArrows();
+		
+		curRivalIDind = rivalGridIDs.length;
+		rivalGridIDs.push('' + msg.uID);
 	}
 });
+
+function updateLeftRightArrows = function(){
+	rightArrow.visible = curRivalIDind < rivalGridIDs.length;
+	leftArrow.visible = curRivalIDind > 0;
+
+	leftArrow.left =  scrollLeft + (document.documentElement.clientWidth - curRival.width - rivalIconMargin);
+	leftArrow.top = rivalIconMargin + curRival.height;
+	rightArrow.left = scrollLeft + (document.documentElement.clientWidth - 30 - rivalIconMargin);
+	rightArrow.top = scrollTop + rivalIconMargin + curRival.height;
+}
 
 
 socket.on('acceptJumpToPVP', function(msg){
