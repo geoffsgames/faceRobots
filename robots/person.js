@@ -1086,7 +1086,7 @@ Person.prototype.changeDir = function(restarting){
 			reportMass(mass,this.fasterSpeeds[dir],newFastSpeed);
 	}
 	else if(this == player && message.text.search("boosters") > 0)//clear any mass messages
-		message.setText("");
+		message.set("text","");
 	if(newFastSpeed != this.fastSpeed_fixed || restarting){
 		this.fastSpeed_fixed = newFastSpeed;
 		if(otherRob.readyToMove || restarting){
@@ -1338,7 +1338,7 @@ Person.prototype.rotateDangerZones = function(rotation){
 Person.prototype.recreateGroup = function(offsetX, offsetY) {
 	if(!this.recreateable)
 		return;
-	
+
 	this.recreated = true;
 	canvas.remove(this.group);
 
@@ -1400,6 +1400,9 @@ Person.prototype.recreateGroup = function(offsetX, offsetY) {
 		this.heart.image.bringToFront();
 
 	}
+
+	this.actualWidth = gridWidth * this.gridSize;
+	this.actualHeight = gridHeight * this.gridSize;
 };
 
 Person.prototype.collect = function(block){
@@ -1423,8 +1426,8 @@ Person.prototype.collectAll = function(){
 			enemy.target = null;
 		
 		if(block.special && this == player){
-			message.setText("You have just collected a " + block.type);
-			message.setColor('green');
+			message.set("text","You have just collected a " + block.type);
+			message.set('fill', 'green');
 		}
 		var newBlock = null;
 		if(block.pointSet)

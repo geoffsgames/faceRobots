@@ -385,8 +385,8 @@ Enemy.prototype.amIStuck = function(){
 
 Enemy.prototype.intelligence = function(){
 	
-	//if(!this.isThief) 
-		//return;
+	if(!this.isThief) 
+		return;
 	
 	if(intermediate || this.partsMoving || !this.readyToMove || this.movepartsSpeed > 1)
 		return;

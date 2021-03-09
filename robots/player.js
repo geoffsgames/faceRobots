@@ -155,8 +155,8 @@ Player.prototype.deleteBlock = function(block, mustDelete){
 	
 	
 	if(tempBlock.heart){
-		message.setText("Can't modify heart!");
-		message.setColor('red');
+		message.set("text","Can't modify heart!");
+		message.set('fill', 'red');
 		tempBlock.selectable = false;
 		return;//can't delete heart
 	}
@@ -170,7 +170,7 @@ Player.prototype.deleteBlock = function(block, mustDelete){
 		for(var i = 0, len = this.rects.length; i < len; i+= 1)
 			this.rects[i].selectable = false;
 
-		message.setText("");
+		message.set("text","");
 		block.bringToFront();
 		selectedBlock.initialAngle = selectedBlock.angle;
 	}
@@ -356,6 +356,7 @@ Player.prototype.addBlockToInventory = function(type){
 		canvas.add(img);
 		img.lockScalingX = img.lockScalingY = img.lockMovementX = img.lockMovementY = true;
 		img.hasControls = false;
+		img.setCoords();
 		ind = this.inventoryTypes.length;
 		this.recordInventoryNum(1, ind);
 		this.inventoryImages.push(img);
@@ -406,16 +407,23 @@ Player.prototype.recordInventoryNum = function(num, ind){
 	var scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
 	var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
+	if(this.inventoryText == undefined || this.inventoryText == null)
+		this.inventoryText = [];
 	
-	var text = new fabric.Text("" + num, { left: (gridWidth * (ind + 1)) - 10 + scrollLeft, top: gridHeight - 10 + scrollTop, fontSize: 20, stroke: '#ff0000' });
 	if(ind < this.inventoryText.length){
-		canvas.remove(this.inventoryText[ind]); //clear out old text to replace
-		this.inventoryText[ind] = text;
+		this.inventoryText[ind].set("text", "" + num);
 	}
-	else
+	else{
+		//TODO THHHIIISSS is where inventory text position is set!!!!
+		var text = new fabric.Text("" + num, 
+				{ left: (gridWidth * (ind + 1)) + scrollLeft - 10, 
+			top: (gridHeight * 2) - 10 + scrollTop, 
+			fontSize: 20,
+			stroke: '#ff0000' });
 		this.inventoryText.push(text);
-	canvas.add(text);
-	text.selectable = false;
+		canvas.add(text);
+		text.selectable = false;
+	}
 };
 
 Player.prototype.selectFromInventory = function(index){
@@ -452,6 +460,7 @@ Player.prototype.activateEditMode = function(){
 	
 	for(var i =0, len = this.inventoryImages.length; i < len; i+= 1){
 		this.inventoryImages[i].setCoords();
+		this.inventoryImages[i].bringToFront();
 		this.inventoryImages[i].selectable = true;
 	}
 	
@@ -589,7 +598,7 @@ Player.prototype.scrollInventory = function(absolute){
 		
 		for(var i = 0; i < this.inventoryText.length; i+= 1){
 			this.inventoryText[i].left = ((i + 1) * gridWidth) - 10 + scrollLeft;
-			this.inventoryText[i].top = gridHeight - 10 + scrollTop;
+			this.inventoryText[i].top = (gridHeight * 2) - 10 + scrollTop;
 			this.inventoryImages[i].left = scrollLeft + ((i + 0.5) * gridWidth);
 			this.inventoryImages[i].top = (gridHeight * 0.5) + scrollTop;
 			this.inventoryImages[i].setCoords();
@@ -661,7 +670,8 @@ Player.prototype.collectAll = function() {
 };
 
 Player.prototype.updateRivals = function(){
-	socket.emit('playerShapeChanged', {gr:getStringArray(this.grid),uID:uniqueID});
+	if(usingSocket)
+		socket.emit('playerShapeChanged', {gr:getStringArray(this.grid),uID:uniqueID});
 }
 
 Player.prototype.setMovement = function(x, y) {
