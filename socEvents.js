@@ -69,32 +69,47 @@ function getStringArray(inArr){
 }
 
 socket.on('rivalChanged', function(msg){
-	if(msg.uID != uniqueID){
-		var img = convertGridToRivalIcon(msg.gr);
-		rivalGrids[msg.uID] = curRivalID
-		if("" + msg.uID == curRivalID){ //if currently viewing this rival then update the image shown
-			if(curRival != null)
-				canvas.remove(curRival)
-			curRival = img
-			canvas.add(curRival);
-			curRival.setCoords();
-		}
-	}
+	savedRivalChanged.add(msg);
 });
 
 
 
 socket.on('newRival', function(msg){
-	if(msg.uID != uniqueID && rivalGridIDs.indexOf(msg.uID) == -1){
-		msg.gr = convertGridToRivalIcon(msg.gr);
-		updateRivalShown(msg.gr, msg.uID);
-		//so new rival/player knows about me in return
-		socket.emit('playerShapeChanged', {uID:uniqueID, gr:getStringArray(player.grid)});
-		curRivalIDind = rivalGridIDs.length;
-		rivalGridIDs.push(msg.uID);
+	savedNewRival.add(msg);
 
-	}
 });
+
+function newRivalImpl(){
+	var msg = savedNewRival.pop();
+	while(msg != undefined){
+		if(msg.uID != uniqueID && rivalGridIDs.indexOf(msg.uID) == -1){
+			msg.gr = convertGridToRivalIcon(msg.gr);
+			updateRivalShown(msg.gr, msg.uID);
+			//so new rival/player knows about me in return
+			socket.emit('playerShapeChanged', {uID:uniqueID, gr:getStringArray(player.grid)});
+			curRivalIDind = rivalGridIDs.length;
+			rivalGridIDs.push(msg.uID);
+		}
+	}
+	
+}
+	
+function rivalChangedImpl(){
+	var msg = savedRivalChanged.pop();
+	while(msg != undefined){
+		if(msg.uID != uniqueID){
+			var img = convertGridToRivalIcon(msg.gr);
+			rivalGrids[msg.uID] = curRivalID
+			if("" + msg.uID == curRivalID){ //if currently viewing this rival then update the image shown
+				if(curRival != null)
+					canvas.remove(curRival)
+				curRival = img
+				canvas.add(curRival);
+				curRival.setCoords();
+			}
+		}
+	}
+}
 
 function updateRivalShown(img, id){
 	if(curRival != null)
