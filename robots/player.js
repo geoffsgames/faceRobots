@@ -606,7 +606,7 @@ Player.prototype.scrollInventory = function(absolute){
 		
 		message.left = scrollLeft + (displayWidth/2);
 		message.top = scrollTop + 30;
-		if(curRival != undefined && curRival != null){
+		if(socket != null && curRival != null){
 			curRival.left = scrollLeft + (document.documentElement.clientWidth - curRival.width - rivalIconMargin);
 			curRival.top = scrollTop + rivalIconMargin;
 			curRival.setCoords();
