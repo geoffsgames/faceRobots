@@ -87,6 +87,7 @@ socket.on('rivalChanged', function(msg){
 
 
 socket.on('newRival', function(msg){
+	alert(msg.uID + " " + uniqueID);
 	if(msg.uID != uniqueID && rivalGridIDs.indexOf(msg.uID) == -1){
 		msg.gr = convertGridToRivalIcon(msg.gr);
 		updateRivalShown(msg.gr, "" + msg.uID);
