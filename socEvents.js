@@ -70,13 +70,13 @@ function getStringArray(inArr){
 
 socket.on('rivalChanged', function(msg){
 	if(msg.uID != uniqueID){
-		msg.gr = convertGridToRivalIcon(msg.gr);
+		var img = convertGridToRivalIcon(msg.gr);
 		rivalGrids[msg.uID] = curRivalID
 		if("" + msg.uID == curRivalID){ //if currently viewing this rival then update the image shown
 			if(curRival != null)
 				canvas.remove(curRival)
-			canvas.add( msg.gr);
-			curRival = canvas._objects.pop(); //you'd think curRival = msg.gr would work but there you go
+			canvas.add(img);
+			curRival = img; //you'd think curRival = msg.gr would work but there you go
 			curRival.setCoords();
 		}
 	}
