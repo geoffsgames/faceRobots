@@ -13,6 +13,8 @@ var thiefProb = 1; 0.1;
 //var handyThiefProb = 0.1;
 var handyThiefProb = 0;
 
+var savedRivalChanged = [];
+var newRivalChanged = [];
 
 var willAddThief = false;
 var oldEnemy;
