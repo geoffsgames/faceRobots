@@ -338,7 +338,7 @@ function wakeRotateWait(){
 }
 
 function updateGame(){
-	if(socket.io != undefined){
+	if(socket != undefined){
 		 newRivalImpl();
 		 rivalChangedImpl();
 	}
