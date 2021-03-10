@@ -14,7 +14,7 @@ var socket = io();
 var uniqueID = "" + Math.random();
 
 if(usingSocket){
-	socket.emit('newPlayer', {uID:uniqueID, gr:getStringArray(player.grid)});
+	socket.emit('newPlayer', {uID:uniqueID, gr:getStringArray(player.grid), msg.trueNewPlayer = true});
 }
 
 
@@ -87,8 +87,9 @@ function newRivalImpl(){
 		if(msg.uID != uniqueID && rivalGridIDs.indexOf(msg.uID) == -1){
 			msg.gr = convertGridToRivalIcon(msg.gr);
 			updateRivalShown(msg.gr, msg.uID);
-			//so new rival/player knows about me in return
-			socket.emit('playerShapeChanged', {uID:uniqueID, gr:getStringArray(player.grid)});
+			if(msg.trueNewPlayer) //if player is completely new (i.e. it's not me that's just joined and I've just learned of the existing players)
+				socket.emit('newPlayer', {uID:uniqueID, gr:getStringArray(player.grid), msg.trueNewPlayer = false}); //so new rival/player knows about me in return
+
 			curRivalIDind = rivalGridIDs.length;
 			rivalGridIDs.push(msg.uID);
 		}
