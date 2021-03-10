@@ -84,8 +84,6 @@ var oldTime = new Date;
 var oldTime2 = new Date;
 
 var socket = null;
-var enemy = null;
-
 
 //confusingly - for restarting after death NOT for starting at the beginning
 function startWholeGame(){
@@ -113,7 +111,7 @@ function getEnemyInterval(){
 //enter new arena or start game
 function start(){
 	numPlayers = 2;
-	if(enemy != null)
+	if(enemy != undefined && enemy != null)
 		enemy.readyToMove = false; 
 
 	if(loading)
