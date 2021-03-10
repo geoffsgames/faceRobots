@@ -338,7 +338,10 @@ function wakeRotateWait(){
 }
 
 function updateGame(){
-	
+	if(socket.io != undefined){
+		 newRivalImpl();
+		 rivalChangedImpl();
+	}
 	
 	//TODO there is literally no reason whatsoever why this needs to be here as exactly the same code is in allComplete()
 	//but for reasons unknown it can't be arsed to do it's job so here we go
