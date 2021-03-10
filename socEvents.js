@@ -69,7 +69,7 @@ function getStringArray(inArr){
 }
 
 socket.on('rivalChanged', function(msg){
-	if(msg.uID == uniqueID){
+	if(msg.uID != uniqueID){
 		alert("WHAT THE FUCK IS YOUR PROBLEM!?!?!? " + msg.uID + " " + uniqueID);
 		msg.gr = convertGridToRivalIcon(msg.gr);
 		rivalGrids[msg.uID] = curRivalID
