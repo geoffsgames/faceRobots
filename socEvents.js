@@ -69,13 +69,13 @@ function getStringArray(inArr){
 }
 
 socket.on('rivalChanged', function(msg){
-	savedRivalChanged.add(msg);
+	savedRivalChanged.push(msg);
 });
 
 
 
 socket.on('newRival', function(msg){
-	savedNewRival.add(msg);
+	savedNewRival.push(msg);
 
 });
 
