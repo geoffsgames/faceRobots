@@ -1,3 +1,11 @@
+
+var rivalGrids = []; //the ID codes
+var rivalGridIDs = []; //codes used as indexes in rivalGrids
+var curRival = null;
+var curRivalID = null;
+var curRivalIDind = 0;
+var rivalIconMargin = 20;
+
 //switch off when editing locally
 var usingSocket = true;
 
@@ -9,12 +17,6 @@ if(usingSocket){
 	socket.emit('newPlayer', {uID:uniqueID, gr:getStringArray(player.grid)});
 }
 
-var rivalGrids = []; //the ID codes
-var rivalGridIDs = []; //codes used as indexes in rivalGrids
-var curRival = null;
-var curRivalID = null;
-var curRivalIDind = 0;
-var rivalIconMargin = 20;
 
 //add arrows for scrolling through rivals""
 var scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
