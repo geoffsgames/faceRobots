@@ -3,7 +3,7 @@ var usingSocket = true;
 
 var socket = io();
 
-var uniqueID = Math.random();
+var uniqueID = "" + Math.random();
 
 if(usingSocket){
 	socket.emit('newPlayer', {uID:uniqueID, gr:getStringArray(player.grid)});
@@ -17,7 +17,7 @@ var curRivalID = null;
 var curRivalIDind = 0;
 var rivalIconMargin = 20;
 
-//add arrows for scrolling through rivals
+//add arrows for scrolling through rivals""
 var scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
 var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
