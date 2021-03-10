@@ -80,8 +80,8 @@ socket.on('newRival', function(msg){
 });
 
 function newRivalImpl(){
-	var msg = savedNewRival.pop();
-	while(msg != undefined){
+	while(savedNewRival.length > 0){
+		var msg = savedNewRival.pop();
 		if(msg.uID != uniqueID && rivalGridIDs.indexOf(msg.uID) == -1){
 			msg.gr = convertGridToRivalIcon(msg.gr);
 			updateRivalShown(msg.gr, msg.uID);
@@ -95,8 +95,8 @@ function newRivalImpl(){
 }
 	
 function rivalChangedImpl(){
-	var msg = savedRivalChanged.pop();
-	while(msg != undefined){
+	while(savedRivalChanged.length > 0){
+		var msg = savedRivalChanged.pop();
 		if(msg.uID != uniqueID){
 			var img = convertGridToRivalIcon(msg.gr);
 			rivalGrids[msg.uID] = curRivalID
