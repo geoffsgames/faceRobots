@@ -71,7 +71,7 @@ function getStringArray(inArr){
 
 socket.on('rivalChanged', function(msg){
 	if(msg.uID == uniqueID){
-		alert(msg.uID + " " + uniqueID);
+		alert("WHAT THE FUCK IS YOUR PROBLEM!?!?!? " + msg.uID + " " + uniqueID);
 		msg.gr = convertGridToRivalIcon(msg.gr);
 		rivalGrids[msg.uID] = curRivalID
 		if("" + msg.uID == curRivalID){ //if currently viewing this rival then update the image shown
