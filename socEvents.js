@@ -8,7 +8,6 @@ var uniqueID = "" + Math.random();
 if(usingSocket){
 	socket.emit('newPlayer', {uID:uniqueID, gr:getStringArray(player.grid)});
 }
-player.updateRivals();
 
 var rivalGrids = []; //the ID codes
 var rivalGridIDs = []; //codes used as indexes in rivalGrids
