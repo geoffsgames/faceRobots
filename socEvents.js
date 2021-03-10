@@ -91,7 +91,7 @@ socket.on('newRival', function(msg){
 		msg.gr = convertGridToRivalIcon(msg.gr);
 		updateRivalShown(msg.gr, "" + msg.uID);
 		//so new rival/player knows about me in return
-		socket.emit('rivalChanged', {uID:uniqueID, gr:getStringArray(player.grid)});
+		socket.emit('playerShapeChanged', {uID:uniqueID, gr:getStringArray(player.grid)});
 		curRivalIDind = rivalGridIDs.length;
 		rivalGridIDs.push('' + msg.uID);
 
