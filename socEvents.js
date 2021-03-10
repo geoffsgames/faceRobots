@@ -102,7 +102,7 @@ function updateRivalShown(img, id){
 	rivalGrids[id] = img;
 	curRivalID = id;
 	canvas.add(img);
-	curRival = canvas._objects.pop(); //you'd think curRival = msg.gr would work but there you go
+	curRival = img
 	curRival.setCoords();
 
 	updateLeftRightArrows();
