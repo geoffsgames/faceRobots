@@ -110,7 +110,7 @@ function getEnemyInterval(){
 //enter new arena or start game
 function start(){
 	numPlayers = 2;
-	if(enemy !== null)
+	if(enemy !== undefined && enemy != null)
 		enemy.readyToMove = false; 
 
 	if(loading)
@@ -338,7 +338,7 @@ function wakeRotateWait(){
 }
 
 function updateGame(){
-	if(socket !== null){
+	if(socket !== undefined){
 		 newRivalImpl();
 		 rivalChangedImpl();
 	}
