@@ -88,6 +88,7 @@ socket.on('rivalChanged', function(msg){
 
 socket.on('newRival', function(msg){
 	if(msg.uID != uniqueID && rivalGridIDs.indexOf(msg.uID) == -1){
+		alert("there's literally no reason this should happen you stupid fuck");
 		msg.gr = convertGridToRivalIcon(msg.gr);
 		updateRivalShown(msg.gr, msg.uID);
 		//so new rival/player knows about me in return
