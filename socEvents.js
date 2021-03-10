@@ -75,8 +75,8 @@ socket.on('rivalChanged', function(msg){
 		if("" + msg.uID == curRivalID){ //if currently viewing this rival then update the image shown
 			if(curRival != null)
 				canvas.remove(curRival)
-			canvas.add(img);
-			curRival = img; //you'd think curRival = msg.gr would work but there you go
+			curRival = img
+			canvas.add(curRival);
 			curRival.setCoords();
 		}
 	}
@@ -101,8 +101,8 @@ function updateRivalShown(img, id){
 		canvas.remove(curRival)
 	rivalGrids[id] = img;
 	curRivalID = id;
-	canvas.add(img);
-	curRival = img
+	curRival = img;
+	canvas.add(curRival);
 	curRival.setCoords();
 
 	updateLeftRightArrows();
