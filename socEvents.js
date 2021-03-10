@@ -70,6 +70,7 @@ function getStringArray(inArr){
 }
 
 socket.on('rivalChanged', function(msg){
+	alert(msg.uID + " " + uniqueID);
 	if(msg.uID != uniqueID){
 		alert("changed 2");
 		msg.gr = convertGridToRivalIcon(msg.gr);
@@ -87,7 +88,6 @@ socket.on('rivalChanged', function(msg){
 
 
 socket.on('newRival', function(msg){
-	alert(msg.uID + " " + uniqueID);
 	if(msg.uID != uniqueID && rivalGridIDs.indexOf(msg.uID) == -1){
 		msg.gr = convertGridToRivalIcon(msg.gr);
 		updateRivalShown(msg.gr, "" + msg.uID);
