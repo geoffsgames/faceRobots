@@ -174,6 +174,6 @@ function convertGridToRivalIcon(grid){
 	robImg.left = (window.pageXOffset || document.documentElement.scrollLeft) + (document.documentElement.clientWidth - robImg.width - rivalIconMargin);
 	robImg.top = (window.pageYOffset || document.documentElement.scrollTop) + rivalIconMargin;
 	robImg.selectable = true;
-
+	canvas.remove(robImg)
 	return(robImg);
 }
