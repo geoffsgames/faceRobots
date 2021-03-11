@@ -22,7 +22,7 @@ io.on('connection', function(socket){
     io.emit('rivalChanged', msg);
   });
   
-  socket.on('jumping', function(msg){
+  socket.on('jumpingWTFisyourproblem', function(msg){
 	  io.emit("acceptJumpToPVP", msg)
   });
   
