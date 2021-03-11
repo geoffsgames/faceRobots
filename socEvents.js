@@ -139,7 +139,7 @@ function acceptJumpToPVPImpl(){
 		var msg = savedAcceptPVP.pop();
 		alert("jump 2 " + uniqueID + " " + msg.otherID);
 		if(uniqueID == msg.otherID)//another moving to me
-			socket.emit("jumpToPVPAccepted", {targID:uniqueID, visID:msg.myID, pX:player.myX, pY:player.myY,l:land});
+			socket.emit("jumpToPVPAccepted", {targID:uniqueID, visID:msg.myID, pX:player.myX, pY:player.myY,seed:land.seed});
 	}
 }
 
