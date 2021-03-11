@@ -124,7 +124,8 @@ function rivalChangedImpl(){
 }
 
 function jumpToPVPImpl(){
-	while(savedPVP.length > 0){		
+	while(savedPVP.length > 0){
+		alert("jump 1 ");
 		var msg = savedPVP.pop();
 		if(uniqueID == msg.myID){ //I'm the one moving
 			//change landscape
@@ -134,7 +135,8 @@ function jumpToPVPImpl(){
 }
 
 function acceptJumpToPVPImpl(){
-	while(savedAcceptPVP.length > 0){		
+	while(savedAcceptPVP.length > 0){
+		alert("jump 2 ");
 		var msg = savedAcceptPVP.pop();
 		if(uniqueID == msg.otherID)//another moving to me
 			socket.emit("jumpToPVPAccepted", {targID:uniqueID, visID:msg.myID, pX:player.myX, pY:player.myY,l:land});
