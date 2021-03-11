@@ -15,6 +15,9 @@ var handyThiefProb = 0;
 
 var savedRivalChanged = [];
 var savedNewRival = [];
+var savedPVP = [];
+var savedAcceptPVP = [];
+
 
 var willAddThief = false;
 var oldEnemy;
