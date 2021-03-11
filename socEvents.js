@@ -123,7 +123,7 @@ function rivalChangedImpl(){
 	}
 }
 
-function jumpToPVPimpl(){
+function jumpToPVPImpl(){
 	while(savedPVP.length > 0){		
 		var msg = savedPVP.pop();
 		if(uniqueID == msg.myID){ //I'm the one moving
@@ -133,7 +133,7 @@ function jumpToPVPimpl(){
 	}
 }
 
-function acceptJumpToPVPimpl(){
+function acceptJumpToPVPImpl(){
 	while(savedAcceptPVP.length > 0){		
 		var msg = savedAcceptPVP.pop();
 		if(uniqueID == msg.otherID)//another moving to me
