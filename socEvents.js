@@ -138,15 +138,15 @@ function updateLeftRightArrows(){
 
 
 socket.on('acceptJumpToPVP', function(msg){
+	alert("jumping");
 	if(uniqueID == msg.otherID){//another moving to me
+		alert("jumping 2");
 		socket.emit("jumpToPVPAccepted", {targID:uniqueID, visID:msg.myID, pX:player.myX, pY:player.myY,l:land});
 	}
 })
 
 socket.on('jumpToPVP', function(msg){
-	alert("jumping");
 	if(uniqueID == msg.myID){ //I'm the one moving
-		alert("jumping 2");
 		//change landscape
 		moveToRival(msg);
 	}
