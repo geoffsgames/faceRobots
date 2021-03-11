@@ -17,7 +17,6 @@ if(usingSocket){
 	socket.emit('newPlayer', {uID:uniqueID, gr:getStringArray(player.grid), trueNewPlayer:true});
 }
 
-
 //add arrows for scrolling through rivals""
 var scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
 var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
