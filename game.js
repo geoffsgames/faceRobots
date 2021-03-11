@@ -339,9 +339,8 @@ function wakeRotateWait(){
 }
 
 function updateGame(){
-	if(socket != null){
-		 newRivalImpl();
-		 rivalChangedImpl();
+	if(socket != null){ //respond to any multiplayer based events which may have happened
+		checkSocketMessages();
 	}
 	
 	//TODO there is literally no reason whatsoever why this needs to be here as exactly the same code is in allComplete()
