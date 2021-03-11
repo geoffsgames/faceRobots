@@ -145,7 +145,9 @@ socket.on('acceptJumpToPVP', function(msg){
 })
 
 socket.on('jumpToPVP', function(msg){
+	alert("jumping");
 	if(uniqueID == msg.myID){ //I'm the one moving
+		alert("jumping 2");
 		//change landscape
 		moveToRival(msg);
 	}
