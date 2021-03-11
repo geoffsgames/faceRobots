@@ -80,6 +80,16 @@ socket.on('newRival', function(msg){
 
 });
 
+
+function checkSocketMessages(){
+	newRivalImpl();
+	rivalChangedImpl();
+	jumpToPVPImpl()
+	acceptJumpToPVPImpl()
+}
+
+//actions in response to receiving socket.io message
+
 function newRivalImpl(){
 	while(savedNewRival.length > 0){
 		var msg = savedNewRival.pop();
@@ -95,7 +105,7 @@ function newRivalImpl(){
 	}
 	
 }
-	
+
 function rivalChangedImpl(){
 	while(savedRivalChanged.length > 0){
 		var msg = savedRivalChanged.pop();
@@ -110,6 +120,24 @@ function rivalChangedImpl(){
 				curRival.setCoords();
 			}
 		}
+	}
+}
+
+function jumpToPVPimpl(){
+	while(savedPVP.length > 0){		
+		var msg = savedPVP.pop();
+		if(uniqueID == msg.myID){ //I'm the one moving
+			//change landscape
+			moveToRival(msg);
+		}
+	}
+}
+
+function acceptJumpToPVPimpl(){
+	while(savedAcceptPVP.length > 0){		
+		var msg = savedAcceptPVP.pop();
+		if(uniqueID == msg.otherID)//another moving to me
+			socket.emit("jumpToPVPAccepted", {targID:uniqueID, visID:msg.myID, pX:player.myX, pY:player.myY,l:land});
 	}
 }
 
@@ -138,18 +166,11 @@ function updateLeftRightArrows(){
 
 
 socket.on('acceptJumpToPVP', function(msg){
-	alert("jumping");
-	if(uniqueID == msg.otherID){//another moving to me
-		alert("jumping 2");
-		socket.emit("jumpToPVPAccepted", {targID:uniqueID, visID:msg.myID, pX:player.myX, pY:player.myY,l:land});
-	}
+	savedAcceptPVP.push(msg)
 })
 
 socket.on('jumpToPVP', function(msg){
-	if(uniqueID == msg.myID){ //I'm the one moving
-		//change landscape
-		moveToRival(msg);
-	}
+	savedPVP.push(msg)
 })
 
 function convertGridToRivalIcon(grid){
