@@ -849,27 +849,4 @@ function jumpToRival(){
 		socket.emit("jumpingWTFisyourproblem", {gr:getStringArray(player.grid),myID:uniqueID,otherID:curRivalID});
 }
 
-//actually move into the rival's arena
-function moveToRival(msg){
-	clearLandscape();
-	canvas.clear();
-	land.grid = null;
-	
-	//save and load new "allLandscapes" because other rival's land occupies different universe/different complete set of landscapes
-	//universe determined by globalSeed while currentSeed determines this landscape so both now also change
-	land.allNeighbours = allLandscapes;
-	var newLand = msg.l
-	if(newLand.allNeighbours != undefined){
-		allLandscapes = newLand.allNeighbours;
-	}else{
-		allLandscapes = [];
-	
-	}
-	
-	//will be used to create landscape in start()
-	curSeed = newLand.seed;
-	globalSeed = newLand.globalSeed;
-	allLandscapes[curSeed] = newLand;
-	clearOldNeighbours(null);
-	start();
-}
+
