@@ -199,3 +199,19 @@ function convertGridToRivalIcon(grid){
 	canvas.remove(robImg)
 	return(robImg);
 }
+
+//actually move into the rival's arena
+function moveToRival(msg){
+	clearLandscape();
+	canvas.clear();
+	land = null;
+	
+	//save and load new "allLandscapes" because other rival's land occupies different universe/different complete set of landscapes
+	//universe determined by globalSeed while currentSeed determines this landscape so both now also change
+	
+	//will be used to create landscape in start()
+	globalSeed = msg.globalSeed
+	curSeed = msg.seed;
+	clearOldNeighbours(null);
+	start();
+}
