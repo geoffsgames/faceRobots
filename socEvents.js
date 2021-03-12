@@ -137,7 +137,8 @@ function acceptJumpToPVPImpl(){
 	while(savedAcceptPVP.length > 0){
 		var msg = savedAcceptPVP.pop();
 		if(uniqueID == msg.otherID)//another moving to me
-			socket.emit("jumpToPVPAccepted", {targID:uniqueID, visID:msg.myID, pX:player.myX, pY:player.myY,seed:land.seed,globalSeed:globalSeed});
+			socket.emit("jumpToPVPAccepted", {targID:uniqueID, visID:msg.myID, pX:player.myX, pY:player.myY,
+							  seed:land.seed,globalSeed:globalSeed, startSeed:startSeed, startGlobalSeed:startGlobalSeed});
 	}
 }
 
@@ -202,7 +203,7 @@ function convertGridToRivalIcon(grid){
 
 //actually move into the rival's arena
 function moveToRival(msg){
-	clearLandscape();
+	clearLandscape();//get rid of enemy and collectables
 	canvas.clear();
 	land = null;
 	enemy = null;
@@ -213,6 +214,8 @@ function moveToRival(msg){
 	//will be used to create landscape in start()
 	globalSeed = msg.globalSeed
 	curSeed = msg.seed;
+	startSeed = msg.startSeed;
+	startGlobalSeed = msg.startGlobalSeed;
 	clearOldNeighbours(null);
 	start();
 }
