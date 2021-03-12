@@ -206,6 +206,7 @@ function moveToRival(msg){
 	canvas.clear();
 	land = null;
 	enemy = null;
+	allLandscapes = [];
 	//save and load new "allLandscapes" because other rival's land occupies different universe/different complete set of landscapes
 	//universe determined by globalSeed while currentSeed determines this landscape so both now also change
 	
