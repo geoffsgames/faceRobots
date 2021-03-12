@@ -139,6 +139,7 @@ Landscape.prototype.makeGrid = function(){
 		drawInGrid(left,top,width,height, grid);
 		//keep near edge to minimise clashes with enemy
 		if(this.initialLandscape()){
+			//generate player at edge of landscape and then move a few pieces in
 			this.playerX = Math.seededRandom(0,1) * width;
 			this.playerY = Math.seededRandom(0,1) * height;
 			if(this.playerX > 0)
