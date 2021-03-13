@@ -94,8 +94,8 @@ function newRivalImpl(){
 	while(savedNewRival.length > 0){
 		var msg = savedNewRival.pop();
 		if(msg.uID != uniqueID && rivalGridIDs.indexOf(msg.uID) == -1){
-			msg.gr = convertGridToRivalIcon(msg.gr);
-			updateRivalShown(msg.gr, msg.uID);
+			var rivImg = convertGridToRivalIcon(msg.gr);
+			updateRivalShown(rivImg, msg.uID, msg.gr);
 			if(msg.trueNewPlayer) //if player is completely new (i.e. it's not me that's just joined and I've just learned of the existing players)
 				socket.emit('newPlayer', {uID:uniqueID, gr:getStringArray(player.grid), trueNewPlayer:false}); //so new rival/player knows about me in return
 
@@ -114,8 +114,9 @@ function rivalChangedImpl(){
 			rivalGrids[msg.uID] = curRivalID
 			if("" + msg.uID == curRivalID){ //if currently viewing this rival then update the image shown
 				if(curRival != null)
-					canvas.remove(curRival)
-				curRival = img
+					canvas.remove(curRival);
+				curRival.grid = msg.gr;
+				curRival = img;
 				canvas.add(curRival);
 				curRival.setCoords();
 			}
@@ -142,12 +143,13 @@ function acceptJumpToPVPImpl(){
 	}
 }
 
-function updateRivalShown(img, id){
+function updateRivalShown(img, id, grid){
 	if(curRival != null)
 		canvas.remove(curRival)
 	rivalGrids[id] = img;
 	curRivalID = id;
 	curRival = img;
+	curRival.grid = grid;
 	canvas.add(curRival);
 	curRival.setCoords();
 
@@ -224,7 +226,7 @@ function moveToRival2(msg){
 	startGlobalSeed = msg.startGlobalSeed;
 	clearOldNeighbours(null);
 	start();
-	addRival();
+	addRival(curRival.grid, msg.pX, msg.pY);
 	
 	player.myX = (curRival.left + scrollLeft) * gridWidth;
 	player.myY = (curRival.top + scrollTop) * gridHeight;
@@ -232,6 +234,17 @@ function moveToRival2(msg){
 	
 	//initialise animating out of corner
 	player.animateOutOfCorner();
+}
+
+function addRival(grid, rivalX, rivalY){
+	var rival = new Person(rivalX, rivalY);
+	for(var x =0 ; x < grid.length; x++){
+		for(var y = 0; y < grid.length; y++){
+			if(grid[x][y] != undefined)
+				rival.addPiece(x,y,grid[x][y]);
+		}
+	}
+	enemy = rival;
 }
 
 //move into rival's arena - step3: prepare to actually start playing out of animating out of the corner of my new landscape
