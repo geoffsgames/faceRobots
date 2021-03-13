@@ -188,6 +188,42 @@ function addStandardPlayerPieces(rob){
 }
 
 function addPlayer(){
+	if(playerStr == undefined){ //if aren't loading player from saved game
+		player = new Player(land.playerX,land.playerY,2);
+
+		addStandardPlayerPieces(player);
+
+		
+		player.totalNumBlocks = 10;
+		player.setupWeapons();
+
+	}
+	else{
+		player = new Player();
+		player.loadFromText(playerStr);
+	}	
+	player.heart.image.bringToFront();
+	//scroll so I of middle screen
+	scrollToPlayer();
+
+	if(testingMotors){
+		stoppedPressingMotor = false;
+		player.motorWillStart = 0;
+	}
+	
+	for(var i =0 ; i < 10; i += 1){
+		player.addBlockToInventory("wall");
+		
+		player.addBlockToInventory("knife");
+		player.addBlockToInventory("motor");
+		player.addBlockToInventory("spring");
+
+	}
+	
+	player.group.bringToFront();
+}
+
+function addRival(){
 	
 
 	
