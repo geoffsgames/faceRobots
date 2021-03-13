@@ -40,9 +40,16 @@ if(Math.abs(gridWidth - 16) < Math.abs(gridWidth - 32))
 else
 	gridWidth = 32;
 var gridHeight = gridWidth;
+
+
 //number of pieces actually shown on screen
-var numPiecesScreenX = Math.ceil(clientWidth / gridWidth);
-var numPiecesScreenY = Math.ceil(clientHeight / gridHeight);
+//var numPiecesScreenX = Math.ceil(clientWidth / gridWidth);
+//var numPiecesScreenY = Math.ceil(clientHeight / gridHeight);
+//Changed to "typical" number because different numbers for different screens messes up multiplayer
+var numPiecesScreenX = 43;
+var numPiecesScreenY = 21;    
+
+
 var code;
 var invBackground;
 var scrollSpeedup = 2;
