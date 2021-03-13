@@ -922,11 +922,11 @@ Player.prototype.animateDownStairs = function() {
 };
 
 //spinning motion going down stairs
-Player.prototype.animateToRival = function(msg) {
+Player.prototype.animateToRival = function(m) {
 	
 	animating = true;
 		this.group.animate('angle', makeAnimateString(360 * stairRotations), {
-		  this.msg = msg;
+		  msg: m,
 	          onComplete: function(){
 	          	moveToRival2(this.msg);
 	          },
