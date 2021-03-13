@@ -232,6 +232,7 @@ function moveToRival2(msg){
 	player.myY = (curRival.top + scrollTop) * gridHeight;
 	player.extractFromOverlap();
 	
+	scrollToPlayer();
 	//initialise animating out of corner
 	player.animateOutOfCorner();
 }
