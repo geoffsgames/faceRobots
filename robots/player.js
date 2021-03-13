@@ -926,7 +926,7 @@ Player.prototype.animateToRival = function(msg) {
 	
 	animating = true;
 		this.group.animate('angle', makeAnimateString(360 * stairRotations), {
-		  this.msg = msg,
+		  this.msg = msg;
 	          onComplete: function(){
 	          	moveToRival2(this.msg);
 	          },
