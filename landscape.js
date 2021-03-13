@@ -459,7 +459,7 @@ Landscape.prototype.makeTubular = function(totalWidth, totalHeight, numEnemies){
 	var minX, maxX, minY, maxY;
 	
 	for(var i =0; i < numAreas; i += 1){
-		//previous
+		//if the previous area was "squat" the next area should be a tube to connect to it - make a choice between squat, vertical and horizonal accordingly
 		if(vertical){
 			vertical = false;
 			if(Math.seededRandom() == 0)
