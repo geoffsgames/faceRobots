@@ -201,8 +201,14 @@ function convertGridToRivalIcon(grid){
 	return(robImg);
 }
 
-//actually move into the rival's arena
+//actually move into the rival's arena - step1: initialise animating into corner to show about to move
 function moveToRival(msg){
+	player.animateToRival(msg);
+
+}
+
+//move into rival's arena - step2: after animating into corner create landscape of rival
+function moveToRival2(msg){
 	clearLandscape();//get rid of enemy and collectables
 	canvas.clear();
 	land = null;
@@ -218,4 +224,13 @@ function moveToRival(msg){
 	startGlobalSeed = msg.startGlobalSeed;
 	clearOldNeighbours(null);
 	start();
+	addRival();
+	
+	//initialise animating out of corner
+	player.animateOutOfCorner();
+}
+
+//move into rival's arena - step3: prepare to actually start playing out of animating out of the corner of my new landscape
+function moveToRival3(){
+	
 }
