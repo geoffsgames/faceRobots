@@ -921,6 +921,61 @@ Player.prototype.animateDownStairs = function() {
 			});
 };
 
+//spinning motion going down stairs
+Player.prototype.animateToRival = function(msg) {
+	
+	animating = true;
+		this.group.animate('angle', makeAnimateString(360 * stairRotations), {
+		  this.msg = msg,
+	          onComplete: function(){
+	          	moveToRival2(this.msg);
+	          },
+	       duration: stairDuration
+			});
+		this.group.animate('scaleX', 0.7, {
+				duration: stairDuration
+			});
+		
+		this.group.animate('scaleY', 0.7, {
+				duration: stairDuration
+			});
+		
+		this.group.animate('left', curRival.left - this.group.left, {
+				duration: stairDuration
+			});
+		
+		this.group.animate('top', curRival.top - this.group.top, {
+				duration: stairDuration
+			});
+};
+
+Player.prototype.animateOutOfCorner = function(msg) {
+	
+	animating = true;
+		this.group.animate('angle', makeAnimateString(360 * stairRotations), {
+	          onComplete: function(){
+	          	moveToRival3(this);
+	          },
+	       duration: stairDuration
+			});
+		this.group.animate('scaleX', 1.0, {
+				duration: stairDuration
+			});
+		
+		this.group.animate('scaleY', 1.0, {
+				duration: stairDuration
+			});
+		
+		this.group.animate('left', (this.myX * gridWidth) - this.group.left, {
+				duration: stairDuration
+			});
+		
+		this.group.animate('top', (this.myY * gridHeight) - this.group.top, {
+				duration: stairDuration
+			});
+};
+
+
 Player.prototype.getOtherRobot = function() {
 	return enemy;
 };
