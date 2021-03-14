@@ -229,7 +229,15 @@ function moveToRival2(msg){
 	
 	player.myX = Math.round((curRival.left + scrollLeft) / gridWidth);
 	player.myY = Math.round((curRival.top + scrollTop) / gridHeight);
-	player.extractFromOverlap();
+	//get out of wall
+	while(player.extractFromOverlap()){
+		if(Math.random() > 0.5){ //if extracting from wall doesn't work then try a few more times, moving to the left and down as likely to be in top right corner 
+											//(but may not be - depending on scroll - but can't be in bottom or left corner)
+			player.myX = player.myX - 10;
+		}
+		if(Math.random() > 0.5)
+			player.myY = player.myY - 10;
+	}
 	
 	scrollToPlayer();
 	//initialise animating out of corner
