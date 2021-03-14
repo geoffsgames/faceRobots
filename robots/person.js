@@ -709,7 +709,7 @@ Person.prototype.extractFromOverlap = function(count_max){
 		//for every square on me check if it overlaps landscape obstacles
 		for(var x = this.minX; x <= this.maxX; x += 1){
 			for(var y = this.minY; y <= this.maxY; y += 1){
-				if(this.grid[x][y] != null && this.grid[x][y] != undefined){
+				if(this.grid[x][y] != null && this.grid[x][y] != undefined){ //if this square is a used square on me (note *on me*, not *on the landscape*)
 					if(this.myX + x < 0)//if a block is off grid to the left then record this so that moving right will be a possible correction
 						overlaps.push("left");
 					else if(this.myX + x >= numPiecesX)//if a block is off grid to the right then record left as possible correction
