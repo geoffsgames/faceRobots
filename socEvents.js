@@ -225,18 +225,27 @@ function moveToRival2(msg){
 	startGlobalSeed = msg.startGlobalSeed;
 	clearOldNeighbours(null);
 	start();
+	willAddEnemy = false;
 	addRival(curRival.grid, msg.pX, msg.pY);
 	
 	player.myX = Math.round((curRival.left + scrollLeft) / gridWidth);
 	player.myY = Math.round((curRival.top + scrollTop) / gridHeight);
+	
+	player.group.left = curRival.left;
+	player.group.top = curRival.top;
+	player.group.opacity = 0.8;
+	player.group.scaleX = 0.7;
+	player.group.scaleY = 0.7;
+	canvas.remove(curRival);
+	
 	//get out of wall
 	while(player.extractFromOverlap()){
 		if(Math.random() > 0.5){ //if extracting from wall doesn't work then try a few more times, moving to the left and down as likely to be in top right corner 
 											//(but may not be - depending on scroll - but can't be in bottom or left corner)
-			player.myX = player.myX - 10;
+			player.myX -= 10;
 		}
 		if(Math.random() > 0.5)
-			player.myY = player.myY - 10;
+			player.myY -= 10;
 	}
 	
 	scrollToPlayer();
