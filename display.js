@@ -186,7 +186,7 @@ function initInventory(){
 	  opacity: 0.3,
 	  selectable: false
 	});	
-	//canvas.add(invBackground);
+	canvas.add(invBackground);
 	
 	
 	
