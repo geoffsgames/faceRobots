@@ -237,7 +237,7 @@ function moveToRival2(msg){
 }
 
 function addRival(grid, rivalX, rivalY){
-	var rival = new Person(rivalX, rivalY);
+	var rival = new Player(rivalX, rivalY);
 	for(var x =0 ; x < grid.length; x++){
 		for(var y = 0; y < grid.length; y++){
 			if(grid[x][y] != undefined)
