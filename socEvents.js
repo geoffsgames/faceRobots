@@ -227,8 +227,8 @@ function moveToRival2(msg){
 	start();
 	addRival(curRival.grid, msg.pX, msg.pY);
 	
-	player.myX = (curRival.left + scrollLeft) * gridWidth;
-	player.myY = (curRival.top + scrollTop) * gridHeight;
+	player.myX = (curRival.left + scrollLeft) / gridWidth;
+	player.myY = (curRival.top + scrollTop) / gridHeight;
 	player.extractFromOverlap();
 	
 	scrollToPlayer();
