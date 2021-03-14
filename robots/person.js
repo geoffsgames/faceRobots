@@ -192,7 +192,6 @@ Person.prototype.update = function() {
 		this.damaged = false;
 	}
 	
-	updatingPlayer = this == player;//does nothing for now - just for test
 	if(this.newX == undefined)//if haven't just rotated. When I've just rotated my REAL position (i.e. not position I'm moving into and it looks like I'm in) may be half over wall! So if I try clearing out now I'll clear a chunk of wall!
 		this.updateGrid(true);//true so clears player from game grid
 	if(!this.partsMoving && this.rotation == 0 && this.willshrink){//if player has reshaped change grid into smallest square around new shape
