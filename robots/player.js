@@ -941,11 +941,11 @@ Player.prototype.animateToRival = function(m) {
 				duration: stairDuration
 			});
 		
-		this.group.animate('left', makeAnimateString(this.group.left - curRival.left), {
+		this.group.animate('left', makeAnimateString(curRival.left - this.group.left), {
 				duration: stairDuration
 			});
 		
-		this.group.animate('top', makeAnimateString(this.group.top - curRival.top), {
+		this.group.animate('top', makeAnimateString(curRival.top - this.group.top), {
 				duration: stairDuration
 			});
 };
@@ -968,11 +968,11 @@ Player.prototype.animateOutOfCorner = function(msg) {
 				duration: stairDuration
 			});
 		
-		this.group.animate('left', makeAnimateString(this.group.left - (this.myX * gridWidth)), {
+		this.group.animate('left', makeAnimateString((this.myX * gridWidth) - this.group.left), {
 				duration: stairDuration
 			});
 		
-		this.group.animate('top', makeAnimateString(this.group.top - (this.myY * gridHeight)), {
+		this.group.animate('top', makeAnimateString((this.myY * gridHeight) - this.group.top), {
 				duration: stairDuration
 			});
 };
