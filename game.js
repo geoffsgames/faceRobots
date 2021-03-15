@@ -494,7 +494,8 @@ function updateGame(){
 			
 			justResumed = false;
 			player.tryToChangeDir();
-			enemy.intelligence();
+			if(enemy.isEnemy) //not a rival in two player mode
+				enemy.intelligence();
 			player.tryToSpeedUp();
 			enemy.tryToSpeedUp();
 			
