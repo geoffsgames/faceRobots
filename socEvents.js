@@ -276,5 +276,4 @@ function moveToRival3(){
 	completeCounter = 0;
 	enteringRival = false;
 	updateGame();
-	initP2P();
 }
