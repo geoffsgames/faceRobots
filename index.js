@@ -36,6 +36,7 @@ http.listen(port, function(){
   console.log('listening on *:' + port);
 });
 
+/**
 ///////////////////////////////PEER TO PEER////////////////////////////////////////////////////
 
 var server = require('http').createServer();
@@ -55,3 +56,5 @@ io2.on('connection', function(socket){
   })
 
 });
+
+*/
