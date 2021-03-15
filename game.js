@@ -501,6 +501,8 @@ function updateGame(){
 			player.tryToChangeDir();
 			if(enemy.isEnemy) //not a rival in two player mode
 				enemy.intelligence();
+			else
+				enemy.tryToChangeDir();
 			player.tryToSpeedUp();
 			enemy.tryToSpeedUp();
 			
