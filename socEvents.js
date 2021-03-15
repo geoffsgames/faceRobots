@@ -276,6 +276,7 @@ function moveToRival3(){
 	player.group.originX = "left";
 	player.group.originY = "top";
 	player.restart();
+	canvas.requestRenderAll();
 	completeCounter = 0;
 	enteringRival = false;
 	updateGame();
