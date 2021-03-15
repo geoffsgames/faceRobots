@@ -177,6 +177,7 @@ socket.on('jumpToPVP', function(msg){
 })
 
 function convertGridToRivalIcon(grid){
+	
 	var rob = new Player(0,0,0);
 	rob.isRivalIcon = true;
 	for(var x = 0; x < grid.length; x+= 1){
@@ -268,6 +269,7 @@ function addRival(grid, rivalX, rivalY){
 
 //move into rival's arena - step3: prepare to actually start playing out of animating out of the corner of my new landscape
 function moveToRival3(){
+	completeCounter = 0;
 	enteringRival = false;
 	updateGame();
 }
