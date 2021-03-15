@@ -238,6 +238,7 @@ function moveToRival2(msg){
 	player.group.opacity = 0.8;
 	player.group.scaleX = 0.7;
 	player.group.scaleY = 0.7;
+	canvas.add(player.group);
 	canvas.remove(curRival);
 	
 	//get out of wall
