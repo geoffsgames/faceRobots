@@ -35,3 +35,22 @@ io.on('connection', function(socket){
 http.listen(port, function(){
   console.log('listening on *:' + port);
 });
+
+
+var server = require('http').createServer();
+var io2 = require('socket.io')(server);
+var p2p = require('socket.io-p2p-server').Server;
+io2.use(p2p);
+server.listen(3030);
+
+io2.on('connection', function(socket){
+  socket.on('peer-msg', function (data) {
+    console.log('Message from peer: %s', data)
+    socket.broadcast.emit('peer-msg', data)
+  })
+
+  socket.on('go-private', function (data) {
+    socket.broadcast.emit('go-private', data)
+  })
+
+});
