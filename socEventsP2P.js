@@ -1,22 +1,12 @@
-var P2P = null;
-var io = null;
-var socket2 = null;
-
-function initP2P(){
-    var P2P = require('socket.io-p2p');
-    var io = require('socket.io-client');
-    var socket2 = io();
-}
-
 function sendKeyPress(key,doubleclick){
-    if(P2P == undefined || P2P == null)
+    if(enemy.isEnemy) //not playing PVP
         return;
-    var p2psocket = new Socketiop2p(socket2, opts, function () {
-        p2psocket.emit('key-press', {key:key, dc:doubleclick})
-    })
+    socket.emit('key-press', {key:key, dc:doubleclick, rID:uniqueID})
 }
   
-p2psocket.on('key-press', function (msg) {
+socket.on('receiveKey-press', function (msg) {
+     if(msg.rID != rivalID)
+	return;
      alert("enemy keypress");
      changeStateEnemy(msg.key,msg.dc);
 })
