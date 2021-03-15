@@ -29,6 +29,10 @@ io.on('connection', function(socket){
   socket.on('jumpToPVPAccepted', function(msg){
 	  io.emit("jumpToPVP", msg)
   })
+	
+  socket.on('key-press', function(msg){
+	  io.emit("receiveKey-press", msg)
+  })
 
 });
 
