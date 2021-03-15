@@ -9,6 +9,8 @@ var rivalIconMargin = 20;
 //switch off when editing locally
 var usingSocket = true;
 
+var rivalID = null; //when we're actually fighting
+
 var socket = io();
 
 var uniqueID = "" + Math.random();
@@ -208,7 +210,7 @@ function convertGridToRivalIcon(grid){
 function moveToRival(msg){
 	enteringRival = true;
 	player.animateToRival(msg);
-
+	rivalID = curRivalID;
 }
 
 //move into rival's arena - step2: after animating into corner create landscape of rival
