@@ -951,7 +951,7 @@ Player.prototype.animateToRival = function(m) {
 };
 
 Player.prototype.animateOutOfCorner = function(msg) {
-	
+	this.group.opacity = 1.0;
 	animating = true;
 		this.group.animate('angle', makeAnimateString(360 * stairRotations), {
 		onChange: canvas.renderAll.bind(canvas),
