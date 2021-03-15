@@ -224,10 +224,11 @@ function keyListener(e){
 		
 	    if((e.keyCode >= 37 && e.keyCode <= 40) || (e.keyCode >= 32 && e.keyCode <= 34))
 	    		e.preventDefault();
-	    code = e.keyCode;
-		changeState(e.keyCode,new Date - lastTime < 500 && lastKey == e.keyCode);
+	    	code = e.keyCode;
+		sendKeyPress(code,new Date - lastTime < 500 && lastKey == code) //if in multiplayer
+		changeState(code,new Date - lastTime < 500 && lastKey == code); //actually activate key code instruction - second parameter is true if doubleclicked
 		lastTime = new Date;
-		lastKey = e.keyCode;
+		lastKey = code;
 	}
 }
 
