@@ -315,7 +315,6 @@ function callScrollLoop(){
 }
 
 function waitForTimeout(intv){
-	console.log("waiting for timeout " + intv);
 	setTimeout('updateGame()',intv);
 };
 
