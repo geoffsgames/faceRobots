@@ -275,6 +275,8 @@ function addRival(grid, rivalX, rivalY){
 function moveToRival3(){
 	player.group.originX = "left";
 	player.group.originY = "top";
+	player.group.left = (player.myX * gridWidth) + ((player.gridSize * gridWidth) / 2);
+	player.group.top = (player.myY * gridHeight) + ((player.gridSize * gridHeight) / 2);
 	completeCounter = 0;
 	enteringRival = false;
 	updateGame();
