@@ -2,7 +2,7 @@ var P2P = null;
 var io = null;
 var socket2 = null;
 
-function init(){
+function initP2P(){
     var P2P = require('socket.io-p2p');
     var io = require('socket.io-client');
     var socket2 = io();
