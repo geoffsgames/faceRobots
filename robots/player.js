@@ -933,11 +933,11 @@ Player.prototype.animateToRival = function(m) {
 	          },
 	       duration: stairDuration
 			});
-		this.group.animate('scaleX', 0.7, {
+		this.group.animate('scaleX', '0.7', {
 				duration: stairDuration
 			});
 		
-		this.group.animate('scaleY', 0.7, {
+		this.group.animate('scaleY', '0.7', {
 				duration: stairDuration
 			});
 		
@@ -960,14 +960,14 @@ Player.prototype.animateOutOfCorner = function(msg) {
 	          },
 	       duration: stairDuration
 			});
-		this.group.animate('scaleX', 1.0, {
+		this.group.animate('scaleX', '1.0', {
 				duration: stairDuration
 			});
 		
-		this.group.animate('scaleY', 1.0, {
+		this.group.animate('scaleY', '1.0', {
 				duration: stairDuration
 			});
-		this.group.animate('opacity', 1.0, {
+		this.group.animate('opacity', '1.0', {
 				duration: stairDuration
 			});
 		
