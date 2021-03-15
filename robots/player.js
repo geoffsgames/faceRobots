@@ -941,11 +941,11 @@ Player.prototype.animateToRival = function(m) {
 				duration: stairDuration
 			});
 		
-		this.group.animate('left', makeAnimateString(curRival.left - this.group.left - (this.actualWidth / 2)), {
+		this.group.animate('left', makeAnimateString(curRival.left - this.group.left + (this.actualWidth / 2)), {
 				duration: stairDuration
 			});
 		
-		this.group.animate('top', makeAnimateString(curRival.top - this.group.top - (this.actualHeight / 2)), {
+		this.group.animate('top', makeAnimateString(curRival.top - this.group.top + (this.actualHeight / 2)), {
 				duration: stairDuration
 			});
 };
