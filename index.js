@@ -36,6 +36,7 @@ http.listen(port, function(){
   console.log('listening on *:' + port);
 });
 
+///////////////////////////////PEER TO PEER////////////////////////////////////////////////////
 
 var server = require('http').createServer();
 var io2 = require('socket.io')(server);
