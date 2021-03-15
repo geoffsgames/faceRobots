@@ -951,7 +951,7 @@ Player.prototype.animateToRival = function(m) {
 };
 
 Player.prototype.animateOutOfCorner = function(msg) {
-	this.group.opacity = 1.0;
+	this.group.opacity = 0.5;
 	animating = true;
 		this.group.animate('angle', makeAnimateString(360 * stairRotations), {
 		onChange: canvas.renderAll.bind(canvas),
@@ -965,6 +965,9 @@ Player.prototype.animateOutOfCorner = function(msg) {
 			});
 		
 		this.group.animate('scaleY', 1.0, {
+				duration: stairDuration
+			});
+		this.group.animate('opacity', 1.0, {
 				duration: stairDuration
 			});
 		
