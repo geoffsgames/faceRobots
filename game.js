@@ -65,6 +65,8 @@ var massMax = 3;
 var testingMotors = false;
 var testingNoRotateDelay = false;
 
+var enteringRival = false;
+
 start();
 addPlayer();
 updateGame();
