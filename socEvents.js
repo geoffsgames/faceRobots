@@ -273,6 +273,8 @@ function addRival(grid, rivalX, rivalY){
 
 //move into rival's arena - step3: prepare to actually start playing out of animating out of the corner of my new landscape
 function moveToRival3(){
+	this.group.originX = "left";
+	this.group.originY = "top";
 	completeCounter = 0;
 	enteringRival = false;
 	updateGame();
