@@ -956,7 +956,7 @@ Player.prototype.animateOutOfCorner = function(msg) {
 		this.group.animate('angle', makeAnimateString(360 * stairRotations), {
 		onChange: canvas.renderAll.bind(canvas),
 	          onComplete: function(){
-	          	moveToRival3(this);
+	          	moveToRival3();
 	          },
 	       duration: stairDuration
 			});
