@@ -17,6 +17,7 @@ function sendKeyPress(key,doubleclick){
 }
   
 p2psocket.on('key-press', function (msg) {
+     alert("enemy keypress");
      changeStateEnemy(msg.key,msg.dc);
 })
 
