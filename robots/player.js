@@ -927,6 +927,7 @@ Player.prototype.animateToRival = function(m) {
 	animating = true;
 		this.group.animate('angle', makeAnimateString(360 * stairRotations), {
 		  msg: m,
+		  onChange: canvas.renderAll.bind(canvas),
 	          onComplete: function(){
 	          	moveToRival2(this.msg);
 	          },
@@ -953,6 +954,7 @@ Player.prototype.animateOutOfCorner = function(msg) {
 	
 	animating = true;
 		this.group.animate('angle', makeAnimateString(360 * stairRotations), {
+		onChange: canvas.renderAll.bind(canvas),
 	          onComplete: function(){
 	          	moveToRival3(this);
 	          },
