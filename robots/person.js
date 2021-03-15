@@ -371,7 +371,7 @@ Person.prototype.animate = function() {
 			}
 			else{
 				if(this == player)
-					animating = true;
+					animating = true; //not used for anything
 				this.moved = true;
 				if(dist > 1)
 					waitingForRotate = true;
