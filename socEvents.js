@@ -264,7 +264,8 @@ function addRival(grid, rivalX, rivalY){
 				rival.addPiece(x,y,grid[x][y]);
 		}
 	}
-	rival.heart.image.bringToFront();	
+	rival.heart.image.bringToFront();
+	rival.changedDir = false;
 	enemy = rival;
 }
 
