@@ -41,9 +41,10 @@ http.listen(port, function(){
 
 var io2 = require('socket.io')(http);
 var p2p = require('socket.io-p2p-server').Server;
+/**
 io2.use(p2p);
 server.listen(3030);
-/**
+
 io2.on('connection', function(socket){
   socket.on('peer-msg', function (data) {
     console.log('Message from peer: %s', data)
