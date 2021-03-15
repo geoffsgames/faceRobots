@@ -971,11 +971,11 @@ Player.prototype.animateOutOfCorner = function(msg) {
 				duration: stairDuration
 			});
 		
-		this.group.animate('left', makeAnimateString((this.myX * gridWidth) - this.group.left), {
+		this.group.animate('left', makeAnimateString((this.myX * gridWidth) - this.group.left - (this.actualWidth / 2)), {
 				duration: stairDuration
 			});
 		
-		this.group.animate('top', makeAnimateString((this.myY * gridHeight) - this.group.top), {
+		this.group.animate('top', makeAnimateString((this.myY * gridHeight) - this.group.top - (this.actualHeight / 2)), {
 				duration: stairDuration
 			});
 };
