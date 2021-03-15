@@ -40,8 +40,10 @@ http.listen(port, function(){
 ///////////////////////////////PEER TO PEER////////////////////////////////////////////////////
 
 var io2 = require('socket.io')(http);
-var p2p = require('socket.io-p2p-server').Server;
+
 /**
+var p2p = require('socket.io-p2p-server').Server;
+
 io2.use(p2p);
 server.listen(3030);
 
