@@ -205,6 +205,7 @@ function convertGridToRivalIcon(grid){
 
 //actually move into the rival's arena - step1: initialise animating into corner to show about to move
 function moveToRival(msg){
+	enteringRival = true;
 	player.animateToRival(msg);
 
 }
@@ -267,5 +268,6 @@ function addRival(grid, rivalX, rivalY){
 
 //move into rival's arena - step3: prepare to actually start playing out of animating out of the corner of my new landscape
 function moveToRival3(){
-	
+	enteringRival = false;
+	updateGame();
 }
