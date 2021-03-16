@@ -91,7 +91,7 @@ function checkSocketMessages(){
 	jumpToPVPImpl();
 	acceptJumpToPVPImpl();
 	if(new Date - timeJumpToRival > 1000) //finished pause waiting for rival to animate on
-		animateRivalArriving
+		animateRivalArriving();
 		
 }
 
