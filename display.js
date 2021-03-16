@@ -136,13 +136,14 @@ function changeState(code,doubleclick){
     	player.willSetMovement(0,1,doubleclick);
     }
     else if(code == "anticlockwise"){
-    	//shift
+    	//enter
     	if(player.willFinishRotating == -1)
     		player.willRotate = -1;//anti-clockwise
     }
-    else if(code == "clockwise"){//backspace
-    	if(selectedBlock != null)
-    		player.deleteBlock(selectedBlock, true); 
+    else if(code == "clockwise"){
+    	//shift
+    	if(player.willFinishRotating == 1)
+    		player.willRotate = 1;//anti-clockwise
     }
     else if(code== 68){//d - down stairs
     	if(activatedStairs != null)
@@ -160,11 +161,6 @@ function changeState(code,doubleclick){
     else if(code >= 49 && code <= 58){ //numbers
 		stoppedPressingMotor = false;
     	player.motorWillStart = code - 49;
-    }
-    else if(code==13){
-    	//enter
-    	if(player.willFinishRotating == -1)
-    		player.willRotate =1;//clockwise
     }
     else if(code==82){//r
 		alert("Restarting!"); //(haven't implemented restart yet - hit refresh)");
