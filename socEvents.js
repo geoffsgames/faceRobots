@@ -170,7 +170,7 @@ function animateRivalArriving(msg){
 	enteringRival = true;
 	canvas.remove(enemy.group)
 	completeNum = 0;
-	addRival(msg.grid, msg.rivalX, msg.rivalY);
+	addRival(msg.grid, msg.rivalX, msg.rivalY, msg.facing);
 	canvas.add(enemy.group); //enemy = rival just arriving
 	enemy.group.left = curRival.left;
 	enemy.group.top = curRival.top;
@@ -265,7 +265,7 @@ function moveToRival2(msg){
 	clearOldNeighbours(null);
 	start();
 	willAddEnemy = false;
-	addRival(curRival.grid, msg.pX, msg.pY);
+	addRival(curRival.grid, msg.pX, msg.pY, msg.facing);
 	
 	player.myX = Math.round((curRival.left + scrollLeft) / gridWidth);
 	player.myY = Math.round((curRival.top + scrollTop) / gridHeight);
