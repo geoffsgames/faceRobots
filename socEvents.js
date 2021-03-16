@@ -151,7 +151,7 @@ function acceptJumpToPVPImpl(){
 	while(savedAcceptPVP.length > 0){
 		var msg = savedAcceptPVP.pop();
 		if(uniqueID == msg.otherID){//another moving to me
-			socket.emit("jumpToPVPAccepted", {targID:uniqueID, visID:msg.myID, pX:player.myX, pY:player.myY,
+			socket.emit("jumpToPVPAccepted", {targID:uniqueID, visID:msg.myID, pX:player.myX, pY:player.myY, player.facing
 							  seed:land.seed,globalSeed:globalSeed, startSeed:startSeed, startGlobalSeed:startGlobalSeed});
 			updateRivalShown(rivalGrids[msg.myID], msg.myID, rivalGrids[msg.myID].grid);
 			leftArrow.visible = false;
