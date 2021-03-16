@@ -484,8 +484,11 @@ function allComplete(){
 	completeCounter += 1;
 	
 	if(completeCounter == numPlayers){
-		if(rivalTimeCounter != undefined && !waitRivalLag)
+		if(rivalTimeCounter != undefined && !waitRivalLag){
 			rivalTimeCounter ++;
+			if(rivalWaitMeLag && rivalWaitMeTime == rivalTimeCounter)
+				socket.emit("imReady", {rID:rivalID});
+		   }
 /**
 		//hack to fix fact animation sometimes jumps me half way across the screen for some reason!
 		if(enemy.moved){
