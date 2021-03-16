@@ -357,6 +357,11 @@ function changeStateEnemy(code,doubleclick){
     	if(enemy.willFinishRotating == -1)
     		enemy.willRotate = -1;//anti-clockwise
     }
+    else if(code == "clockwise"){
+    	//shift
+    	if(enemy.willFinishRotating == -1)
+    		enemy.willRotate = 1;//clockwise
+    }
     else if(code == 32){ //space
     	if(enemy.movX != 0 || enemy.movY != 0)
     		enemy.willStop = true;
@@ -365,9 +370,5 @@ function changeStateEnemy(code,doubleclick){
 		  stoppedPressingMotor = false;
     	enemy.motorWillStart = code - 49;
     }
-    else if(code==13){
-    	//enter
-    	if(enemy.willFinishRotating == -1)
-    		enemy.willRotate =1;//clockwise
-    }
+
 }
