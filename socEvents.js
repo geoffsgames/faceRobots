@@ -293,12 +293,14 @@ function moveToRival2(msg){
 	player.animateOutOfCorner(moveToRival3);
 }
 
-function addRival(grid, rivalX, rivalY){
-	var rival = new Player(rivalX, rivalY);
+function addRival(grid, rivalX, rivalY, rivalFacing){
+	var rival = new Player(rivalX, rivalY, rivalFacing);
 	for(var x =0 ; x < grid.length; x++){
 		for(var y = 0; y < grid.length; y++){
-			if(grid[x][y] != undefined)
+			if(grid[x][y] != undefined){
+				rival.totalNumBlocks ++;
 				rival.addPiece(x,y,grid[x][y]);
+			}
 		}
 	}
 	rival.heart.image.bringToFront();
