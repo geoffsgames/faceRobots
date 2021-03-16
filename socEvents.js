@@ -161,10 +161,9 @@ function animateRivalArriving(){
 	timeJumpToRival = NaN
 	enteringRival = true;
 	canvas.remove(enemy.group)
-	enemy = null;
 	completeNum = 0;
 	addRival(grid, rivalX, rivalY);
-	canvas.add(enemy); //enemy = rival just arriving
+	canvas.add(enemy.group); //enemy = rival just arriving
 	enemy.group.left = curRival.left;
 	enemy.group.top = curRival.top;
 	enemy.group.opacity = 0.8;
