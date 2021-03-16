@@ -484,7 +484,7 @@ function allComplete(){
 	completeCounter += 1;
 	
 	if(completeCounter == numPlayers){
-		if(rivalTimeCounter != undefined)
+		if(rivalTimeCounter != undefined && !waitRivalLag)
 			rivalTimeCounter ++;
 /**
 		//hack to fix fact animation sometimes jumps me half way across the screen for some reason!
