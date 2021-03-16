@@ -326,7 +326,6 @@ function sendKeyPress(key,doubleclick){
 socket.on('receiveKey-press', function (msg) {
      if(msg.rID != rivalID)
 	return;
-     alert("enemy keypress");
      changeStateEnemy(msg.key,msg.dc);
 })
 
