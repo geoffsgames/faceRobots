@@ -14,7 +14,7 @@ var rivalArrivedMsg = null;
 var rivalTimeCounter = 0;
 var waitRivalLag = false;
 var rivalWaitMeLag = false;
-
+var rivalWaitMeTime = 0;
 
 if(usingSocket){
 	socket.emit('newPlayer', {uID:uniqueID, gr:getStringArray(player.grid), trueNewPlayer:true});
@@ -346,6 +346,10 @@ socket.on('waitForMe2', function (msg) {
 
 socket.on('imWaitingForYou2', function (msg) {
 	rivalWaitMeLag = true;
+});
+
+socket.on('imReady2', function (msg) {
+	waitRivalLag = false;
 });
 
 
