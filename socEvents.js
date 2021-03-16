@@ -287,7 +287,7 @@ function moveToRival2(msg){
 		if(Math.random() > 0.5)
 			player.myY -= 10;
 	}
-	socket.emit('reportRivalArrived', {yourID:rivalID, grid:getStringArray(player.grid), rivalX:player.myX, rivalY:player.myY});
+	socket.emit('reportRivalArrived', {yourID:rivalID, grid:getStringArray(player.grid), rivalX:player.myX, rivalY:player.myY, facing:player.facing});
 	scrollToPlayer();
 	//initialise animating out of corner
 	player.animateOutOfCorner(moveToRival3);
