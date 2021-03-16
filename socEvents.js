@@ -163,7 +163,7 @@ function animateRivalArriving(){
 	enemy.group.opacity = 0.8;
 	enemy.group.scaleX = 0.7;
 	enemy.group.scaleY = 0.7;
-	enemy.animateOutOfCorner();
+	enemy.animateOutOfCorner(moveToRival3);
 }
 
 function updateRivalShown(img, id, grid){
@@ -276,7 +276,7 @@ function moveToRival2(msg){
 	
 	scrollToPlayer();
 	//initialise animating out of corner
-	player.animateOutOfCorner();
+	player.animateOutOfCorner(moveToRival3);
 }
 
 function addRival(grid, rivalX, rivalY){
