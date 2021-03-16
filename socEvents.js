@@ -139,10 +139,31 @@ function jumpToPVPImpl(){
 function acceptJumpToPVPImpl(){
 	while(savedAcceptPVP.length > 0){
 		var msg = savedAcceptPVP.pop();
-		if(uniqueID == msg.otherID)//another moving to me
+		if(uniqueID == msg.otherID){//another moving to me
 			socket.emit("jumpToPVPAccepted", {targID:uniqueID, visID:msg.myID, pX:player.myX, pY:player.myY,
 							  seed:land.seed,globalSeed:globalSeed, startSeed:startSeed, startGlobalSeed:startGlobalSeed});
+			updateRivalShown(rivalGrids[msg.myID], msg.myID, rivalGrids[msg.myID].grid);
+			leftArrow.visible = false;
+			rightArrow.visible = false;
+			rivalGrids[msg.myID].opacity = 1.0;
+			rivalID = msg.myID;
+		}
 	}
+}
+
+function animateRivalArriving(){
+	enteringRival = true;
+	canvas.remove(enemy.group)
+	enemy = null;
+	completeNum = 0;
+	addRival(grid, rivalX, rivalY);
+	canvas.add(enemy); //enemy = rival just arriving
+	enemy.group.left = curRival.left;
+	enemy.group.top = curRival.top;
+	enemy.group.opacity = 0.8;
+	enemy.group.scaleX = 0.7;
+	enemy.group.scaleY = 0.7;
+	enemy.animateOutOfCorner();
 }
 
 function updateRivalShown(img, id, grid){
