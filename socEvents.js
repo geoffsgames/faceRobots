@@ -303,7 +303,7 @@ function addRival(grid, rivalX, rivalY, rivalFacing){
 			}
 		}
 	}
-	rival.dangerZones = {};
+	rival.setupWeapons();
 	rival.heart.image.bringToFront();
 	rival.changedDir = false;
 	enemy = rival;
