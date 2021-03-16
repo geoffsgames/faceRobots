@@ -33,6 +33,10 @@ io.on('connection', function(socket){
   socket.on('key-press', function(msg){
 	  io.emit("receiveKey-press", msg)
   })
+	
+  socket.on('reportRivalArrived', function(msg){
+	  io.emit("rivalHasArrived", msg)
+  })
 
 });
 
