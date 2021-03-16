@@ -950,13 +950,13 @@ Player.prototype.animateToRival = function(m) {
 			});
 };
 
-Player.prototype.animateOutOfCorner = function(msg) {
+Player.prototype.animateOutOfCorner = function(nextMethod) {
 	this.group.opacity = 0.5;
 	animating = true;
 		this.group.animate('angle', makeAnimateString(360 * stairRotations), {
 		onChange: canvas.renderAll.bind(canvas),
 	          onComplete: function(){
-	          	moveToRival3();
+	          	nextMethod();
 	          },
 	       duration: stairDuration
 			});
