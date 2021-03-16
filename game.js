@@ -380,6 +380,9 @@ function wakeRotateWait(){
 }
 
 function updateGame(){
+	if(waitRivalLag )
+		return;
+	
 	if(enteringRival) //don't do anything if I'm animating onto rival's grid
 		return;
 	
