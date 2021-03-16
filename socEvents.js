@@ -88,8 +88,11 @@ socket.on('newRival', function(msg){
 function checkSocketMessages(){
 	newRivalImpl();
 	rivalChangedImpl();
-	jumpToPVPImpl()
-	acceptJumpToPVPImpl()
+	jumpToPVPImpl();
+	acceptJumpToPVPImpl();
+	if(new Date - timeJumpToRival > 1000) //finished pause waiting for rival to animate on
+		animateRivalArriving
+		
 }
 
 //actions in response to receiving socket.io message
@@ -149,11 +152,13 @@ function acceptJumpToPVPImpl(){
 			rightArrow.visible = false;
 			rivalGrids[msg.myID].opacity = 1.0;
 			rivalID = msg.myID;
+			timeJumpToRival = new Date;
 		}
 	}
 }
 
 function animateRivalArriving(){
+	timeJumpToRival = NaN
 	enteringRival = true;
 	canvas.remove(enemy.group)
 	enemy = null;
