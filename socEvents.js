@@ -15,7 +15,7 @@ var socket = io();
 
 var uniqueID = "" + Math.random();
 
-var timeJumpToRival = NaN;
+var rivalArrivedMsg = null;
 
 if(usingSocket){
 	socket.emit('newPlayer', {uID:uniqueID, gr:getStringArray(player.grid), trueNewPlayer:true});
@@ -84,15 +84,21 @@ socket.on('newRival', function(msg){
 
 });
 
+socket.on('rivalHasArrived', function(msg){
+	if(msg.yourID == uniqueID)
+		rivalArrivedMsg = msg;
+});
+
 
 function checkSocketMessages(){
 	newRivalImpl();
 	rivalChangedImpl();
 	jumpToPVPImpl();
 	acceptJumpToPVPImpl();
-	if(new Date - timeJumpToRival > 1000) //finished pause waiting for rival to animate on
-		animateRivalArriving();
-		
+	if(rivalArrivedMsg != undefined && rivalArrivedMsg != null){
+		animateRivalArriving(rivalArrivedMsg);
+		rivalArrivedMsg = null;
+	}
 }
 
 //actions in response to receiving socket.io message
@@ -157,12 +163,14 @@ function acceptJumpToPVPImpl(){
 	}
 }
 
-function animateRivalArriving(){
+
+
+function animateRivalArriving(msg){
 	timeJumpToRival = NaN
 	enteringRival = true;
 	canvas.remove(enemy.group)
 	completeNum = 0;
-	addRival(grid, rivalX, rivalY);
+	addRival(msg.grid, msg.rivalX, msg.rivalY);
 	canvas.add(enemy.group); //enemy = rival just arriving
 	enemy.group.left = curRival.left;
 	enemy.group.top = curRival.top;
@@ -279,7 +287,7 @@ function moveToRival2(msg){
 		if(Math.random() > 0.5)
 			player.myY -= 10;
 	}
-	
+	socket.emit('reportRivalArrived', {yourID:rivalID, grid:getStringArray(player.grid), rivalX:player.myX, rivalY:player.myY});
 	scrollToPlayer();
 	//initialise animating out of corner
 	player.animateOutOfCorner(moveToRival3);
