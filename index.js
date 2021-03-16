@@ -37,6 +37,20 @@ io.on('connection', function(socket){
   socket.on('reportRivalArrived', function(msg){
 	  io.emit("rivalHasArrived", msg)
   })
+	
+  socket.on("imWaitingForYou", function(msg){
+	  io.emit("imWaitingForYou2", msg)
+  })
+	
+  socket.on("waitForMe", function(msg){
+	  io.emit("waitForMe2", msg)
+  })
+
+  socket.on("imReady", function(msg){
+	  io.emit("imReady2", msg)
+  })
+
+
 
 });
 
