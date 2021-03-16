@@ -5,17 +5,13 @@ var curRival = null;
 var curRivalID = null;
 var curRivalIDind = 0;
 var rivalIconMargin = 20;
-
 //switch off when editing locally
 var usingSocket = true;
-
 var rivalID = null; //when we're actually fighting
-
 var socket = io();
-
 var uniqueID = "" + Math.random();
-
 var rivalArrivedMsg = null;
+var rivalTimeCounter = 0;
 
 if(usingSocket){
 	socket.emit('newPlayer', {uID:uniqueID, gr:getStringArray(player.grid), trueNewPlayer:true});
@@ -317,6 +313,7 @@ function moveToRival3(){
 	canvas.requestRenderAll();
 	completeCounter = 0;
 	enteringRival = false;
+	rivalTimeCounter = 0; //counter ensures I'm at the same game time as rival (increments on every game update)
 	updateGame();
 }
 
