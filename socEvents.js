@@ -13,6 +13,8 @@ var uniqueID = "" + Math.random();
 var rivalArrivedMsg = null;
 var rivalTimeCounter = 0;
 var waitRivalLag = false;
+var rivalWaitMeLag = false;
+
 
 if(usingSocket){
 	socket.emit('newPlayer', {uID:uniqueID, gr:getStringArray(player.grid), trueNewPlayer:true});
@@ -327,15 +329,23 @@ function sendKeyPress(key,doubleclick){
 socket.on('receiveKey-press', function (msg) {
      if(msg.rID != rivalID)
 	return;
-     if(msg.time < rivalTimeCounter) //rival's comp is behind me in game time
+     if(msg.time < rivalTimeCounter){ //rival's comp is behind me in game time
 	     waitRivalLag = true; //wait for rival to catch up
-     else if(msg.time > rivalTimeCounter)
+	     socket.emit("imWaitingForYou", {rID:rivalID, rivalTimeCounter});
+     }
+     else if(msg.time > rivalTimeCounter){
 	     socket.emit("waitForMe", {rID:rivalID, rivalTimeCounter});
+	     rivalWaitMeLag = true;
+     }
      changeStateEnemy(msg.key,msg.dc);
 });
 
-socket.on('waitForMe', function (msg) {
+socket.on('waitForMe2', function (msg) {
 	waitRivalLag = true;
+});
+
+socket.on('imWaitingForYou2', function (msg) {
+	rivalWaitMeLag = true;
 });
 
 
