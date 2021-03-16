@@ -15,6 +15,8 @@ var socket = io();
 
 var uniqueID = "" + Math.random();
 
+var timeJumpToRival = NaN;
+
 if(usingSocket){
 	socket.emit('newPlayer', {uID:uniqueID, gr:getStringArray(player.grid), trueNewPlayer:true});
 }
