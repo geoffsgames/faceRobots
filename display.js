@@ -137,13 +137,13 @@ function changeState(code,doubleclick){
     }
     else if(code == "anticlockwise"){
     	//enter
-    	if(player.willFinishRotating == -1)
+    	if(player.willFinishRotating == -1) //not already rotating?
     		player.willRotate = -1;//anti-clockwise
     }
     else if(code == "clockwise"){
     	//shift
-    	if(player.willFinishRotating == 1)
-    		player.willRotate = 1;//anti-clockwise
+    	if(player.willFinishRotating == -1)
+    		player.willRotate = 1;//clockwise
     }
     else if(code== 68){//d - down stairs
     	if(activatedStairs != null)
