@@ -12,6 +12,7 @@ var socket = io();
 var uniqueID = "" + Math.random();
 var rivalArrivedMsg = null;
 var rivalTimeCounter = 0;
+var waitRivalLag = false;
 
 if(usingSocket){
 	socket.emit('newPlayer', {uID:uniqueID, gr:getStringArray(player.grid), trueNewPlayer:true});
@@ -320,19 +321,27 @@ function moveToRival3(){
 function sendKeyPress(key,doubleclick){
     if(enemy.isEnemy) //not playing PVP
         return;
-    socket.emit('key-press', {key:key, dc:doubleclick, rID:uniqueID})
+    socket.emit('key-press', {key:key, dc:doubleclick, rID:uniqueID, time:rivalTimeCounter})
 }
   
 socket.on('receiveKey-press', function (msg) {
      if(msg.rID != rivalID)
 	return;
+     if(msg.time < rivalTimeCounter) //rival's comp is behind me in game time
+	     waitRivalLag = true; //wait for rival to catch up
+     else if(msg.time > rivalTimeCounter)
+	     socket.emit("waitForMe", {rID:rivalID, rivalTimeCounter});
      changeStateEnemy(msg.key,msg.dc);
-})
+});
+
+socket.on('waitForMe', function (msg) {
+	waitRivalLag = true;
+});
 
 
 //see changeState(...) in display
 function changeStateEnemy(code,doubleclick){
-	code = enemy.convertCode(code);
+    code = enemy.convertCode(code);
     if(code== "left"){
         //keyCode 37 is left arrow
         enemy.willSetMovement(-1,0,doubleclick);
