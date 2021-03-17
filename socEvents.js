@@ -329,13 +329,15 @@ function sendKeyPress(key,doubleclick){
 socket.on('receiveKey-press', function (msg) {
      if(msg.rID != rivalID)
 	return;
-     if(msg.time < rivalTimeCounter){ //rival's comp is behind me in game time
-	     waitRivalLag = true; //wait for rival to catch up
-	     socket.emit("imWaitingForYou", {rID:rivalID, rivalTimeCounter});
-     }
-     else if(msg.time > rivalTimeCounter){
-	     socket.emit("waitForMe", {rID:rivalID, rivalTimeCounter});
-	     rivalWaitMeLag = true;
+     if(!(enemy.movX == 0 && enemy.movY == 0 && player.movX == 0 && enemy.movY == 0)){
+	     if(msg.time < rivalTimeCounter){ //rival's comp is behind me in game time
+		     waitRivalLag = true; //wait for rival to catch up
+		     socket.emit("imWaitingForYou", {rID:rivalID, rivalTimeCounter});
+	     }
+	     else if(msg.time > rivalTimeCounter){
+		     socket.emit("waitForMe", {rID:rivalID, rivalTimeCounter});
+		     rivalWaitMeLag = true;
+	     }
      }
      changeStateEnemy(msg.key,msg.dc);
 });
