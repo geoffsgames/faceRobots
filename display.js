@@ -117,7 +117,13 @@ function initCanvas(){
 
 function changeState(code,doubleclick){
 	//http://keycode.info/
-
+   //TEST - pause for one second to simulate lag
+   if(code == 80) //p
+      	interval = interval * 1.5;
+   else if(code == 81) //q
+	interval = interval / 0.75;
+	
+	
 	code = player.convertCode(code);
     if(code== "left"){
         //keyCode 37 is left arrow
