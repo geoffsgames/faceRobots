@@ -335,7 +335,7 @@ socket.on('receiveKey-press', function (msg) {
 		     socket.emit("imWaitingForYou", {rID:rivalID, rivalTimeCounter});
 	     }
 	     else if(msg.time > rivalTimeCounter){
-		     socket.emit("waitForMe", {rID:rivalID, rivalTimeCounter});
+		     socket.emit("waitForMe", {rID:rivalID, rTime:rivalTimeCounter});
 		     rivalWaitMeLag = true;
 	     }
      }
@@ -343,6 +343,7 @@ socket.on('receiveKey-press', function (msg) {
 });
 
 socket.on('waitForMe2', function (msg) {
+	rivalWaitMeTime = msg.rTime;
 	waitRivalLag = true;
 });
 
