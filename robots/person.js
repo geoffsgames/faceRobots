@@ -487,8 +487,11 @@ function allComplete(){
 	if(completeCounter == numPlayers){
 		if(rivalTimeCounter != null && !waitRivalLag){
 			rivalTimeCounter ++;
-			if(rivalWaitMeLag && rivalWaitMeTime == rivalTimeCounter)
-				socket.emit("imReady", {rID:rivalID});
+			if(rivalWaitMeLag){
+				alert("him wait me " + rivalWaitMeTime + " " + rivalTimeCounter);
+				if(rivalWaitMeTime == rivalTimeCounter)
+					socket.emit("imReady", {rID:rivalID});
+			}
 		   }
 /**
 		//hack to fix fact animation sometimes jumps me half way across the screen for some reason!
