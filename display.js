@@ -63,6 +63,8 @@ var reallyWaitingForRotate = false; //after non intermediate has been confirmed,
 
 var startTime = 0;
 
+var willLag = false;
+
 var delImg = new fabric.Image(document.getElementById("delete"), {
 	lockScalingX: false,
 	lockScalingY: false,
@@ -119,10 +121,7 @@ function changeState(code,doubleclick){
 	//http://keycode.info/
    //TEST - pause for one second to simulate lag
    if(code == 80) //p
-      	interval = interval * 1.5;
-   else if(code == 81) //q
-	interval = interval / 0.75;
-	
+	willLag = true;	
 	
 	code = player.convertCode(code);
     if(code== "left"){
