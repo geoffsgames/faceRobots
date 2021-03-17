@@ -328,8 +328,8 @@ socket.on('receiveKey-press', function (msg) {
      changeStateEnemy(msg.key,msg.dc);
 });
 
-socket.on('allComplete_rival2', function(uID){
-	if(uID == rivalID){
+socket.on('allComplete_rival2', function(msg){
+	if(msg.uID == rivalID && msg.tCounter == rivalTimeCounter){
 		rivalCompleted = true;
 		if(waitingForRival) //if I've also completed
 			allComplete2();
