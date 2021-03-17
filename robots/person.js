@@ -483,58 +483,27 @@ Person.prototype.desiredVisualLeft = function(){
 
 function allComplete(){
 	completeCounter += 1;
-	
 	if(completeCounter == numPlayers){
-		if(rivalTimeCounter != null && !waitRivalLag){
-			rivalTimeCounter ++;
-			if(rivalWaitMeLag){
-				alert("him wait me " + rivalWaitMeTime + " " + rivalTimeCounter);
-				if(rivalWaitMeTime == rivalTimeCounter)
-					socket.emit("imReady", {rID:rivalID});
-			}
-		   }
-/**
-		//hack to fix fact animation sometimes jumps me half way across the screen for some reason!
-		if(enemy.moved){
-			if(Math.abs(enemy.group.left - enemy.desiredVisualLeft()) > 50){
-				console.log("animation fucked up again. LEFT " + (enemy.group.left - enemy.desiredVisualLeft()));
-				enemy.group.left = enemy.desiredVisualLeft();
-				canvas.renderAll();
-			}
-			if(Math.abs(enemy.group.top - enemy.desiredVisualTop()) > 50){
-				console.log("animation fucked up again. LEFT " + (enemy.group.top - enemy.desiredVisualTop()));
-				enemy.group.top = enemy.desiredVisualTop();
-				canvas.renderAll();
-			}
-		}
-		if(player.moved){
-			if(Math.abs(player.group.left - player.desiredVisualLeft()) > 50){
-				console.log("animation fucked up again. LEFT " + (player.group.left - player.desiredVisualLeft()));
-				player.group.left = player.desiredVisualLeft();
-				canvas.renderAll();
-			}
-			if(Math.abs(player.group.top - player.desiredVisualTop()) > 50){
-				console.log("animation fucked up again. LEFT " + (player.group.top - player.desiredVisualTop()));
-				player.group.top = player.desiredVisualTop();
-				canvas.renderAll();
-			}
-		}
-		*/
-		
-		completeCounter = 0;
-		//if neither moved - wait as no delay for animation would otherwise make things too fast TODO - if add more than 1 enemy
-		actualIntv = new Date - oldTime;
-		oldTime = new Date;
-		if(interval > actualIntv)
-			waitForTimeout(interval - actualIntv);
-		else{
-			if(actualIntv - interval > 50)
-				countLag += 1;	
-			updateGame();
-		}
-		
+		socket.emit("allComplete_rival", uniqueID);
+		if(rivalCompleted)
+			allComplete2();
 	}
 };
+
+function allComplete2(){
+	completeCounter = 0;
+	rivalCompleted = false;
+	//if neither moved - wait as no delay for animation would otherwise make things too fast TODO - if add more than 1 enemy
+	actualIntv = new Date - oldTime;
+	oldTime = new Date;
+	if(interval > actualIntv)
+		waitForTimeout(interval - actualIntv);
+	else{
+		if(actualIntv - interval > 50)
+			countLag += 1;	
+		updateGame();
+	}
+}
 
 //redraw after enter new landscape
 Person.prototype.restart = function(){
