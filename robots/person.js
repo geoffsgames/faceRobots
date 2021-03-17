@@ -5,6 +5,7 @@ var fastMoving = false;
 var debugMode = false;
 
 var waitingForRival = false;
+var rivalTimeCounter = 0;
 
 //just for testing
 var testingStuckRotation = false;
