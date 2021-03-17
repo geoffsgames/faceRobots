@@ -391,13 +391,7 @@ function updateGame(){
 		}
 	}
 	//END TESTING
-	
-	if(waitRivalLag )
-		return;
-	
-	if(enteringRival) //don't do anything if I'm animating onto rival's grid
-		return;
-	
+
 	if(socket != null){ //respond to any multiplayer based events which may have happened
 		checkSocketMessages();
 	}
