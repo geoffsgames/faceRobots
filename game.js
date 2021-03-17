@@ -67,6 +67,10 @@ var testingNoRotateDelay = false;
 
 var enteringRival = false;
 
+
+var waitRivalLag = false;
+var enteringRival = false;
+
 start();
 addPlayer();
 updateGame();
