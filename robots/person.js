@@ -4,6 +4,7 @@ var intermediate = false;
 var fastMoving = false;
 var debugMode = false;
 
+var rivalTimeCounter = null
 
 //just for testing
 var testingStuckRotation = false;
@@ -484,7 +485,7 @@ function allComplete(){
 	completeCounter += 1;
 	
 	if(completeCounter == numPlayers){
-		if(rivalTimeCounter != undefined && !waitRivalLag){
+		if(rivalTimeCounter != null && !waitRivalLag){
 			rivalTimeCounter ++;
 			if(rivalWaitMeLag && rivalWaitMeTime == rivalTimeCounter)
 				socket.emit("imReady", {rID:rivalID});
