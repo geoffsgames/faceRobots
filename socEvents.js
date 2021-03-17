@@ -329,30 +329,15 @@ function sendKeyPress(key,doubleclick){
 socket.on('receiveKey-press', function (msg) {
      if(msg.rID != rivalID)
 	return;
-     if(!(enemy.movX == 0 && enemy.movY == 0 && player.movX == 0 && enemy.movY == 0)){
-	     if(msg.time < rivalTimeCounter){ //rival's comp is behind me in game time
-		     waitRivalLag = true; //wait for rival to catch up
-		     socket.emit("imWaitingForYou", {rID:rivalID, rivalTimeCounter});
-	     }
-	     else if(msg.time > rivalTimeCounter){
-		     socket.emit("waitForMe", {rID:rivalID, rTime:rivalTimeCounter});
-		     rivalWaitMeLag = true;
-	     }
-     }
      changeStateEnemy(msg.key,msg.dc);
 });
 
-socket.on('waitForMe2', function (msg) {
-	rivalWaitMeTime = msg.rTime;
-	waitRivalLag = true;
-});
-
-socket.on('imWaitingForYou2', function (msg) {
-	rivalWaitMeLag = true;
-});
-
-socket.on('imReady2', function (msg) {
-	waitRivalLag = false;
+socket.on('allComplete_rival2', function(uID){
+	if(uID == rivalID){
+		rivalCompleted = true;
+		if(completeCounter == numPlayers) //if I've also completed
+			allComplete2();
+	}
 });
 
 
