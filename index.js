@@ -38,18 +38,9 @@ io.on('connection', function(socket){
 	  io.emit("rivalHasArrived", msg)
   })
 	
-  socket.on("imWaitingForYou", function(msg){
-	  io.emit("imWaitingForYou2", msg)
+  socket.on('allComplete_rival', function(msg){
+	  io.emit("allComplete_rival2", msg)
   })
-	
-  socket.on("waitForMe", function(msg){
-	  io.emit("waitForMe2", msg)
-  })
-
-  socket.on("imReady", function(msg){
-	  io.emit("imReady2", msg)
-  })
-
 
 
 });
