@@ -122,6 +122,8 @@ function changeState(code,doubleclick){
    //TEST - pause for one second to simulate lag
    if(code == 80) //p
 	willLag = true;	
+   if(code == 81) //q
+	willLag = false;	
 	
 	code = player.convertCode(code);
     if(code== "left"){
