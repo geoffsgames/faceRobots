@@ -484,9 +484,14 @@ Person.prototype.desiredVisualLeft = function(){
 function allComplete(){
 	completeCounter += 1;
 	if(completeCounter == numPlayers){
-		socket.emit("allComplete_rival", uniqueID);
-		if(rivalCompleted)
+		if(!(enemy == null || enemy.isEnemy)){
+			socket.emit("allComplete_rival", uniqueID);
+			if(rivalCompleted)
+				allComplete2();
+		}
+		else
 			allComplete2();
+
 	}
 };
 
