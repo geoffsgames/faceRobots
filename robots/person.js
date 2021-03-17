@@ -486,7 +486,7 @@ function allComplete(){
 	waitingForRival = false;
 	if(completeCounter == numPlayers){
 		if(!(enemy == null || enemy.isEnemy)){
-			socket.emit("allComplete_rival", uniqueID);
+			socket.emit("allComplete_rival", {uID:uniqueID, tCounter:rivalTimeCounter});
 			if(rivalCompleted)
 				allComplete2();
 			else
