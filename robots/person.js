@@ -500,6 +500,7 @@ function allComplete(){
 
 function allComplete2(){
 	completeCounter = 0;
+	rivalTimeCounter++;
 	waitingForRival = false;
 	rivalCompleted = false;
 	//if neither moved - wait as no delay for animation would otherwise make things too fast TODO - if add more than 1 enemy
