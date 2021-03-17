@@ -4,7 +4,7 @@ var intermediate = false;
 var fastMoving = false;
 var debugMode = false;
 
-var rivalTimeCounter = null
+var waitingForRival = false;
 
 //just for testing
 var testingStuckRotation = false;
@@ -483,11 +483,14 @@ Person.prototype.desiredVisualLeft = function(){
 
 function allComplete(){
 	completeCounter += 1;
+	waitingForRival = false;
 	if(completeCounter == numPlayers){
 		if(!(enemy == null || enemy.isEnemy)){
 			socket.emit("allComplete_rival", uniqueID);
 			if(rivalCompleted)
 				allComplete2();
+			else
+				waitingForRival = true;
 		}
 		else
 			allComplete2();
@@ -497,6 +500,7 @@ function allComplete(){
 
 function allComplete2(){
 	completeCounter = 0;
+	waitingForRival = false;
 	rivalCompleted = false;
 	//if neither moved - wait as no delay for animation would otherwise make things too fast TODO - if add more than 1 enemy
 	actualIntv = new Date - oldTime;
