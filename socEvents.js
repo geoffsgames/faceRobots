@@ -335,7 +335,7 @@ socket.on('receiveKey-press', function (msg) {
 socket.on('allComplete_rival2', function(uID){
 	if(uID == rivalID){
 		rivalCompleted = true;
-		if(completeCounter == numPlayers) //if I've also completed
+		if(waitingForRival) //if I've also completed
 			allComplete2();
 	}
 });
