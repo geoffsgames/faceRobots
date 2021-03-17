@@ -330,13 +330,13 @@ socket.on('receiveKey-press', function (msg) {
 
 socket.on('allComplete_rival2', function(msg){
 	if(msg.uID == rivalID){
-		if(msg.tCounter == rivalTimeCounter){
+		//if(msg.tCounter == rivalTimeCounter){
 			rivalCompleted = true;
 			if(waitingForRival) //if I've also completed
 				allComplete2();
-		}
-		else
-			alert("something went wrong");
+		//}
+		//else
+		//	alert("something went wrong");
 	}
 });
 
