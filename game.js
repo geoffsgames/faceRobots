@@ -384,6 +384,14 @@ function wakeRotateWait(){
 }
 
 function updateGame(){
+	//TESTING - just for testing lag
+	if(willLag){
+		time = new Date;
+		while(new Date - time < 1000){
+		}
+	}
+	//END TESTING
+	
 	if(waitRivalLag )
 		return;
 	
