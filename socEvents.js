@@ -323,7 +323,7 @@ function moveToRival3(){
 function sendKeyPress(key,doubleclick){
     if(enemy.isEnemy) //not playing PVP
         return;
-    socket.emit('key-press', {key:key, dc:doubleclick, rID:uniqueID, time:rivalTimeCounter})
+    socket.emit('key-press', {key:key, dc:doubleclick, rID:uniqueID})
 }
   
 socket.on('receiveKey-press', function (msg) {
