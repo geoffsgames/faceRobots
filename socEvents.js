@@ -11,10 +11,6 @@ var rivalID = null; //when we're actually fighting
 var socket = io();
 var uniqueID = "" + Math.random();
 var rivalArrivedMsg = null;
-var rivalTimeCounter = 0;
-var waitRivalLag = false;
-var rivalWaitMeLag = false;
-var rivalWaitMeTime = 0;
 
 if(usingSocket){
 	socket.emit('newPlayer', {uID:uniqueID, gr:getStringArray(player.grid), trueNewPlayer:true});
