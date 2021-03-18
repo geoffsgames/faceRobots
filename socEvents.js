@@ -142,24 +142,6 @@ function jumpToPVPImpl(){
 	}
 }
 
-function acceptJumpToPVPImpl(){
-	while(savedAcceptPVP.length > 0){
-		var msg = savedAcceptPVP.pop();
-		if(uniqueID == msg.otherID){//another moving to me
-			socket.emit("jumpToPVPAccepted", {targID:uniqueID, visID:msg.myID, pX:player.myX, pY:player.myY, facing:player.facing,
-							  seed:land.seed,globalSeed:globalSeed, startSeed:startSeed, startGlobalSeed:startGlobalSeed});
-			updateRivalShown(rivalGrids[msg.myID], msg.myID, rivalGrids[msg.myID].grid);
-			leftArrow.visible = false;
-			rightArrow.visible = false;
-			rivalGrids[msg.myID].opacity = 1.0;
-			rivalID = msg.myID;
-			timeJumpToRival = new Date;
-		}
-	}
-}
-
-
-
 function animateRivalArriving(msg){
 	timeJumpToRival = NaN
 	enteringRival = true;
@@ -200,7 +182,12 @@ function updateLeftRightArrows(){
 }
 
 
-socket.on('acceptJumpToPVP', function(msg){
+socket.on('jumpToRival_response', function(msg){
+	if(confirm('Accept challenge from ' + msg.myID) + '?'){ //prompt the user
+		socket.emit("jumpToPVPAccepted", {targID:uniqueID, visID:msg.myID, pX:player.myX, pY:player.myY, facing:player.facing,  //send all details of me and my landscape so rival can join it
+							seed:land.seed,globalSeed:globalSeed, startSeed:startSeed, startGlobalSeed:startGlobalSeed});
+
+	}
 	savedAcceptPVP.push(msg)
 })
 
