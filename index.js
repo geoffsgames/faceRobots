@@ -22,8 +22,8 @@ io.on('connection', function(socket){
     io.emit('rivalChanged', msg);
   });
   
-  socket.on('jumpingWTFisyourproblem', function(msg){
-	  io.emit("acceptJumpToPVP", msg)
+  socket.on('jumpToRival_request', function(msg){
+	  io.emit("jumpToRival_response", msg)
   });
   
   socket.on('jumpToPVPAccepted', function(msg){
