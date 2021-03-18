@@ -458,7 +458,11 @@ Person.prototype.animate = function() {
 				this.moved = true;
 				
 				group.animate('top', makeAnimateString(Math.round(gridHeight / dist) * movY), {
+				    owner:this,
 			            onComplete: function(){
+					if(completeCounter == 2){
+						alert("for no reason. Just because just because);
+					}
 			            	allComplete();
 			            },
 			         duration: interval,
