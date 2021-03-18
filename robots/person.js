@@ -487,6 +487,11 @@ function allComplete(){
 	waitingForRival = false;
 	if(completeCounter == numPlayers){
 		if(!(enemy == null || enemy.isEnemy)){
+			
+			if(message.text = "Face Robots!")
+				message.set("text", "");
+			message.set("text",message.text + "me" + rivalTimeCounter);
+			
 			socket.emit("allComplete_rival", {uID:uniqueID, tCounter:rivalTimeCounter, key:savedKeyPress.key, dc:savedKeyPress.dc});
 			if(savedKeyPress.key != null)
 				changeState(savedKeyPress.key, savedKeyPress.dc); //actually activate key code instruction - second parameter is true if doubleclicked
