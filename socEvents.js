@@ -71,7 +71,7 @@ function getStringArray(inArr){
 
 
 
-////////////////////////////////////////////////////CHANGING THE GRIDS IN THE CORNER ////////////////////////////
+////////////////////////////////////////////////////CHANGING THE GRIDS/ICONS IN THE CORNER ////////////////////////////
 
 //one of the other robots on the network changed it's grid layout (e.g. lost a piece, added a piece)
 socket.on('rivalChanged', function(msg){
@@ -185,6 +185,7 @@ function updateLeftRightArrows(){
 //(receiver) response to attacker's request 
 socket.on('jumpToRival_response', function(msg){
 	if(confirm('Accept challenge from ' + msg.myID) + '?'){ //prompt the user
+		enteringRival = true; //stops anything else happening while I'm accepting the rival
 		socket.emit("jumpToPVPAccepted", {targID:uniqueID, visID:msg.myID, pX:player.myX, pY:player.myY, facing:player.facing,  //send all details of me and my landscape so rival can join it
 							seed:land.seed,globalSeed:globalSeed, startSeed:startSeed, startGlobalSeed:startGlobalSeed});
 		if(enemy != null)
@@ -200,9 +201,9 @@ socket.on('jumpToRival_response', function(msg){
 
 //(attacker)
 socket.on('jumpToPVP', function(msg){
+	enteringRival = true; //stops anything else happening while I'm animating across
 	if(enemy != null)
 		canvas.remove(enemy.group)
-	enteringRival = true; //stops anything else happening while I'm animating across
 	player.recreateGroup(); //interrupts any animation that might be happening and puts me back where I came from 
 									//as this method, for need of avoiding compounded delays, violates the usual "wait for animation to finish" protocol 
 	
@@ -270,6 +271,7 @@ function moveToRival3(){
 	player.restart();
 	canvas.requestRenderAll();
 	completeCounter = 0;
+	inPVP = true;
 	enteringRival = false;
 	rivalTimeCounter = 0; //counter ensures I'm at the same game time as rival (increments on every game update)
 	updateGame();
