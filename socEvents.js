@@ -306,14 +306,17 @@ function animateRivalArriving(msg){
 
 socket.on('allComplete_rival2', function(msg){
 	if(msg.uID == rivalID){
-		if(message.text == "Face Robots!")
-			message.set("text", "");
-		message.set("fill", "white");
-		message.set("text",message.text + "h" + rivalTimeCounter + "-" + msg.tCounter);
+
 
 		//if(msg.tCounter == rivalTimeCounter){
-			if(msg.key != null)
-				changeStateEnemy(msg.key,msg.dc);	
+			if(msg.key != null){
+				if(message.text == "Face Robots!")
+					message.set("text", "");
+				message.set("fill", "white");
+				message.set("text",message.text + "h" + rivalTimeCounter + "-" + msg.tCounter);
+				
+				changeStateEnemy(msg.key,msg.dc);
+			}
 			rivalCompleted = true;
 			if(waitingForRival) //if I've also completed
 				allComplete2();
