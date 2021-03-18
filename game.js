@@ -391,7 +391,8 @@ function updateGame(){
 		savedKeyPress = {key:null}
 	}
 	//TODO - could be combined with rival counter - do we need both?
-	counter4KeyCmds ++;
+	if(inPVP)
+		counter4KeyCmds ++;
 	
 	//TESTING - just for testing lag
 	if(willLag){
