@@ -355,7 +355,9 @@ Person.prototype.animate = function() {
 	var movY = this.movY;
 	var rotation = this.rotation;
 	var dist = (initialInterval / interval) / this.fastSpeed_fixed;
-	
+	if(completeCounter == 2){
+		alert("for no reason. Just because just because");
+	}
 	if(!this.recreated && (movX != 0 || movY != 0 || rotation != 0)){
 		if((interval < 50 || dist >= (gridWidth / 2)) && rotation == 0){
 			tinyAnimate(dist,group,movX,movY,this);
@@ -458,11 +460,7 @@ Person.prototype.animate = function() {
 				this.moved = true;
 				
 				group.animate('top', makeAnimateString(Math.round(gridHeight / dist) * movY), {
-				    owner:this,
 			            onComplete: function(){
-					if(completeCounter == 2){
-						alert("for no reason. Just because just because");
-					}
 			            	allComplete();
 			            },
 			         duration: interval,
