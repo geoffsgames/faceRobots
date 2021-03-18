@@ -13,12 +13,6 @@ var thiefProb = 1; 0.1;
 //var handyThiefProb = 0.1;
 var handyThiefProb = 0;
 
-var savedRivalChanged = [];
-var savedNewRival = [];
-var savedPVP = [];
-var savedAcceptPVP = [];
-
-
 var willAddThief = false;
 var oldEnemy;
 
@@ -391,10 +385,6 @@ function updateGame(){
 		}
 	}
 	//END TESTING
-
-	if(socket != null){ //respond to any multiplayer based events which may have happened
-		checkSocketMessages();
-	}
 	
 	//TODO there is literally no reason whatsoever why this needs to be here as exactly the same code is in allComplete()
 	//but for reasons unknown it can't be arsed to do it's job so here we go
@@ -896,10 +886,5 @@ function reportMass(mass,fans,speed){
 	message.set('fill', 'blue');
 };
 
-//when I discover I'm moving to rival - alert server
-function jumpToRival(){
-	if(usingSocket)
-		socket.emit("jumpToRival_request", {gr:getStringArray(player.grid),myID:uniqueID,otherID:curRivalID});
-}
 
 
