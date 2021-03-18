@@ -316,21 +316,11 @@ function moveToRival3(){
 	updateGame();
 }
 
-function sendKeyPress(key,doubleclick){
-    if(enemy.isEnemy) //not playing PVP
-        return;
-    socket.emit('key-press', {key:key, dc:doubleclick, rID:uniqueID})
-}
-  
-socket.on('receiveKey-press', function (msg) {
-     if(msg.rID != rivalID)
-	return;
-     changeStateEnemy(msg.key,msg.dc);
-});
-
 socket.on('allComplete_rival2', function(msg){
 	if(msg.uID == rivalID){
 		//if(msg.tCounter == rivalTimeCounter){
+			if(msg.key != null)
+				changeStateEnemy(msg.key,msg.dc);	
 			rivalCompleted = true;
 			if(waitingForRival) //if I've also completed
 				allComplete2();
