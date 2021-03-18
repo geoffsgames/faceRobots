@@ -170,7 +170,7 @@ function updateLeftRightArrows(){
 //(attacker) after request to try moving to rival (see Display.js) alert server
 function jumpToRival(){
 	if(usingSocket)
-		socket.emit("jumpToRival_request", {gr:getStringArray(player.grid),myID:uniqueID,otherID:curRivalID});
+		socket.emit("jumpToRival_request", {gr:getStringArray(player.grid),myID:uniqueID,otherID:curRivalID, });
 }
 
 //(receiver) response to attacker's request 
@@ -183,8 +183,6 @@ socket.on('jumpToRival_response', function(msg){
 			if(enemy != null)
 				canvas.remove(enemy.group);
 			canvas.remove(player.group)
-			animateRivalArriving(msg);
-
 		}
 	}
 })
@@ -204,6 +202,11 @@ socket.on('jumpToPVP', function(msg){
 	}
 })
 
+//(receiver) add attacker when position attacker ends up in has been calculated
+socket.on('rivalHasArrived', function(msg){
+	if(msg.yourID == uniqueID)
+		animateRivalArriving(msg);
+});
 
 //(attacker) move into the rival's arena - part1: initialise animating into corner to show about to move
 function moveToRival(msg){
@@ -255,6 +258,8 @@ function moveToRival2(msg){
 	//initialise animating out of corner
 	player.animateOutOfCorner(moveToRival3);
 }
+
+
 
 //(attacker and receiver) move into rival's arena - step3: prepare to actually start playing out of animating out of the corner of my new landscape
 function moveToRival3(){
