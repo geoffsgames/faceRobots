@@ -488,8 +488,9 @@ function allComplete(){
 	if(completeCounter == numPlayers){
 		if(!(enemy == null || enemy.isEnemy)){
 			
-			if(message.text = "Face Robots!")
+			if(message.text == "Face Robots!")
 				message.set("text", "");
+			message.set("fill", "white");
 			message.set("text",message.text + "me" + rivalTimeCounter);
 			
 			socket.emit("allComplete_rival", {uID:uniqueID, tCounter:rivalTimeCounter, key:savedKeyPress.key, dc:savedKeyPress.dc});
