@@ -487,14 +487,6 @@ function allComplete(){
 	waitingForRival = false;
 	if(completeCounter == numPlayers){
 		if(inPVP){
-			
-			//TESTING - makes sure messages sent in right order
-			if(message.text == "Face Robots!")
-				message.set("text", "");
-			message.set("fill", "white");
-			message.set("text",message.text + "me" + rivalTimeCounter);
-			//END TESTING			
-
 			//"I'm done"
 			socket.emit("allComplete_rival", {uID:uniqueID, tCounter:rivalTimeCounter, key:savedKeyPress.key, dc:savedKeyPress.dc});
 			
