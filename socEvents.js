@@ -162,7 +162,16 @@ function updateLeftRightArrows(){
 
 ///////////////////////////////////////////////////MOVING TO RIVAL'S ARENA FOR PVP////////////////
 
-//*****Step 1 = ATTACKER CLICKS ON RIVAL AND SENDS REQUEST (see Display.js)
+
+
+
+//*****Step 1 = ATTACKER CLICKS ON RIVAL AND SENDS REQUEST 
+
+//(attacker) after request to try moving to rival (see Display.js) alert server
+function jumpToRival(){
+	if(usingSocket)
+		socket.emit("jumpToRival_request", {gr:getStringArray(player.grid),myID:uniqueID,otherID:curRivalID});
+}
 
 //(receiver) response to attacker's request 
 socket.on('jumpToRival_response', function(msg){
