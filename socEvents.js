@@ -304,7 +304,7 @@ function animateRivalArriving(msg){
 ///////////////////////////////////////////////////SYNCING RIVALS////////////////
 
 socket.on("rivalKeyCode2", function(msg){
-	if(msg.rID == rivalID){
+	if(msg.rID == uniqueID){
 		/**
 		if(message.text == "Face Robots!")
 			message.set("text", "");
