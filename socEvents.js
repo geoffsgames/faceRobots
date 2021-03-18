@@ -183,7 +183,7 @@ socket.on('jumpToRival_response', function(msg){
 			if(enemy != null)
 				canvas.remove(enemy.group);
 			canvas.remove(player.group)
-			animateRivalArriving(rivalArrivedMsg);
+			animateRivalArriving(msg);
 
 		}
 	}
