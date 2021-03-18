@@ -379,6 +379,8 @@ function wakeRotateWait(){
 }
 
 function updateGame(){
+	if(completeCounter == 2)
+		alert("because I can. For literally no fucking reason whatsoever. Just because I fucking can");
 	//TESTING - just for testing lag
 	if(willLag){
 		time = new Date;
