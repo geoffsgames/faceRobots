@@ -30,10 +30,6 @@ io.on('connection', function(socket){
 	  io.emit("jumpToPVP", msg)
   })
 	
-  socket.on('key-press', function(msg){
-	  io.emit("receiveKey-press", msg)
-  })
-	
   socket.on('reportRivalArrived', function(msg){
 	  io.emit("rivalHasArrived", msg)
   })
