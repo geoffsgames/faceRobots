@@ -899,7 +899,7 @@ function reportMass(mass,fans,speed){
 //when I discover I'm moving to rival - alert server
 function jumpToRival(){
 	if(usingSocket)
-		socket.emit("jumpingWTFisyourproblem", {gr:getStringArray(player.grid),myID:uniqueID,otherID:curRivalID});
+		socket.emit("jumpToRival_request", {gr:getStringArray(player.grid),myID:uniqueID,otherID:curRivalID});
 }
 
 
