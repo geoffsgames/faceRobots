@@ -75,40 +75,6 @@ function getStringArray(inArr){
 
 //one of the other robots on the network changed it's grid layout (e.g. lost a piece, added a piece)
 socket.on('rivalChanged', function(msg){
-	savedRivalChanged.push(msg);
-});
-
-//new player joined network
-socket.on('newRival', function(msg){
-	savedNewRival.push(msg);
-
-});
-
-//so that only adjust rivals in corner of grid at right time in each update
-function checkSocketMessages(){
-	newRivalImpl();
-	rivalChangedImpl();
-}
-
-function newRivalImpl(){
-	while(savedNewRival.length > 0){
-		var msg = savedNewRival.pop();
-		if(msg.uID != uniqueID && rivalGridIDs.indexOf(msg.uID) == -1){
-			var rivImg = convertGridToRivalIcon(msg.gr);
-			updateRivalShown(rivImg, msg.uID, msg.gr);
-			if(msg.trueNewPlayer) //if player is completely new (i.e. it's not me that's just joined and I've just learned of the existing players)
-				socket.emit('newPlayer', {uID:uniqueID, gr:getStringArray(player.grid), trueNewPlayer:false}); //so new rival/player knows about me in return
-
-			curRivalIDind = rivalGridIDs.length;
-			rivalGridIDs.push(msg.uID);
-		}
-	}
-	
-}
-
-function rivalChangedImpl(){
-	while(savedRivalChanged.length > 0){
-		var msg = savedRivalChanged.pop();
 		if(msg.uID != uniqueID){
 			var img = convertGridToRivalIcon(msg.gr);
 			rivalGrids[msg.uID] = curRivalID
@@ -121,8 +87,24 @@ function rivalChangedImpl(){
 				curRival.setCoords();
 			}
 		}
-	}
-}
+});
+
+//new player joined network
+socket.on('newRival', function(msg){
+		if(msg.uID != uniqueID && rivalGridIDs.indexOf(msg.uID) == -1){
+			var rivImg = convertGridToRivalIcon(msg.gr);
+			updateRivalShown(rivImg, msg.uID, msg.gr);
+			if(msg.trueNewPlayer) //if player is completely new (i.e. it's not me that's just joined and I've just learned of the existing players)
+				socket.emit('newPlayer', {uID:uniqueID, gr:getStringArray(player.grid), trueNewPlayer:false}); //so new rival/player knows about me in return
+
+			curRivalIDind = rivalGridIDs.length;
+			rivalGridIDs.push(msg.uID);
+		}
+});
+
+//so that only adjust rivals in corner of grid at right time in each update
+
+
 
 
 function convertGridToRivalIcon(grid){
@@ -184,17 +166,18 @@ function updateLeftRightArrows(){
 
 //(receiver) response to attacker's request 
 socket.on('jumpToRival_response', function(msg){
-	if(confirm('Accept challenge from ' + msg.myID) + '?'){ //prompt the user
-		enteringRival = true; //stops anything else happening while I'm accepting the rival
-		socket.emit("jumpToPVPAccepted", {targID:uniqueID, visID:msg.myID, pX:player.myX, pY:player.myY, facing:player.facing,  //send all details of me and my landscape so rival can join it
-							seed:land.seed,globalSeed:globalSeed, startSeed:startSeed, startGlobalSeed:startGlobalSeed});
-		if(enemy != null)
-			canvas.remove(enemy.group);
-		canvas.remove(player.group)
-		animateRivalArriving(rivalArrivedMsg);
+	if(msg.otherID == uniqueID){
+		if(confirm('Accept challenge from ' + msg.myID) + '?'){ //prompt the user
+			enteringRival = true; //stops anything else happening while I'm accepting the rival
+			socket.emit("jumpToPVPAccepted", {targID:uniqueID, visID:msg.myID, pX:player.myX, pY:player.myY, facing:player.facing,  //send all details of me and my landscape so rival can join it
+								seed:land.seed,globalSeed:globalSeed, startSeed:startSeed, startGlobalSeed:startGlobalSeed});
+			if(enemy != null)
+				canvas.remove(enemy.group);
+			canvas.remove(player.group)
+			animateRivalArriving(rivalArrivedMsg);
 
+		}
 	}
-	savedAcceptPVP.push(msg)
 })
 
 //******Step 2 = Request accepted. Attacker animates over to rival's land
