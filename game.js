@@ -380,7 +380,13 @@ function wakeRotateWait(){
 	waitingForRotate = false;
 }
 
-function updateGame(){
+function updateGame(){	
+	//keyCodes during PVP = rival's key codes
+	if(keyMessage != null && keyMessage.time <= counter4KeyCmds) //if he sent it at n we know he won't do it until n + 1
+		changeStateEnemy(keyMessage.code,keyMessage.dc);
+	if(savedKeyPress.key != null)
+		changeState(savedKeyPress.key, savedKeyPress.dc); //actually activate key code instruction - second parameter is true if doubleclicked
+	
 	//TODO - could be combined with rival counter - do we need both?
 	counter4KeyCmds ++;
 	
