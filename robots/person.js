@@ -483,10 +483,6 @@ Person.prototype.desiredVisualLeft = function(){
 }
 
 function allComplete(){
-	if(completeCounter == 2){
-		alert("I swear I'm not making this up!!!!");
-	}
-	
 	completeCounter += 1;
 	waitingForRival = false;
 	if(completeCounter == numPlayers){
