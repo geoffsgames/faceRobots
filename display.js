@@ -231,10 +231,8 @@ function keyListener(e){
 	    	code = e.keyCode;
 		if(enemy != null && !enemy.isEnemy)//multiplayer
 			savedKeyPress = {key:code, dc:new Date - lastTime < 500 && lastKey == code};
-		else{
-			savedKeyPress = {key:null, dc:0}
+		else
 			sendKeyPress(code,new Date - lastTime < 500 && lastKey == code) //if in multiplayer
-		}
 		changeState(code,new Date - lastTime < 500 && lastKey == code); //actually activate key code instruction - second parameter is true if doubleclicked
 		lastTime = new Date;
 		lastKey = code;
