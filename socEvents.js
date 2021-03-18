@@ -191,13 +191,10 @@ socket.on('jumpToRival_response', function(msg){
 
 //(attacker)
 socket.on('jumpToPVP', function(msg){
-	enteringRival = true; //stops anything else happening while I'm animating across
-	if(enemy != null)
-		canvas.remove(enemy.group)
-	player.recreateGroup(); //interrupts any animation that might be happening and puts me back where I came from 
-									//as this method, for need of avoiding compounded delays, violates the usual "wait for animation to finish" protocol 
-	
 	if(uniqueID == msg.visID){ //I AM the one moving
+		enteringRival = true; //stops anything else happening while I'm animating across
+		if(enemy != null)
+			canvas.remove(enemy.group)
 		moveToRival(msg); //move to new landscape
 	}
 })
