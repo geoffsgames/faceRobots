@@ -229,8 +229,10 @@ function keyListener(e){
 	    if((e.keyCode >= 37 && e.keyCode <= 40) || (e.keyCode >= 32 && e.keyCode <= 34))
 	    		e.preventDefault();
 	    	code = e.keyCode;
-		if(enemy != null && !enemy.isEnemy)//multiplayer
+		if(enemy != null && !enemy.isEnemy){//multiplayer
+			alert("so we're just going to ignore this whole thing for the banter. Well fucking go you");
 			savedKeyPress = {key:code, dc:new Date - lastTime < 500 && lastKey == code};
+		}
 		else
 			changeState(code,new Date - lastTime < 500 && lastKey == code); //actually activate key code instruction - second parameter is true if doubleclicked
 		lastTime = new Date;
