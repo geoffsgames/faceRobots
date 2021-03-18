@@ -487,7 +487,10 @@ function allComplete(){
 	waitingForRival = false;
 	if(completeCounter == numPlayers){
 		if(!(enemy == null || enemy.isEnemy)){
-			socket.emit("allComplete_rival", {uID:uniqueID, tCounter:rivalTimeCounter, key:keyCode, dc:doubleclick});
+			socket.emit("allComplete_rival", {uID:uniqueID, tCounter:rivalTimeCounter, key:savedKeyPress.key, dc:savedKeyPress.dc});
+			if(savedKeyPress.key != null)
+				changeState(savedKeyPress.key, savedKeyPress.dc); //actually activate key code instruction - second parameter is true if doubleclicked
+			savedKeyPress = {key:null, dc:0};
 			if(rivalCompleted)
 				allComplete2();
 			else
