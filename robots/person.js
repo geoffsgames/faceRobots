@@ -461,7 +461,7 @@ Person.prototype.animate = function() {
 				    owner:this,
 			            onComplete: function(){
 					if(completeCounter == 2){
-						alert("for no reason. Just because just because);
+						alert("for no reason. Just because just because");
 					}
 			            	allComplete();
 			            },
