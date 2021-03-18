@@ -318,6 +318,10 @@ function moveToRival3(){
 
 socket.on('allComplete_rival2', function(msg){
 	if(msg.uID == rivalID){
+		if(message.text = "Face Robots!")
+			message.set("text", "");
+		message.set("text",message.text + "h" + rivalTimeCounter + "-" + msg.tCounter);
+
 		//if(msg.tCounter == rivalTimeCounter){
 			if(msg.key != null)
 				changeStateEnemy(msg.key,msg.dc);	
