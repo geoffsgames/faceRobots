@@ -64,6 +64,7 @@ var reallyWaitingForRotate = false; //after non intermediate has been confirmed,
 var startTime = 0;
 
 var willLag = false;
+var savedKeyPress = {key:null, dc:0};
 
 var delImg = new fabric.Image(document.getElementById("delete"), {
 	lockScalingX: false,
@@ -228,7 +229,12 @@ function keyListener(e){
 	    if((e.keyCode >= 37 && e.keyCode <= 40) || (e.keyCode >= 32 && e.keyCode <= 34))
 	    		e.preventDefault();
 	    	code = e.keyCode;
-		sendKeyPress(code,new Date - lastTime < 500 && lastKey == code) //if in multiplayer
+		if(enemy != null && !enemy.isEnemy)//multiplayer
+			savedKeyPress = {key:code, dc:new Date - lastTime < 500 && lastKey == code};
+		else{
+			savedKeyPress = {key:null, dc:0}
+			sendKeyPress(code,new Date - lastTime < 500 && lastKey == code) //if in multiplayer
+		}
 		changeState(code,new Date - lastTime < 500 && lastKey == code); //actually activate key code instruction - second parameter is true if doubleclicked
 		lastTime = new Date;
 		lastKey = code;
