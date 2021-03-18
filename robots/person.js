@@ -486,17 +486,24 @@ function allComplete(){
 	completeCounter += 1;
 	waitingForRival = false;
 	if(completeCounter == numPlayers){
-		if(!(enemy == null || enemy.isEnemy)){
+		if(inPVP){
 			
+			//TESTING - makes sure messages sent in right order
 			if(message.text == "Face Robots!")
 				message.set("text", "");
 			message.set("fill", "white");
 			message.set("text",message.text + "me" + rivalTimeCounter);
-			
+			//END TESTING			
+
+			//"I'm done"
 			socket.emit("allComplete_rival", {uID:uniqueID, tCounter:rivalTimeCounter, key:savedKeyPress.key, dc:savedKeyPress.dc});
+			
+			//handle keypress events
 			if(savedKeyPress.key != null)
 				changeState(savedKeyPress.key, savedKeyPress.dc); //actually activate key code instruction - second parameter is true if doubleclicked
 			savedKeyPress = {key:null, dc:0};
+			
+			//move on only if rival also done
 			if(rivalCompleted)
 				allComplete2();
 			else
@@ -510,9 +517,13 @@ function allComplete(){
 
 function allComplete2(){
 	completeCounter = 0;
-	rivalTimeCounter++;
-	waitingForRival = false;
-	rivalCompleted = false;
+	
+	if(inPVP){
+		rivalTimeCounter++;
+		waitingForRival = false;
+		rivalCompleted = false;
+	}
+	
 	//if neither moved - wait as no delay for animation would otherwise make things too fast TODO - if add more than 1 enemy
 	actualIntv = new Date - oldTime;
 	oldTime = new Date;
