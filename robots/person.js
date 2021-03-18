@@ -487,6 +487,7 @@ Person.prototype.desiredVisualLeft = function(){
 function allComplete(){
 	completeCounter += 1;
 	waitingForRival = false;
+	console.trace();
 	if(completeCounter == numPlayers){
 		if(inPVP){
 			//"I'm done"
