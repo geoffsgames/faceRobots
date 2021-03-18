@@ -62,14 +62,14 @@ var massScaler = 10;
 var massMin = 6;
 var massMax = 3;
 
+//Motors
 var testingMotors = false;
 var testingNoRotateDelay = false;
 
-var enteringRival = false;
-
-
-var waitRivalLag = false;
-var enteringRival = false;
+//PVP
+var waitRivalLag = false; //?? - Still used?
+var enteringRival = false; //don't respond to any input when entrance of rival animation happening
+var inPVP = false;
 
 start();
 addPlayer();
