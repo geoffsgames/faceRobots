@@ -64,7 +64,7 @@ var testingNoRotateDelay = false;
 var waitRivalLag = false; //?? - Still used?
 var enteringRival = false; //don't respond to any input when entrance of rival animation happening
 var inPVP = false;
-var rivalCompleted = true; //rival completed a single turn so don't have to wait for
+var rivalCompleted = false; //rival completed a single turn so don't have to wait for
 
 start();
 addPlayer();
