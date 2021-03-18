@@ -65,6 +65,7 @@ var waitRivalLag = false; //?? - Still used?
 var enteringRival = false; //don't respond to any input when entrance of rival animation happening
 var inPVP = false;
 var rivalCompleted = false; //rival completed a single turn so don't have to wait for
+var counter4KeyCmds = 0; //records which iteration we're on so key commands attached to right one
 
 start();
 addPlayer();
@@ -379,6 +380,9 @@ function wakeRotateWait(){
 }
 
 function updateGame(){
+	//TODO - could be combined with rival counter - do we need both?
+	counter4KeyCmds ++;
+	
 	//TESTING - just for testing lag
 	if(willLag){
 		time = new Date;
