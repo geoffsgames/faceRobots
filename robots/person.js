@@ -499,8 +499,20 @@ function allComplete(){
 			socket.emit("allComplete_rival", {uID:uniqueID, tCounter:rivalTimeCounter, key:savedKeyPress.key, dc:savedKeyPress.dc});
 			
 			//handle keypress events
-			if(savedKeyPress.key != null)
+			if(savedKeyPress.key != null){
+				
+				//TESTING - makes sure messages sent in right order
+				if(message.text == "Face Robots!")
+					message.set("text", "");
+				message.set("fill", "white");
+				message.set("text",message.text + "me" + rivalTimeCounter);
+				//END TESTING
+				
+				
 				changeState(savedKeyPress.key, savedKeyPress.dc); //actually activate key code instruction - second parameter is true if doubleclicked
+				
+				
+			}
 			savedKeyPress = {key:null, dc:0};
 			
 			//move on only if rival also done
