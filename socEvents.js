@@ -183,6 +183,7 @@ socket.on('jumpToRival_response', function(msg){
 			if(enemy != null)
 				canvas.remove(enemy.group);
 			canvas.remove(player.group)
+			rivalID = msg.myID;
 		}
 	}
 })
@@ -193,6 +194,7 @@ socket.on('jumpToRival_response', function(msg){
 socket.on('jumpToPVP', function(msg){
 	if(uniqueID == msg.visID){ //I AM the one moving
 		enteringRival = true; //stops anything else happening while I'm animating across
+		rivalID = msg.targID;
 		if(enemy != null)
 			canvas.remove(enemy.group)
 		moveToRival(msg); //move to new landscape
@@ -208,7 +210,6 @@ socket.on('rivalHasArrived', function(msg){
 //(attacker) move into the rival's arena - part1: initialise animating into corner to show about to move
 function moveToRival(msg){
 	player.animateToRival(msg);
-	rivalID = curRivalID;
 }
 
 //(attacker) move into rival's arena - part2: after animating into corner create landscape of rival
