@@ -230,8 +230,10 @@ function keyListener(e){
 	    		e.preventDefault();
 	    	code = e.keyCode;
 		var doubleClick = new Date - lastTime < 500 && lastKey == code;
-		if(inPVP)//multiplayer
-			socket.emit("rivalKeyCode",{time:counter4KeyCmds, rID:rivalID, key:code, dc:doubleClick});
+		if(inPVP){//multiplayer
+			savedKeyPress = {time:counter4KeyCmds, rID:rivalID, key:code, dc:doubleClick};
+			socket.emit("rivalKeyCode",savedKeyPress);
+		}
 		else
 			changeState(code,doubleClick); //actually activate key code instruction - second parameter is true if doubleclicked
 		lastTime = new Date;
