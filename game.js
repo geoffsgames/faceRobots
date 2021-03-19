@@ -69,6 +69,7 @@ var counter4KeyCmds = 0; //records which iteration we're on so key commands atta
 var keyMessage = null; //stores key commands received from rival
 var messageSent = false;
 var returnedKeyMessage = null;
+var waitReturnedKeyMessage = false;
 
 var grrr = false;
 
@@ -385,47 +386,47 @@ function wakeRotateWait(){
 }
 
 function updateGame(){
-	//TODO there is literally no reason whatsoever why this needs to be here as exactly the same code is in allComplete()
-	//but for reasons unknown it can't be arsed to do it's job so here we go
+	if(inPVP)
+		updateGamePVP(); //extra potential wait loop required in PVP to ensure key presses are kept in sync. Method in socEvents like all PVP stuff
+	else
+		updateGame2();
+}
+
+function updateGamePVP(){
 	
+	if(sentMessage && returnedKeyMessage == null){
+		waitReturnedKeyMessage = true;
+		return;
+	}
+	waitReturnedKeyMessage = false;
+	sentMessage = false;
 	
+	//keyCodes during PVP = rival's key codes
+	if(keyMessage != null && keyMessage.time <= counter4KeyCmds){ //if he sent it at n we know he won't do it until n + 1
+		changeStateEnemy(keyMessage.key,keyMessage.dc);
+		keyMessage = null
+	}
+	if(savedKeyPress.key != null && counter4KeyCmds >= returnedKeyMessage.time){
+		changeState(savedKeyPress.key, savedKeyPress.dc); //actually activate key code instruction - second parameter is true if doubleclicked
+		savedKeyPress = {key:null}
+		returnedKeyMessage = null;
+	}
+	updateGame2();
+}
+
+function updateGame2(){
+	
+	//shouldn't happen as updateGame() in display should handle the delays completely - this is just a failsafe, with appropriate error message
 	actualIntv = new Date - oldTime2;
 	if(interval > actualIntv){
+		console.error("something went wrong with timing");
 		waitForTimeout(interval - actualIntv);
 		return;
 	}
 	oldTime2 = new Date;
 	
-	//TODO - could be combined with rival counter - do we need both?
-	if(inPVP){
-		
-		/**
-		while(messageSent && returnedKeyMessage == null){
-		}
-		messageSent = false;
-		*/
-		
-		//keyCodes during PVP = rival's key codes
-		if(keyMessage != null && keyMessage.time <= counter4KeyCmds){ //if he sent it at n we know he won't do it until n + 1
-			
-			message.set("fill", "orage");
-			message.set("text", "My own. " + counter4KeyCmds + " should >= " + keyMessage.time);
-			
-			changeStateEnemy(keyMessage.key,keyMessage.dc);
-			keyMessage = null
-		}
-		if(savedKeyPress.key != null && counter4KeyCmds >= returnedKeyMessage.time){
-			
-			message.set("fill", "yellow");
-			message.set("text", "His. " + counter4KeyCmds + " should <= " + returnedKeyMessage.time);
-			
-			changeState(savedKeyPress.key, savedKeyPress.dc); //actually activate key code instruction - second parameter is true if doubleclicked
-			savedKeyPress = {key:null}
-			returnedKeyMessage = null;
-		}
-		keyMessage = null;
+	if(inPVP)
 		counter4KeyCmds ++;
-	}
 	
 	//TESTING - just for testing lag
 	if(willLag){
