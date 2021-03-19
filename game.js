@@ -381,9 +381,6 @@ function wakeRotateWait(){
 	waitingForRotate = false;
 }
 
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 function updateGame(){
 	//TODO there is literally no reason whatsoever why this needs to be here as exactly the same code is in allComplete()
@@ -397,12 +394,12 @@ function updateGame(){
 	//TODO - could be combined with rival counter - do we need both?
 	if(inPVP){
 		var i = 0;
-		while(messageSent && returnedKeyMessage == null){
-			await sleep(100);
-			message.set("fill", "yellow");
-			message.set("text", "" + i);
-			i++;
-		}
+		//while(messageSent && returnedKeyMessage == null){
+		//	await sleep(100);
+		//	message.set("fill", "yellow");
+		//	message.set("text", "" + i);
+		//	i++;
+		//}
 		messageSent = false;
 		//keyCodes during PVP = rival's key codes
 		if(keyMessage != null && keyMessage.time == counter4KeyCmds){ //if he sent it at n we know he won't do it until n + 1
