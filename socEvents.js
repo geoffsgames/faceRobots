@@ -269,6 +269,8 @@ function moveToRival3(){
 	inPVP = true;
 	enteringRival = false;
 	rivalTimeCounter = 0; //counter ensures I'm at the same game time as rival (increments on every game update)
+	player.recreateGroup();
+	enemy.recreateGroup();
 	updateGame();
 }
 
