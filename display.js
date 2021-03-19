@@ -358,9 +358,7 @@ async function callScrollLoop(){
 }
 
 async function waitForTimeout(intv){
-	var d = new Date;
 	await sleep(intv);
-	console.log(new Date - d);
 	updateGame()
 };
 
