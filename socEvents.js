@@ -313,7 +313,7 @@ socket.on("rivalKeyCode2", function(msg){
 
 function returnKeyCode(msg){
 	message.set("fill", "orange");
-	message.set("text", "Sending " + new Date);
+	message.set("text", "Sending Count " + counter4KeyCmds + " msg: " + msg.time);
 	socket.emit("returnedKeyCode", msg);
 
 }
@@ -321,7 +321,7 @@ function returnKeyCode(msg){
 socket.on("returnedKeyCode2", function(msg){
 	if(msg.rID == uniqueID){
 		message.set("fill", "yellow");
-		message.set("text", "Receiving " + new Date);
+		message.set("text", "Receiving Count " + counter4KeyCmds + " msg: " + msg.time);
 		returnedKeyMessage = msg;
 	}
 });
