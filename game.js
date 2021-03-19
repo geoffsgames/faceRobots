@@ -384,7 +384,7 @@ function wakeRotateWait(){
 }
 
 function goFuckyourself(){
-	alert("go fuck yourself");
+	setTimeout('goFuckyourself()',10000);
 }
 
 function updateGame(){
@@ -403,7 +403,7 @@ function updateGame(){
 	if(inPVP){
 		grrr = true;
 		if(messageSent && returnedKeyMessage == null)
-			setTimeout('goFuckyourself()',1000);
+			setTimeout('goFuckyourself()',10000);
 		grrr = false
 		messageSent = false;
 		//keyCodes during PVP = rival's key codes
