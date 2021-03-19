@@ -69,6 +69,8 @@ var counter4KeyCmds = 0; //records which iteration we're on so key commands atta
 var keyMessage = null; //stores key commands received from rival
 var messageSent = false;
 
+var grrr = true;
+
 start();
 addPlayer();
 updateGame();
@@ -381,6 +383,9 @@ function wakeRotateWait(){
 	waitingForRotate = false;
 }
 
+function goFuckyourself(){
+	alert("go fuck yourself");
+}
 
 function updateGame(){
 	//TODO there is literally no reason whatsoever why this needs to be here as exactly the same code is in allComplete()
@@ -396,8 +401,10 @@ function updateGame(){
 	
 	//TODO - could be combined with rival counter - do we need both?
 	if(inPVP){
+		grrr = true;
 		if(messageSent && returnedKeyMessage == null)
-			setTimeout('updateGame()',10);
+			setTimeout('goFuckyourself()',1000);
+		grrr = false
 		messageSent = false;
 		//keyCodes during PVP = rival's key codes
 		if(keyMessage != null && keyMessage.time == counter4KeyCmds){ //if he sent it at n we know he won't do it until n + 1
