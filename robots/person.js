@@ -514,8 +514,10 @@ function allComplete2(){
 	}
 	
 	//if neither moved - wait as no delay for animation would otherwise make things too fast TODO - if add more than 1 enemy
+	console.log("OT1 " + oldTime);
 	actualIntv = new Date - oldTime;
 	oldTime = new Date;
+	console.log(oldTime);
 	if(interval > actualIntv)
 		waitForTimeout(interval - actualIntv);
 	else{
