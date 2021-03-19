@@ -395,12 +395,16 @@ function updateGame(){
 		changeStateEnemy(keyMessage.key,keyMessage.dc);
 		keyMessage = null
 	}
-	if(savedKeyPress.key != null && counter4KeyCmds == savedKeyPress.time){
+	if(savedKeyPress.key != null && counter4KeyCmds == returnedKeyMessage.time){
 		changeState(savedKeyPress.key, savedKeyPress.dc); //actually activate key code instruction - second parameter is true if doubleclicked
 		savedKeyPress = {key:null}
 	}
 	//TODO - could be combined with rival counter - do we need both?
 	if(inPVP){
+		while(keyMessage != null && returnedKeyMessage == null){
+		}
+		keyMessage = null;
+		returnedKeyMessage = null;
 		counter4KeyCmds ++;
 		if(message.text = "Face Robots!")
 			message.set("text","");
