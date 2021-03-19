@@ -394,6 +394,8 @@ function updateGame(){
 	if(inPVP){
 		var i = 0;
 		while(messageSent && returnedKeyMessage == null){
+			message.set("text", "" + i);
+			i++;
 		}
 		messageSent = false;
 		//keyCodes during PVP = rival's key codes
