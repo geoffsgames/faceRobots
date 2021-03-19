@@ -38,12 +38,22 @@ io.on('connection', function(socket){
 	  io.emit("allComplete_rival2", msg)
   })
 
+  ////keydown events
   socket.on('rivalKeyCode', function(msg){
 	  io.emit("rivalKeyCode2", msg)
   })
 	 
   socket.on('returnedKeyCode', function(msg){
 	  io.emit("returnedKeyCode2", msg)
+  })
+
+  ////keyup events
+  socket.on('rivalKeyCodeUp', function(msg){
+	  io.emit("rivalKeyCodeUp2", msg)
+  })
+	 
+  socket.on('returnedKeyCodeUp', function(msg){
+	  io.emit("returnedKeyCodeUp2", msg)
   })
 });
 
