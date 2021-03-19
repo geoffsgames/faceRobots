@@ -389,19 +389,18 @@ function updateGame(){
 		return;
 	}
 	oldTime2 = new Date;
-	
-	//keyCodes during PVP = rival's key codes
-	if(keyMessage != null && keyMessage.time == counter4KeyCmds){ //if he sent it at n we know he won't do it until n + 1
-		changeStateEnemy(keyMessage.key,keyMessage.dc);
-		keyMessage = null
-	}
-	if(savedKeyPress.key != null && counter4KeyCmds == returnedKeyMessage.time){
-		changeState(savedKeyPress.key, savedKeyPress.dc); //actually activate key code instruction - second parameter is true if doubleclicked
-		savedKeyPress = {key:null}
-	}
 	//TODO - could be combined with rival counter - do we need both?
 	if(inPVP){
 		while(keyMessage != null && returnedKeyMessage == null){
+		}
+		//keyCodes during PVP = rival's key codes
+		if(keyMessage != null && keyMessage.time == counter4KeyCmds){ //if he sent it at n we know he won't do it until n + 1
+			changeStateEnemy(keyMessage.key,keyMessage.dc);
+			keyMessage = null
+		}
+		if(savedKeyPress.key != null && counter4KeyCmds == returnedKeyMessage.time){
+			changeState(savedKeyPress.key, savedKeyPress.dc); //actually activate key code instruction - second parameter is true if doubleclicked
+			savedKeyPress = {key:null}
 		}
 		keyMessage = null;
 		returnedKeyMessage = null;
