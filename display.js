@@ -226,7 +226,7 @@ window.onkeyup = function(e) {
 		if(inPVP){//multiplayer
 			if(savedKeyPressUp.key != null)
 				return;
-			savedKeyPressUp = {time:counter4KeyCmds, rID:rivalID, key:e.keyCode, dc:doubleClick};
+			savedKeyPressUp = {time:counter4KeyCmds, rID:rivalID, key:e.keyCode};
 			messageSentUp = true;
 			socket.emit("rivalKeyCodeUp",savedKeyPressUp);
 		}
