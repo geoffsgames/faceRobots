@@ -315,6 +315,8 @@ socket.on("rivalKeyCode2", function(msg){
 socket.on("returnedKeyCode2", function(msg){
 	if(msg.rID == uniqueID){
 		returnedKeyMessage = msg;
+		if(grrr)
+			updateGame();
 	}
 });
 
