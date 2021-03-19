@@ -328,8 +328,6 @@ function callScrollLoop(){
 }
 
 function waitForTimeout(intv){
-	console.log("restarting");
-	console.trace();
 	setTimeout('updateGame()',intv);
 };
 
