@@ -68,6 +68,7 @@ var rivalCompleted = false; //rival completed a single turn so don't have to wai
 var counter4KeyCmds = 0; //records which iteration we're on so key commands attached to right one
 var keyMessage = null; //stores key commands received from rival
 var messageSent = false;
+var returnedKeyMessage = null;
 
 var grrr = false;
 
