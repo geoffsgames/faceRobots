@@ -384,35 +384,34 @@ function wakeRotateWait(){
 	waitingForRotate = false;
 }
 
-function goFuckyourself(){
-	setTimeout('goFuckyourself()',10000);
-}
-
 function updateGame(){
 	//TODO there is literally no reason whatsoever why this needs to be here as exactly the same code is in allComplete()
 	//but for reasons unknown it can't be arsed to do it's job so here we go
 	
 	
-	//actualIntv = new Date - oldTime2;
-	//if(interval > actualIntv){
-	//	waitForTimeout(interval - actualIntv);
-	//	return;
-	//}
-	//oldTime2 = new Date;
+	actualIntv = new Date - oldTime2;
+	if(interval > actualIntv){
+		waitForTimeout(interval - actualIntv);
+		return;
+	}
+	oldTime2 = new Date;
 	
 	//TODO - could be combined with rival counter - do we need both?
 	if(inPVP){
-		grrr = true;
-		if(messageSent && returnedKeyMessage == null)
-			setTimeout('goFuckyourself()',10000);
-		grrr = false
+		
+		/**
+		while(messageSent && returnedKeyMessage == null){
+		}
 		messageSent = false;
+		*/
+		
 		//keyCodes during PVP = rival's key codes
 		if(keyMessage != null && keyMessage.time == counter4KeyCmds){ //if he sent it at n we know he won't do it until n + 1
 			changeStateEnemy(keyMessage.key,keyMessage.dc);
 			keyMessage = null
 		}
-		if(savedKeyPress.key != null && returnedKeyMessage != null && counter4KeyCmds == returnedKeyMessage.time){
+		if(savedKeyPress.key != null &&   
+		   	((returnedKeyMessage == null && counter4KeyCmds == savedKeyPress.time) || (returnedKeyMessage != null && counter4KeyCmds == returnedKeyMessage.time))){
 			changeState(savedKeyPress.key, savedKeyPress.dc); //actually activate key code instruction - second parameter is true if doubleclicked
 			savedKeyPress = {key:null}
 			returnedKeyMessage = null;
