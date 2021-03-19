@@ -521,6 +521,7 @@ function allComplete2(){
 	else{
 		if(actualIntv - interval > 50)
 			countLag += 1;
+		oldTime = new Date();
 		updateGame();
 	}
 }
