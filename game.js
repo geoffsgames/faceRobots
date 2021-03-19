@@ -70,6 +70,7 @@ var keyMessage = null; //stores key commands received from rival
 var messageSent = false;
 var returnedKeyMessage = null;
 var waitReturnedKeyMessage = false;
+var keyDangerZone = false;
 //some had to be copied for keyup events
 var keyMessageUp = null; //stores key commands received from rival
 var messageSentUp = false;
@@ -409,6 +410,7 @@ function updateGamePVP(){
 	waitReturnedKeyMessage = false;
 	messageSent = false;
 	
+	keyDangerZone = true;
 	//keyCodes during PVP = rival's key codes
 	if(keyMessage != null && keyMessage.time <= counter4KeyCmds){ //if he sent it at n we know he won't do it until n + 1
 		changeStateEnemy(keyMessage.key,keyMessage.dc);
@@ -439,7 +441,7 @@ function updateGamePVP(){
 		savedKeyPressUp = {key:null}
 		returnedKeyMessageUp = null;
 	}
-	
+	keyDangerZone = false;
 }
 
 function updateGame2(){
@@ -461,7 +463,7 @@ function updateGame2(){
 	//TESTING - just for testing lag
 	if(willLag){
 		time = new Date;
-		while(new Date - time < 3000){
+		while(new Date - time < 1000){
 		}
 	}
 	//END TESTING
