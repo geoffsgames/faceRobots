@@ -304,13 +304,6 @@ function animateRivalArriving(msg){
 
 socket.on("rivalKeyCode2", function(msg){
 	if(msg.rID == uniqueID){
-		/**
-		if(message.text == "Face Robots!")
-			message.set("text", "");
-		message.set("fill", "white");
-		message.set("text",message.text + "h" + rivalTimeCounter + "-" + msg.tCounter);
-		*/
-		
 		if(msg.time < counter4KeyCmds){  //I'm already ahead
 			msg.time = counter4KeyCmds;
 			msg.rID = rivalID;
@@ -319,6 +312,13 @@ socket.on("rivalKeyCode2", function(msg){
 		keyMessage = msg;
 	}
 });
+
+socket.on("returnedKeyCode2", function(msg){
+	if(msg.rID == uniqueID){
+		savedKeyPress = msg;
+	}
+});
+
 
 socket.on('allComplete_rival2', function(msg){
 	if(msg.uID == rivalID){
