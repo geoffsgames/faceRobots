@@ -94,8 +94,6 @@ var updatingPlayer;
 
 var frozeWaitingForEnemy = true;//enemy fade in taking too long - keeps synched so enemy always starts on same frame regardless of delays in animation
 var arrivalTime = 0;
-
-var oldTime = new Date();
 var oldTime2 = null;
 
 var socket = null;
