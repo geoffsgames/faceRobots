@@ -456,8 +456,9 @@ function updateGame2(){
 			return;
 		}
 	}
+	console.log("old OT2 " + oldTime2.toISOString());
 	oldTime2 = new Date();
-	console.log("setting OT2 " + oldTime2.toISOString());
+	console.log("new OT2 " + oldTime2.toISOString());
 	if(inPVP)
 		counter4KeyCmds ++;
 	
