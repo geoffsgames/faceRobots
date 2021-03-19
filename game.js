@@ -79,7 +79,6 @@ var waitReturnedKeyMessageUp = false;
 
 start();
 addPlayer();
-oldTime = new Date;
 updateGame();
 //enemy.extractFromOverlap();
 
@@ -97,7 +96,7 @@ var frozeWaitingForEnemy = true;//enemy fade in taking too long - keeps synched 
 var arrivalTime = 0;
 
 var oldTime = new Date();
-var oldTime2 = new Date();
+var oldTime2 = null;
 
 var socket = null;
 
