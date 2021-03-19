@@ -79,6 +79,7 @@ var waitReturnedKeyMessageUp = false;
 
 start();
 addPlayer();
+oldTime = new Date;
 updateGame();
 //enemy.extractFromOverlap();
 
