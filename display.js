@@ -147,7 +147,7 @@ function changeState(code,doubleclick){
     else if(code == "anticlockwise"){
     	//enter
 	message.set("fill", "yellow");
-	message.set("text", "" + player.willRotate);
+	message.set("text", "" + player.willFinishRotating );
     	if(player.willFinishRotating == -1){ //not already rotating?
     		player.willRotate = -1;//anti-clockwise
 		message.set("fill", "white");
@@ -157,7 +157,7 @@ function changeState(code,doubleclick){
     else if(code == "clockwise"){
     	//shift
 	message.set("fill", "yellow");
-	message.set("text", "" + player.willRotate);
+	message.set("text", "" + player.willFinishRotating );
     	if(player.willFinishRotating == -1){
     		player.willRotate = 1;//clockwise
 		message.set("fill", "white");
