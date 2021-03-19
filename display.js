@@ -65,6 +65,7 @@ var startTime = 0;
 
 var willLag = false;
 var savedKeyPress = {key:null, dc:0};
+var messageSent = false;
 
 var delImg = new fabric.Image(document.getElementById("delete"), {
 	lockScalingX: false,
@@ -234,6 +235,7 @@ function keyListener(e){
 			if(savedKeyPress.key != null)
 				return;
 			savedKeyPress = {time:counter4KeyCmds, rID:rivalID, key:code, dc:doubleClick};
+			messageSent = true;
 			socket.emit("rivalKeyCode",savedKeyPress);
 		}
 		else
