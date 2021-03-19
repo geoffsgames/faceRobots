@@ -400,8 +400,13 @@ function updateGame(){
 		savedKeyPress = {key:null}
 	}
 	//TODO - could be combined with rival counter - do we need both?
-	if(inPVP)
+	if(inPVP){
 		counter4KeyCmds ++;
+		if(message.text = "Face Robots!")
+			message.set("text","");
+		message.set("fill","white");
+		message.set("text", message.text + counter4KeyCmds + ",");
+	}
 	
 	//TESTING - just for testing lag
 	if(willLag){
