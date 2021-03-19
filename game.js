@@ -381,6 +381,10 @@ function wakeRotateWait(){
 	waitingForRotate = false;
 }
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 function updateGame(){
 	//TODO there is literally no reason whatsoever why this needs to be here as exactly the same code is in allComplete()
 	//but for reasons unknown it can't be arsed to do it's job so here we go
@@ -394,6 +398,8 @@ function updateGame(){
 	if(inPVP){
 		var i = 0;
 		while(messageSent && returnedKeyMessage == null){
+			await sleep(100);
+			message.set("fill", "yellow");
 			message.set("text", "" + i);
 			i++;
 		}
