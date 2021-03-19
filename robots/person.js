@@ -355,7 +355,9 @@ Person.prototype.animate = function() {
 	var movY = this.movY;
 	var rotation = this.rotation;
 	var dist = (initialInterval / interval) / this.fastSpeed_fixed;
-	
+	if(completeCounter == 2){
+		alert("for no reason. Just because just because");
+	}
 	if(!this.recreated && (movX != 0 || movY != 0 || rotation != 0)){
 		if((interval < 50 || dist >= (gridWidth / 2)) && rotation == 0){
 			tinyAnimate(dist,group,movX,movY,this);
@@ -485,18 +487,15 @@ Person.prototype.desiredVisualLeft = function(){
 function allComplete(){
 	completeCounter += 1;
 	waitingForRival = false;
+	console.trace();
+	console.log(completeCounter);
+	console.log(rivalCompleted);
 	if(completeCounter == numPlayers){
-		if(!(enemy == null || enemy.isEnemy)){
+		if(inPVP){
+			//"I'm done"
+			socket.emit("allComplete_rival", {uID:uniqueID, tCounter:rivalTimeCounter});
 			
-			if(message.text == "Face Robots!")
-				message.set("text", "");
-			message.set("fill", "white");
-			message.set("text",message.text + "me" + rivalTimeCounter);
-			
-			socket.emit("allComplete_rival", {uID:uniqueID, tCounter:rivalTimeCounter, key:savedKeyPress.key, dc:savedKeyPress.dc});
-			if(savedKeyPress.key != null)
-				changeState(savedKeyPress.key, savedKeyPress.dc); //actually activate key code instruction - second parameter is true if doubleclicked
-			savedKeyPress = {key:null, dc:0};
+			//move on only if rival also done
 			if(rivalCompleted)
 				allComplete2();
 			else
@@ -510,9 +509,13 @@ function allComplete(){
 
 function allComplete2(){
 	completeCounter = 0;
-	rivalTimeCounter++;
-	waitingForRival = false;
-	rivalCompleted = false;
+	
+	if(inPVP){
+		rivalTimeCounter++;
+		waitingForRival = false;
+		rivalCompleted = false;
+	}
+	
 	//if neither moved - wait as no delay for animation would otherwise make things too fast TODO - if add more than 1 enemy
 	actualIntv = new Date - oldTime;
 	oldTime = new Date;

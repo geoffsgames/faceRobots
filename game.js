@@ -13,12 +13,6 @@ var thiefProb = 1; 0.1;
 //var handyThiefProb = 0.1;
 var handyThiefProb = 0;
 
-var savedRivalChanged = [];
-var savedNewRival = [];
-var savedPVP = [];
-var savedAcceptPVP = [];
-
-
 var willAddThief = false;
 var oldEnemy;
 
@@ -62,14 +56,17 @@ var massScaler = 10;
 var massMin = 6;
 var massMax = 3;
 
+//Motors
 var testingMotors = false;
 var testingNoRotateDelay = false;
 
-var enteringRival = false;
-
-
-var waitRivalLag = false;
-var enteringRival = false;
+//PVP
+var waitRivalLag = false; //?? - Still used?
+var enteringRival = false; //don't respond to any input when entrance of rival animation happening
+var inPVP = false;
+var rivalCompleted = false; //rival completed a single turn so don't have to wait for
+var counter4KeyCmds = 0; //records which iteration we're on so key commands attached to right one
+var keyMessage = null; //stores key commands received from rival
 
 start();
 addPlayer();
@@ -384,18 +381,6 @@ function wakeRotateWait(){
 }
 
 function updateGame(){
-	//TESTING - just for testing lag
-	if(willLag){
-		time = new Date;
-		while(new Date - time < 1000){
-		}
-	}
-	//END TESTING
-
-	if(socket != null){ //respond to any multiplayer based events which may have happened
-		checkSocketMessages();
-	}
-	
 	//TODO there is literally no reason whatsoever why this needs to be here as exactly the same code is in allComplete()
 	//but for reasons unknown it can't be arsed to do it's job so here we go
 	actualIntv = new Date - oldTime2;
@@ -404,6 +389,28 @@ function updateGame(){
 		return;
 	}
 	oldTime2 = new Date;
+	
+	//keyCodes during PVP = rival's key codes
+	if(keyMessage != null && keyMessage.time <= counter4KeyCmds){ //if he sent it at n we know he won't do it until n + 1
+		changeStateEnemy(keyMessage.key,keyMessage.dc);
+		keyMessage = null
+	}
+	if(savedKeyPress.key != null){
+		changeState(savedKeyPress.key, savedKeyPress.dc); //actually activate key code instruction - second parameter is true if doubleclicked
+		savedKeyPress = {key:null}
+	}
+	//TODO - could be combined with rival counter - do we need both?
+	if(inPVP)
+		counter4KeyCmds ++;
+	
+	//TESTING - just for testing lag
+	if(willLag){
+		time = new Date;
+		while(new Date - time < 1000){
+		}
+	}
+	//END TESTING
+	
 	
 	
 	if(!reallyWaitingForRotate){
@@ -896,10 +903,5 @@ function reportMass(mass,fans,speed){
 	message.set('fill', 'blue');
 };
 
-//when I discover I'm moving to rival - alert server
-function jumpToRival(){
-	if(usingSocket)
-		socket.emit("jumpToRival_request", {gr:getStringArray(player.grid),myID:uniqueID,otherID:curRivalID});
-}
 
 

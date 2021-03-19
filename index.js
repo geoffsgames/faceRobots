@@ -38,7 +38,9 @@ io.on('connection', function(socket){
 	  io.emit("allComplete_rival2", msg)
   })
 
-
+  socket.on('rivalKeyCode', function(msg){
+	  io.emit("rivalKeyCode2", msg)
+  })
 });
 
 http.listen(port, function(){

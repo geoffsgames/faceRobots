@@ -13,8 +13,8 @@ canvas.controlsAboveOverlay = true;
 var character;
 
 //character speed
-var initialInterval = 8192;
-var minInt = 64;
+var initialInterval = 128;
+var minInt = 16;
 var maxSpeed = initialInterval / minInt;
 var numSpeeds = (Math.log(maxSpeed) / Math.log(2));
 
@@ -229,10 +229,13 @@ function keyListener(e){
 	    if((e.keyCode >= 37 && e.keyCode <= 40) || (e.keyCode >= 32 && e.keyCode <= 34))
 	    		e.preventDefault();
 	    	code = e.keyCode;
-		if(enemy != null && !enemy.isEnemy)//multiplayer
-			savedKeyPress = {key:code, dc:new Date - lastTime < 500 && lastKey == code};
+		var doubleClick = new Date - lastTime < 500 && lastKey == code;
+		if(inPVP){//multiplayer
+			savedKeyPress = {time:counter4KeyCmds, rID:rivalID, key:code, dc:doubleClick};
+			socket.emit("rivalKeyCode",savedKeyPress);
+		}
 		else
-			changeState(code,new Date - lastTime < 500 && lastKey == code); //actually activate key code instruction - second parameter is true if doubleclicked
+			changeState(code,doubleClick); //actually activate key code instruction - second parameter is true if doubleclicked
 		lastTime = new Date;
 		lastKey = code;
 	}
@@ -321,6 +324,8 @@ function callScrollLoop(){
 }
 
 function waitForTimeout(intv){
+	console.log("restarting");
+	console.trace();
 	setTimeout('updateGame()',intv);
 };
 

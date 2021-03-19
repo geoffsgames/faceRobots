@@ -68,55 +68,13 @@ function getStringArray(inArr){
 	return(outArr);
 }
 
+
+
+
+////////////////////////////////////////////////////CHANGING THE GRIDS/ICONS IN THE CORNER ////////////////////////////
+
+//one of the other robots on the network changed it's grid layout (e.g. lost a piece, added a piece)
 socket.on('rivalChanged', function(msg){
-	savedRivalChanged.push(msg);
-});
-
-
-
-socket.on('newRival', function(msg){
-	savedNewRival.push(msg);
-
-});
-
-socket.on('rivalHasArrived', function(msg){
-	if(msg.yourID == uniqueID)
-		rivalArrivedMsg = msg;
-});
-
-
-function checkSocketMessages(){
-	newRivalImpl();
-	rivalChangedImpl();
-	jumpToPVPImpl();
-	acceptJumpToPVPImpl();
-	if(rivalArrivedMsg != undefined && rivalArrivedMsg != null){
-		animateRivalArriving(rivalArrivedMsg);
-		rivalArrivedMsg = null;
-	}
-}
-
-//actions in response to receiving socket.io message
-
-function newRivalImpl(){
-	while(savedNewRival.length > 0){
-		var msg = savedNewRival.pop();
-		if(msg.uID != uniqueID && rivalGridIDs.indexOf(msg.uID) == -1){
-			var rivImg = convertGridToRivalIcon(msg.gr);
-			updateRivalShown(rivImg, msg.uID, msg.gr);
-			if(msg.trueNewPlayer) //if player is completely new (i.e. it's not me that's just joined and I've just learned of the existing players)
-				socket.emit('newPlayer', {uID:uniqueID, gr:getStringArray(player.grid), trueNewPlayer:false}); //so new rival/player knows about me in return
-
-			curRivalIDind = rivalGridIDs.length;
-			rivalGridIDs.push(msg.uID);
-		}
-	}
-	
-}
-
-function rivalChangedImpl(){
-	while(savedRivalChanged.length > 0){
-		var msg = savedRivalChanged.pop();
 		if(msg.uID != uniqueID){
 			var img = convertGridToRivalIcon(msg.gr);
 			rivalGrids[msg.uID] = curRivalID
@@ -129,84 +87,25 @@ function rivalChangedImpl(){
 				curRival.setCoords();
 			}
 		}
-	}
-}
+});
 
-function jumpToPVPImpl(){
-	while(savedPVP.length > 0){
-		var msg = savedPVP.pop();
-		if(uniqueID == msg.visID){ //I'm the one moving
-			//change landscape
-			moveToRival(msg);
+//new player joined network
+socket.on('newRival', function(msg){
+		if(msg.uID != uniqueID && rivalGridIDs.indexOf(msg.uID) == -1){
+			var rivImg = convertGridToRivalIcon(msg.gr);
+			updateRivalShown(rivImg, msg.uID, msg.gr);
+			if(msg.trueNewPlayer) //if player is completely new (i.e. it's not me that's just joined and I've just learned of the existing players)
+				socket.emit('newPlayer', {uID:uniqueID, gr:getStringArray(player.grid), trueNewPlayer:false}); //so new rival/player knows about me in return
+
+			curRivalIDind = rivalGridIDs.length;
+			rivalGridIDs.push(msg.uID);
 		}
-	}
-}
+});
 
-function acceptJumpToPVPImpl(){
-	while(savedAcceptPVP.length > 0){
-		var msg = savedAcceptPVP.pop();
-		if(uniqueID == msg.otherID){//another moving to me
-			socket.emit("jumpToPVPAccepted", {targID:uniqueID, visID:msg.myID, pX:player.myX, pY:player.myY, facing:player.facing,
-							  seed:land.seed,globalSeed:globalSeed, startSeed:startSeed, startGlobalSeed:startGlobalSeed});
-			updateRivalShown(rivalGrids[msg.myID], msg.myID, rivalGrids[msg.myID].grid);
-			leftArrow.visible = false;
-			rightArrow.visible = false;
-			rivalGrids[msg.myID].opacity = 1.0;
-			rivalID = msg.myID;
-			timeJumpToRival = new Date;
-		}
-	}
-}
+//so that only adjust rivals in corner of grid at right time in each update
 
 
 
-function animateRivalArriving(msg){
-	timeJumpToRival = NaN
-	enteringRival = true;
-	canvas.remove(enemy.group)
-	completeNum = 0;
-	addRival(msg.grid, msg.rivalX, msg.rivalY, msg.facing);
-	canvas.add(enemy.group); //enemy = rival just arriving
-	enemy.group.left = curRival.left;
-	enemy.group.top = curRival.top;
-	enemy.group.opacity = 0.8;
-	enemy.group.scaleX = 0.7;
-	enemy.group.scaleY = 0.7;
-	enemy.animateOutOfCorner(moveToRival3);
-}
-
-function updateRivalShown(img, id, grid){
-	if(curRival != null)
-		canvas.remove(curRival)
-	rivalGrids[id] = img;
-	curRivalID = id;
-	curRival = img;
-	curRival.grid = grid;
-	canvas.add(curRival);
-	curRival.setCoords();
-
-	updateLeftRightArrows();
-
-}
-
-function updateLeftRightArrows(){
-	rightArrow.visible = curRivalIDind < rivalGridIDs.length;
-	leftArrow.visible = curRivalIDind > 0;
-
-	leftArrow.left =  scrollLeft + (document.documentElement.clientWidth - curRival.width - rivalIconMargin);
-	leftArrow.top = rivalIconMargin + curRival.height;
-	rightArrow.left = scrollLeft + (document.documentElement.clientWidth - 30 - rivalIconMargin);
-	rightArrow.top = scrollTop + rivalIconMargin + curRival.height;
-}
-
-
-socket.on('acceptJumpToPVP', function(msg){
-	savedAcceptPVP.push(msg)
-})
-
-socket.on('jumpToPVP', function(msg){
-	savedPVP.push(msg)
-})
 
 function convertGridToRivalIcon(grid){
 	
@@ -236,14 +135,84 @@ function convertGridToRivalIcon(grid){
 	return(robImg);
 }
 
-//actually move into the rival's arena - step1: initialise animating into corner to show about to move
-function moveToRival(msg){
-	enteringRival = true;
-	player.animateToRival(msg);
-	rivalID = curRivalID;
+
+function updateRivalShown(img, id, grid){
+	if(curRival != null)
+		canvas.remove(curRival)
+	rivalGrids[id] = img;
+	curRivalID = id;
+	curRival = img;
+	curRival.grid = grid;
+	canvas.add(curRival);
+	curRival.setCoords();
+
+	updateLeftRightArrows();
+
 }
 
-//move into rival's arena - step2: after animating into corner create landscape of rival
+function updateLeftRightArrows(){
+	rightArrow.visible = curRivalIDind < rivalGridIDs.length;
+	leftArrow.visible = curRivalIDind > 0;
+
+	leftArrow.left =  scrollLeft + (document.documentElement.clientWidth - curRival.width - rivalIconMargin);
+	leftArrow.top = rivalIconMargin + curRival.height;
+	rightArrow.left = scrollLeft + (document.documentElement.clientWidth - 30 - rivalIconMargin);
+	rightArrow.top = scrollTop + rivalIconMargin + curRival.height;
+}
+
+///////////////////////////////////////////////////MOVING TO RIVAL'S ARENA FOR PVP////////////////
+
+
+
+
+//*****Step 1 = ATTACKER CLICKS ON RIVAL AND SENDS REQUEST 
+
+//(attacker) after request to try moving to rival (see Display.js) alert server
+function jumpToRival(){
+	if(usingSocket)
+		socket.emit("jumpToRival_request", {gr:getStringArray(player.grid),myID:uniqueID,otherID:curRivalID, });
+}
+
+//(receiver) response to attacker's request 
+socket.on('jumpToRival_response', function(msg){
+	if(msg.otherID == uniqueID){
+		if(confirm('Accept challenge from ' + msg.myID) + '?'){ //prompt the user
+			enteringRival = true; //stops anything else happening while I'm accepting the rival
+			socket.emit("jumpToPVPAccepted", {targID:uniqueID, visID:msg.myID, pX:player.myX, pY:player.myY, facing:player.facing,  //send all details of me and my landscape so rival can join it
+								seed:land.seed,globalSeed:globalSeed, startSeed:startSeed, startGlobalSeed:startGlobalSeed});
+			if(enemy != null)
+				canvas.remove(enemy.group);
+			canvas.remove(player.group)
+			rivalID = msg.myID;
+		}
+	}
+})
+
+//******Step 2 = Request accepted. Attacker animates over to rival's land
+
+//(attacker)
+socket.on('jumpToPVP', function(msg){
+	if(uniqueID == msg.visID){ //I AM the one moving
+		enteringRival = true; //stops anything else happening while I'm animating across
+		rivalID = msg.targID;
+		if(enemy != null)
+			canvas.remove(enemy.group)
+		moveToRival(msg); //move to new landscape
+	}
+})
+
+//(receiver) add attacker when position attacker ends up in has been calculated
+socket.on('rivalHasArrived', function(msg){
+	if(msg.yourID == uniqueID)
+		animateRivalArriving(msg);
+});
+
+//(attacker) move into the rival's arena - part1: initialise animating into corner to show about to move
+function moveToRival(msg){
+	player.animateToRival(msg);
+}
+
+//(attacker) move into rival's arena - part2: after animating into corner create landscape of rival
 function moveToRival2(msg){
 	clearLandscape();//get rid of enemy and collectables
 	canvas.clear();
@@ -288,6 +257,21 @@ function moveToRival2(msg){
 	player.animateOutOfCorner(moveToRival3);
 }
 
+
+
+//(attacker and receiver) move into rival's arena - step3: prepare to actually start playing out of animating out of the corner of my new landscape
+function moveToRival3(){
+	player.group.originX = "left";
+	player.group.originY = "top";
+	player.restart();
+	canvas.requestRenderAll();
+	completeCounter = 0;
+	inPVP = true;
+	enteringRival = false;
+	rivalTimeCounter = 0; //counter ensures I'm at the same game time as rival (increments on every game update)
+}
+
+//(receiver) create rival in my arena
 function addRival(grid, rivalX, rivalY, rivalFacing){
 	var rival = new Player(rivalX, rivalY, rivalFacing);
 	for(var x =0 ; x < grid.length; x++){
@@ -304,28 +288,39 @@ function addRival(grid, rivalX, rivalY, rivalFacing){
 	enemy = rival;
 }
 
-//move into rival's arena - step3: prepare to actually start playing out of animating out of the corner of my new landscape
-function moveToRival3(){
-	player.group.originX = "left";
-	player.group.originY = "top";
-	player.restart();
-	canvas.requestRenderAll();
-	completeCounter = 0;
-	enteringRival = false;
-	rivalTimeCounter = 0; //counter ensures I'm at the same game time as rival (increments on every game update)
-	updateGame();
+//(receiver) attacker spins into my land (as also happens on their screen)
+function animateRivalArriving(msg){
+	addRival(msg.grid, msg.rivalX, msg.rivalY, msg.facing);
+	canvas.add(enemy.group); //enemy = rival just arriving
+	enemy.group.left = curRival.left;
+	enemy.group.top = curRival.top;
+	enemy.group.opacity = 0.8;
+	enemy.group.scaleX = 0.7;
+	enemy.group.scaleY = 0.7;
+	enemy.animateOutOfCorner(moveToRival3);
 }
 
-socket.on('allComplete_rival2', function(msg){
-	if(msg.uID == rivalID){
+///////////////////////////////////////////////////SYNCING RIVALS////////////////
+
+socket.on("rivalKeyCode2", function(msg){
+	if(msg.rID == uniqueID){
+		/**
 		if(message.text == "Face Robots!")
 			message.set("text", "");
 		message.set("fill", "white");
 		message.set("text",message.text + "h" + rivalTimeCounter + "-" + msg.tCounter);
+		*/
+		
+		keyMessage = msg;
+	}
+});
+
+socket.on('allComplete_rival2', function(msg){
+	if(msg.uID == rivalID){
+
 
 		//if(msg.tCounter == rivalTimeCounter){
-			if(msg.key != null)
-				changeStateEnemy(msg.key,msg.dc);	
+
 			rivalCompleted = true;
 			if(waitingForRival) //if I've also completed
 				allComplete2();
@@ -335,6 +330,9 @@ socket.on('allComplete_rival2', function(msg){
 	}
 });
 
+
+
+//////////////////////////////////////KEY INPUT FROM RIVAL ///////////////////////////////////////////////
 
 //see changeState(...) in display
 function changeStateEnemy(code,doubleclick){
