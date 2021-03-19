@@ -14,7 +14,7 @@ var character;
 
 //character speed
 var initialInterval = 1024;
-var minInt = 16;
+var minInt = 64;
 var maxSpeed = initialInterval / minInt;
 var numSpeeds = (Math.log(maxSpeed) / Math.log(2));
 
