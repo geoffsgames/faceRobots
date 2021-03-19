@@ -9,12 +9,12 @@ var rivalTimeCounter = 0;
 
 //just for testing
 var testingStuckRotation = false;
+var oldTime = new Date();
 
 var Person = function (myX, myY, facing) {
 	if(myX != undefined)
 		this.setup(myX,myY, facing);
 };
-var oldTime = new Date();
 
 Person.prototype.setup = function(myX, myY, facing) {
 	this.readyToMove = true;
