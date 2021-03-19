@@ -146,13 +146,23 @@ function changeState(code,doubleclick){
     }
     else if(code == "anticlockwise"){
     	//enter
-    	if(player.willFinishRotating == -1) //not already rotating?
+	message.set("fill", "yellow");
+	message.set("text", "" + player.willRotate);
+    	if(player.willFinishRotating == -1){ //not already rotating?
     		player.willRotate = -1;//anti-clockwise
+		message.set("fill", "white");
+		message.set("text", "" + player.willRotate);
+	}
     }
     else if(code == "clockwise"){
     	//shift
-    	if(player.willFinishRotating == -1)
+	message.set("fill", "yellow");
+	message.set("text", "" + player.willRotate);
+    	if(player.willFinishRotating == -1){
     		player.willRotate = 1;//clockwise
+		message.set("fill", "white");
+		message.set("text", "" + player.willRotate);
+	}
     }
     else if(code== 68){//d - down stairs
     	if(activatedStairs != null)
