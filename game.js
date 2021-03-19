@@ -385,20 +385,19 @@ function wakeRotateWait(){
 function updateGame(){
 	//TODO there is literally no reason whatsoever why this needs to be here as exactly the same code is in allComplete()
 	//but for reasons unknown it can't be arsed to do it's job so here we go
-	actualIntv = new Date - oldTime2;
-	if(interval > actualIntv){
-		waitForTimeout(interval - actualIntv);
-		return;
-	}
-	oldTime2 = new Date;
+	
+	
+	//actualIntv = new Date - oldTime2;
+	//if(interval > actualIntv){
+	//	waitForTimeout(interval - actualIntv);
+	//	return;
+	//}
+	//oldTime2 = new Date;
+	
 	//TODO - could be combined with rival counter - do we need both?
 	if(inPVP){
-		var i = 0;
 		while(messageSent && returnedKeyMessage == null){
-		//	await sleep(100);
-		//	message.set("fill", "yellow");
-		//	message.set("text", "" + i);
-		//	i++;
+			setTimeout('updateGame()',10);
 		}
 		messageSent = false;
 		//keyCodes during PVP = rival's key codes
