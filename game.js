@@ -459,7 +459,7 @@ function updateGame2(){
 	//TESTING - just for testing lag
 	if(willLag){
 		time = new Date;
-		while(new Date - time < 1000){
+		while(new Date - time < 3000){
 		}
 	}
 	//END TESTING
