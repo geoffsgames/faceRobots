@@ -445,17 +445,19 @@ function updateGamePVP(){
 }
 
 function updateGame2(){
-	console.trace();
+	//console.trace();
 	if(oldTime2 != null){
-		actualIntv = new Date - oldTime2; //shouldn't happen as updateGame() in display should handle the delays completely - this is just a failsafe, with appropriate error message
+		var newTime = new Date();
+		console.log("comp OT2 " + newTime.toISOString());
+		actualIntv = newTime - oldTime2; //shouldn't happen as updateGame() in display should handle the delays completely - this is just a failsafe, with appropriate error message
 		if(interval > actualIntv){
 			console.error("something went wrong with timing");
 			waitForTimeout(interval - actualIntv);
 			return;
 		}
 	}
-	oldTime2 = new Date;
-	
+	oldTime2 = new Date();
+	console.log("setting OT2 " + oldTime2.toISOString());
 	if(inPVP)
 		counter4KeyCmds ++;
 	
