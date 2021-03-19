@@ -359,6 +359,7 @@ async function callScrollLoop(){
 
 async function waitForTimeout(intv){
 	await sleep(intv);
+	oldTime = new Date();
 	updateGame()
 };
 
