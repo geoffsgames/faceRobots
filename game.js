@@ -455,7 +455,8 @@ function updateGame2(){
 	oldTime2 = new Date();
 	if(inPVP)
 		counter4KeyCmds ++;
-	
+	message.set("fill", "yellow");
+	message.set("text", "" + count4KeyCmds);
 	//TESTING - just for testing lag
 	if(willLag){
 		time = new Date;
