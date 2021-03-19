@@ -311,6 +311,11 @@ socket.on("rivalKeyCode2", function(msg){
 		message.set("text",message.text + "h" + rivalTimeCounter + "-" + msg.tCounter);
 		*/
 		
+		if(msg.time < counter4KeyCmds){  //I'm already ahead
+			msg.time = counter4KeyCmds;
+			msg.rID = rivalID;
+			socket.emit("returnedKeyCode", msg);
+		   }
 		keyMessage = msg;
 	}
 });
