@@ -11,7 +11,6 @@ var rivalID = null; //when we're actually fighting
 var socket = io();
 var uniqueID = "" + Math.random();
 var rivalArrivedMsg = null;
-var returnedKeyMessage = null;
 
 if(usingSocket){
 	socket.emit('newPlayer', {uID:uniqueID, gr:getStringArray(player.grid), trueNewPlayer:true});
@@ -314,6 +313,7 @@ socket.on("rivalKeyCode2", function(msg){
 
 socket.on("returnedKeyCode2", function(msg){
 	if(msg.rID == uniqueID){
+		message.set("text",msg);
 		returnedKeyMessage = msg;
 		if(grrr)
 			updateGame();
