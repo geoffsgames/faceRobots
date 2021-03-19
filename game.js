@@ -67,6 +67,7 @@ var inPVP = false;
 var rivalCompleted = false; //rival completed a single turn so don't have to wait for
 var counter4KeyCmds = 0; //records which iteration we're on so key commands attached to right one
 var keyMessage = null; //stores key commands received from rival
+var messageSent = false;
 
 start();
 addPlayer();
