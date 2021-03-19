@@ -445,6 +445,7 @@ function updateGamePVP(){
 
 function updateGame2(){
 	//shouldn't happen as updateGame() in display should handle the delays completely - this is just a failsafe, with appropriate error message
+	console.trace();
 	actualIntv = new Date - oldTime2;
 	if(interval > actualIntv){
 		console.error("something went wrong with timing");
