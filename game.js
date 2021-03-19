@@ -385,7 +385,13 @@ function wakeRotateWait(){
 	waitingForRotate = false;
 }
 
-function updateGame(){	
+function updateGame(){
+	//failsafe enemy.isEnemy should ONLY be false for non null enemy's in PVP
+	if(enemy != null && !enemy.isEnemy && !inPVP){
+		console.error("something went wrong with entering PVP")
+		return;
+	}
+	
 	if(inPVP)
 		updateGamePVP(); //extra potential wait loop required in PVP to ensure key presses are kept in sync. Method in socEvents like all PVP stuff
 	updateGame2();
