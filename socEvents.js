@@ -313,7 +313,7 @@ socket.on("rivalKeyCode2", function(msg){
 
 socket.on("returnedKeyCode2", function(msg){
 	if(msg.rID == uniqueID){
-		message.set("text", "" + msg);
+		message.set("text", "" + Math.random());
 		returnedKeyMessage = msg;
 		if(grrr)
 			updateGame();
