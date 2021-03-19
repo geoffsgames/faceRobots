@@ -70,8 +70,12 @@ var keyMessage = null; //stores key commands received from rival
 var messageSent = false;
 var returnedKeyMessage = null;
 var waitReturnedKeyMessage = false;
+//some had to be copied for keyup events
+var keyMessageUp = null; //stores key commands received from rival
+var messageSentUp = false;
+var returnedKeyMessageUp = null;
+var waitReturnedKeyMessageUp = false;
 
-var grrr = false;
 
 start();
 addPlayer();
@@ -416,6 +420,27 @@ function updateGamePVP(){
 		savedKeyPress = {key:null}
 		returnedKeyMessage = null;
 	}
+	
+	
+	//////same with keyup
+	if(messageSentUp && returnedKeyMessageUp == null){
+		waitReturnedKeyMessageUp = true;
+		return;
+	}
+	waitReturnedKeyMessageUp = false;
+	messageSentUp = false;
+	
+	//keyCodes during PVP = rival's key codes
+	if(keyMessageUp != null && keyMessageUp.time <= counter4KeyCmds){ //if he sent it at n we know he won't do it until n + 1
+		changeStateEnemyUp(keyMessageUp.key);
+		keyMessageUp = null
+	}
+	if(savedKeyPressUp.key != null && counter4KeyCmds >= returnedKeyMessageUp.time){
+		changeStateUp(savedKeyPressUp.key); //actually activate key code instruction - second parameter is true if doubleclicked
+		savedKeyPressUp = {key:null}
+		returnedKeyMessageUp = null;
+	}
+	
 }
 
 function updateGame2(){
