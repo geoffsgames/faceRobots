@@ -385,20 +385,10 @@ function wakeRotateWait(){
 	waitingForRotate = false;
 }
 
-function updateGame(){
-	//shouldn't happen as updateGame() in display should handle the delays completely - this is just a failsafe, with appropriate error message
-	actualIntv = new Date - oldTime2;
-	if(interval > actualIntv){
-		console.error("something went wrong with timing");
-		waitForTimeout(interval - actualIntv);
-		return;
-	}
-	oldTime2 = new Date;
-	
+function updateGame(){	
 	if(inPVP)
 		updateGamePVP(); //extra potential wait loop required in PVP to ensure key presses are kept in sync. Method in socEvents like all PVP stuff
-	else
-		updateGame2();
+	updateGame2();
 }
 
 function updateGamePVP(){
@@ -420,10 +410,18 @@ function updateGamePVP(){
 		savedKeyPress = {key:null}
 		returnedKeyMessage = null;
 	}
-	updateGame2();
 }
 
-function updateGame2(){	
+function updateGame2(){
+	//shouldn't happen as updateGame() in display should handle the delays completely - this is just a failsafe, with appropriate error message
+	actualIntv = new Date - oldTime2;
+	if(interval > actualIntv){
+		console.error("something went wrong with timing");
+		waitForTimeout(interval - actualIntv);
+		return;
+	}
+	oldTime2 = new Date;
+	
 	if(inPVP)
 		counter4KeyCmds ++;
 	
@@ -539,7 +537,7 @@ function updateGame2(){
 			
 			justResumed = false;
 			player.tryToChangeDir();
-			if(enemy.isEnemy) //not a rival in two player mode
+			if(!inPVP) //not a rival in two player mode
 				enemy.intelligence();
 			else
 				enemy.tryToChangeDir();
