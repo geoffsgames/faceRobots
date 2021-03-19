@@ -223,17 +223,20 @@ function initInventory(){
 }
 
 window.onkeyup = function(e) {
-		if(inPVP){//multiplayer
-			if(savedKeyPressUp.key != null)
-				return;
-			savedKeyPressUp = {time:counter4KeyCmds, rID:rivalID, key:e.keyCode};
-			messageSentUp = true;
-			socket.emit("rivalKeyCodeUp",savedKeyPressUp);
-		}
-		else{
-			changeStateUp(e.keyCode);
-		}
-	};
+	if(keyDangerZone)
+		return; 
+	
+	if(inPVP){//multiplayer
+		if(savedKeyPressUp.key != null)
+			return;
+		savedKeyPressUp = {time:counter4KeyCmds, rID:rivalID, key:e.keyCode};
+		messageSentUp = true;
+		socket.emit("rivalKeyCodeUp",savedKeyPressUp);
+	}
+	else{
+		changeStateUp(e.keyCode);
+	}
+};
 
 function changeStateUp(code){
 	if(code >= 49 && code <= 58) //motors
@@ -245,6 +248,9 @@ function changeStateUp(code){
 
 
 function keyListener(e){
+	if(keyDangerZone)
+		return;
+	
 	if(!willRestart){
 		
 	    if(!e){
