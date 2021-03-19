@@ -333,6 +333,8 @@ async function callScrollLoop(){
 }
 
 async function waitForTimeout(intv){
+	message.set("fill", "white");
+	message.set("text", message.text + ".");
 	await sleep(intv);
 	updateGame()
 };
