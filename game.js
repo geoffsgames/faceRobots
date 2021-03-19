@@ -418,10 +418,6 @@ function updateGame(){
 		}
 		keyMessage = null;
 		counter4KeyCmds ++;
-		if(message.text = "Face Robots!")
-			message.set("text","");
-		message.set("fill","white");
-		message.set("text", message.text + counter4KeyCmds + ",");
 	}
 	
 	//TESTING - just for testing lag
