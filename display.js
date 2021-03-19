@@ -323,12 +323,18 @@ canvas.on('mouse:up', function(options) {
 		player.finishEditBlockRotation();
 })
 
-function callScrollLoop(){
-	setTimeout('scrollLoop()',scrollDelay);
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function waitForTimeout(intv){
-	setTimeout('updateGame()',intv);
+async function callScrollLoop(){
+	await sleep(scrollDelay)
+	scrollLoop()
+}
+
+async function waitForTimeout(intv){
+	await sleep(intv);
+	updateGame()
 };
 
 //function errorLoop(){
