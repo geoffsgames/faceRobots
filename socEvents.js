@@ -11,6 +11,7 @@ var rivalID = null; //when we're actually fighting
 var socket = io();
 var uniqueID = "" + Math.random();
 var rivalArrivedMsg = null;
+var rivalArrivedMsgUp = null;
 
 if(usingSocket){
 	socket.emit('newPlayer', {uID:uniqueID, gr:getStringArray(player.grid), trueNewPlayer:true});
@@ -326,6 +327,30 @@ socket.on("returnedKeyCode2", function(msg){
 });
 
 
+////////for lifting finger off key
+socket.on("rivalKeyCodeUp2", function(msg){
+	if(msg.rID == uniqueID){
+		msg.time = counter4KeyCmds; //if HIS term when HE will do it is ahead of mine, then I will wait. I MY term when I will do it is ahead of his, then he will wait
+		msg.rID = rivalID;
+		returnKeyCodeUp(msg);
+		keyMessageUp = msg;
+	}
+});
+
+function returnKeyCodeUp(msg){
+	socket.emit("returnedKeyCodeUp", msg);
+
+}
+
+socket.on("returnedKeyCodeUp2", function(msg){
+	if(msg.rID == uniqueID){
+		returnedKeyMessageUp = msg;
+		if(waitReturnedKeyMessageUp)
+			updateGamePVP();
+	}
+});
+//////
+
 socket.on('allComplete_rival2', function(msg){
 	if(msg.uID == rivalID){
 
@@ -379,8 +404,16 @@ function changeStateEnemy(code,doubleclick){
     		enemy.willStop = true;
     }
     else if(code >= 49 && code <= 58){ //numbers
-		  stoppedPressingMotor = false;
+		  enemyStoppedPressingMotor = false;
     	enemy.motorWillStart = code - 49;
     }
 
+}
+
+function changeStateEnemyUp(code){
+	if(code >= 49 && code <= 58) //motors
+		enemyStoppedPressingMotor = true;
+
+	if(code == 13 || code == 16)//finish rotation
+		enemy.finishRotating();
 }
