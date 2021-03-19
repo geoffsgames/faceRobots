@@ -386,6 +386,15 @@ function wakeRotateWait(){
 }
 
 function updateGame(){
+	//shouldn't happen as updateGame() in display should handle the delays completely - this is just a failsafe, with appropriate error message
+	actualIntv = new Date - oldTime2;
+	if(interval > actualIntv){
+		console.error("something went wrong with timing");
+		waitForTimeout(interval - actualIntv);
+		return;
+	}
+	oldTime2 = new Date;
+	
 	if(inPVP)
 		updateGamePVP(); //extra potential wait loop required in PVP to ensure key presses are kept in sync. Method in socEvents like all PVP stuff
 	else
@@ -394,12 +403,12 @@ function updateGame(){
 
 function updateGamePVP(){
 	
-	if(sentMessage && returnedKeyMessage == null){
+	if(messageSent && returnedKeyMessage == null){
 		waitReturnedKeyMessage = true;
 		return;
 	}
 	waitReturnedKeyMessage = false;
-	sentMessage = false;
+	messageSent = false;
 	
 	//keyCodes during PVP = rival's key codes
 	if(keyMessage != null && keyMessage.time <= counter4KeyCmds){ //if he sent it at n we know he won't do it until n + 1
@@ -414,17 +423,7 @@ function updateGamePVP(){
 	updateGame2();
 }
 
-function updateGame2(){
-	
-	//shouldn't happen as updateGame() in display should handle the delays completely - this is just a failsafe, with appropriate error message
-	actualIntv = new Date - oldTime2;
-	if(interval > actualIntv){
-		console.error("something went wrong with timing");
-		waitForTimeout(interval - actualIntv);
-		return;
-	}
-	oldTime2 = new Date;
-	
+function updateGame2(){	
 	if(inPVP)
 		counter4KeyCmds ++;
 	
