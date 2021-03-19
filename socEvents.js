@@ -11,6 +11,7 @@ var rivalID = null; //when we're actually fighting
 var socket = io();
 var uniqueID = "" + Math.random();
 var rivalArrivedMsg = null;
+var returnedKeyMessage = null;
 
 if(usingSocket){
 	socket.emit('newPlayer', {uID:uniqueID, gr:getStringArray(player.grid), trueNewPlayer:true});
@@ -304,18 +305,16 @@ function animateRivalArriving(msg){
 
 socket.on("rivalKeyCode2", function(msg){
 	if(msg.rID == uniqueID){
-		if(msg.time < counter4KeyCmds){  //I'm already ahead
-			msg.time = counter4KeyCmds;
-			msg.rID = rivalID;
-			socket.emit("returnedKeyCode", msg);
-		   }
+		msg.time = counter4KeyCmds; //if HIS term when HE will do it is ahead of mine, then I will wait. I MY term when I will do it is ahead of his, then he will wait
+		msg.rID = rivalID;
+		socket.emit("returnedKeyCode", msg);
 		keyMessage = msg;
 	}
 });
 
 socket.on("returnedKeyCode2", function(msg){
 	if(msg.rID == uniqueID){
-		savedKeyPress = msg;
+		returnedKeyMessage = msg;
 	}
 });
 
