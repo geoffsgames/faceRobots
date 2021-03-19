@@ -380,7 +380,16 @@ function wakeRotateWait(){
 	waitingForRotate = false;
 }
 
-function updateGame(){	
+function updateGame(){
+	//TODO there is literally no reason whatsoever why this needs to be here as exactly the same code is in allComplete()
+	//but for reasons unknown it can't be arsed to do it's job so here we go
+	actualIntv = new Date - oldTime2;
+	if(interval > actualIntv){
+		waitForTimeout(interval - actualIntv);
+		return;
+	}
+	oldTime2 = new Date;
+	
 	//keyCodes during PVP = rival's key codes
 	if(keyMessage != null && keyMessage.time <= counter4KeyCmds){ //if he sent it at n we know he won't do it until n + 1
 		changeStateEnemy(keyMessage.key,keyMessage.dc);
@@ -402,14 +411,6 @@ function updateGame(){
 	}
 	//END TESTING
 	
-	//TODO there is literally no reason whatsoever why this needs to be here as exactly the same code is in allComplete()
-	//but for reasons unknown it can't be arsed to do it's job so here we go
-	actualIntv = new Date - oldTime2;
-	if(interval > actualIntv){
-		waitForTimeout(interval - actualIntv);
-		return;
-	}
-	oldTime2 = new Date;
 	
 	
 	if(!reallyWaitingForRotate){
