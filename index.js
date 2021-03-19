@@ -41,6 +41,10 @@ io.on('connection', function(socket){
   socket.on('rivalKeyCode', function(msg){
 	  io.emit("rivalKeyCode2", msg)
   })
+	 
+  socket.on('returnedKeyCode', function(msg){
+	  io.emit("returnedKeyCode2", msg)
+  })
 });
 
 http.listen(port, function(){
