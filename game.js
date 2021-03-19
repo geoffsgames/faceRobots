@@ -411,7 +411,7 @@ function updateGame(){
 			changeStateEnemy(keyMessage.key,keyMessage.dc);
 			keyMessage = null
 		}
-		if(savedKeyPress.key != null && counter4KeyCmds == returnedKeyMessage.time){
+		if(savedKeyPress.key != null && returnedKeyMessage != null && counter4KeyCmds == returnedKeyMessage.time){
 			changeState(savedKeyPress.key, savedKeyPress.dc); //actually activate key code instruction - second parameter is true if doubleclicked
 			savedKeyPress = {key:null}
 			returnedKeyMessage = null;
