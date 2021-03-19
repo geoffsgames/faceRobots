@@ -516,11 +516,12 @@ function allComplete2(){
 	//if neither moved - wait as no delay for animation would otherwise make things too fast TODO - if add more than 1 enemy
 	actualIntv = new Date - oldTime;
 	oldTime = new Date;
+	console.log(actualIntv);
 	if(interval > actualIntv)
 		waitForTimeout(interval - actualIntv);
 	else{
 		if(actualIntv - interval > 50)
-			countLag += 1;	
+			countLag += 1;
 		updateGame();
 	}
 }
