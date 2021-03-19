@@ -306,17 +306,23 @@ socket.on("rivalKeyCode2", function(msg){
 	if(msg.rID == uniqueID){
 		msg.time = counter4KeyCmds; //if HIS term when HE will do it is ahead of mine, then I will wait. I MY term when I will do it is ahead of his, then he will wait
 		msg.rID = rivalID;
-		socket.emit("returnedKeyCode", msg);
+		returnKeyCode(msg);
 		keyMessage = msg;
 	}
 });
 
+function returnKeyCode(msg){
+	message.set("fill", "orange");
+	message.set("text", "Sending " + new Date);
+	socket.emit("returnedKeyCode", msg);
+
+}
+
 socket.on("returnedKeyCode2", function(msg){
 	if(msg.rID == uniqueID){
-		message.set("text", "" + Math.random());
+		message.set("fill", "yellow");
+		message.set("text", "Receiving " + new Date);
 		returnedKeyMessage = msg;
-		if(grrr)
-			updateGame();
 	}
 });
 
