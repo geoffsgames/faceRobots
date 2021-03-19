@@ -396,9 +396,8 @@ function updateGame(){
 	
 	//TODO - could be combined with rival counter - do we need both?
 	if(inPVP){
-		while(messageSent && returnedKeyMessage == null){
+		if(messageSent && returnedKeyMessage == null)
 			setTimeout('updateGame()',10);
-		}
 		messageSent = false;
 		//keyCodes during PVP = rival's key codes
 		if(keyMessage != null && keyMessage.time == counter4KeyCmds){ //if he sent it at n we know he won't do it until n + 1
