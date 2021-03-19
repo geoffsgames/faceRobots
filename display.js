@@ -66,6 +66,8 @@ var startTime = 0;
 var willLag = false;
 var savedKeyPress = {key:null, dc:0};
 var messageSent = false;
+var savedKeyPressUp = {key:null, dc:0};
+var messageSentUp = false;
 
 var delImg = new fabric.Image(document.getElementById("delete"), {
 	lockScalingX: false,
@@ -221,12 +223,25 @@ function initInventory(){
 }
 
 window.onkeyup = function(e) {
-		if(e.keyCode >= 49 && e.keyCode <= 58) //motors
-			stoppedPressingMotor = true;
-	
-		if(e.keyCode == 13 || e.keyCode == 16)//finish rotation
-			player.finishRotating();
+		if(inPVP){//multiplayer
+			if(savedKeyPressUp.key != null)
+				return;
+			savedKeyPressUp = {time:counter4KeyCmds, rID:rivalID, key:e.keyCode, dc:doubleClick};
+			messageSentUp = true;
+			socket.emit("rivalKeyCodeUp",savedKeyPressUp);
+		}
+		else{
+			changeStateUp(e.keyCode);
+		}
 	};
+
+function changeStateUp(code){
+	if(code >= 49 && code <= 58) //motors
+		stoppedPressingMotor = true;
+
+	if(code == 13 || code == 16)//finish rotation
+		player.finishRotating();
+}
 
 
 function keyListener(e){
