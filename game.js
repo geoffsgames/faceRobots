@@ -537,7 +537,7 @@ function updateGame2(){
 			
 			justResumed = false;
 			player.tryToChangeDir();
-			if(enemy.isEnemy()) //not a rival in two player mode
+			if(enemy.isEnemy) //not a rival in two player mode
 				enemy.intelligence();
 			else
 				enemy.tryToChangeDir();
