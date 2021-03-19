@@ -456,7 +456,7 @@ function updateGame2(){
 	if(inPVP){
 		counter4KeyCmds ++;
 		message.set("fill", "yellow");
-		message.set("text", "" + count4KeyCmds);
+		message.set("text", "" + counter4KeyCmds);
 	}
 	//TESTING - just for testing lag
 	if(willLag){
