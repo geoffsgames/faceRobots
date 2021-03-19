@@ -391,11 +391,11 @@ function updateGame(){
 	oldTime2 = new Date;
 	
 	//keyCodes during PVP = rival's key codes
-	if(keyMessage != null && keyMessage.time <= counter4KeyCmds){ //if he sent it at n we know he won't do it until n + 1
+	if(keyMessage != null && keyMessage.time == counter4KeyCmds){ //if he sent it at n we know he won't do it until n + 1
 		changeStateEnemy(keyMessage.key,keyMessage.dc);
 		keyMessage = null
 	}
-	if(savedKeyPress.key != null){
+	if(savedKeyPress.key != null && counter4KeyCmds == keyMessage.time){
 		changeState(savedKeyPress.key, savedKeyPress.dc); //actually activate key code instruction - second parameter is true if doubleclicked
 		savedKeyPress = {key:null}
 	}
