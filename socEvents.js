@@ -319,6 +319,8 @@ function returnKeyCode(msg){
 socket.on("returnedKeyCode2", function(msg){
 	if(msg.rID == uniqueID){
 		returnedKeyMessage = msg;
+		if(waitReturnedKeyMessage)
+			updateGamePVP();
 	}
 });
 
