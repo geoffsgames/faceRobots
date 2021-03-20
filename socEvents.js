@@ -264,6 +264,7 @@ function moveToRival2(msg){
 function moveToRival3(){
 	player.group.originX = "left";
 	player.group.originY = "top";
+	canvas.remove(player.group);
 	player.restart();
 	canvas.requestRenderAll();
 	completeCounter = 0;
