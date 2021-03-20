@@ -326,7 +326,7 @@ socket.on("returnedKeyCode2", function(msg){
 		console.log(msg);
 		returnedKeyMessage = msg;
 		if(waitReturnedKeyMessage)
-			updateGamePVP();
+			updateGame();
 	}
 });
 
@@ -350,7 +350,7 @@ socket.on("returnedKeyCodeUp2", function(msg){
 	if(msg.rID == uniqueID){
 		returnedKeyMessageUp = msg;
 		if(waitReturnedKeyMessageUp)
-			updateGamePVP();
+			updateGame();
 	}
 });
 //////
