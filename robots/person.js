@@ -490,6 +490,7 @@ function allComplete(){
 	waitingForRival = false;
 	if(completeCounter == numPlayers){
 		if(inPVP){
+			console.log("I'm completed");
 			//"I'm done"
 			socket.emit("allComplete_rival", {uID:uniqueID, tCounter:rivalTimeCounter});
 			
