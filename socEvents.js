@@ -294,7 +294,6 @@ function addRival(grid, rivalX, rivalY, rivalFacing){
 //(receiver) attacker spins into my land (as also happens on their screen)
 function animateRivalArriving(msg){
 	addRival(msg.grid, msg.rivalX, msg.rivalY, msg.facing);
-	canvas.add(enemy.group); //enemy = rival just arriving
 	enemy.group.left = curRival.left;
 	enemy.group.top = curRival.top;
 	enemy.group.opacity = 0.8;
