@@ -562,9 +562,16 @@ function updateGame2(){
 		}
 		else{
 			if(!reallyWaitingForRotate){
-				player.checkIntermediate();
-				if(!justResumed && enemy.readyToMove)
-					enemy.checkIntermediate();
+				if(inPVP && player.isInvader){ //switch order of player and enemy in PVP to ensure it's the same on both machines
+				   	if(!justResumed)
+						enemy.checkIntermediate();
+					player.checkIntermediate();
+				}
+				else{
+					player.checkIntermediate();
+					if(!justResumed && enemy.readyToMove)
+						enemy.checkIntermediate();
+				}
 			}
 			if(!intermediate){				
 				if(waitingForRotate){
@@ -590,16 +597,33 @@ function updateGame2(){
 			
 			
 			justResumed = false;
-			player.tryToChangeDir();
-			if(enemy.isEnemy) //not a rival in two player mode
-				enemy.intelligence();
-			else
+			if(inPVP && player.isInvader){ //switch order of player and enemy in PVP to ensure it's the same on both machines
 				enemy.tryToChangeDir();
-			player.tryToSpeedUp();
-			enemy.tryToSpeedUp();
-			
-			player.update();
-			enemy.update();
+				player.tryToChangeDir();
+			}
+			else{
+				player.tryToChangeDir();
+				if(inPVP) //not a rival in two player mode
+					enemy.intelligence();
+				else
+					enemy.tryToChangeDir();
+			}
+			if(inPVP && player.isInvader){ //switch order of player and enemy in PVP to ensure it's the same on both machines
+				enemy.tryToSpeedUp();
+				player.tryToSpeedUp();
+			}
+			else{
+				player.tryToSpeedUp();
+				enemy.tryToSpeedUp();
+			}
+			if(inPVP && player.isInvader){ //switch order of player and enemy in PVP to ensure it's the same on both machines
+				enemy.update();
+				player.update();
+			}
+			else{
+				player.update();
+				enemy.update();
+			}
 		}
 	}
 	//countBlocks();
