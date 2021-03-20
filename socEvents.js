@@ -306,6 +306,7 @@ function animateRivalArriving(msg){
 
 socket.on("rivalKeyCode2", function(msg){
 	if(msg.rID == uniqueID){
+		console.log("Returning " + msg + " TIME " + counter4KeyCmds);
 		msg.time = counter4KeyCmds; //if HIS term when HE will do it is ahead of mine, then I will wait. I MY term when I will do it is ahead of his, then he will wait
 		msg.rID = rivalID;
 		returnKeyCode(msg);
@@ -320,6 +321,7 @@ function returnKeyCode(msg){
 
 socket.on("returnedKeyCode2", function(msg){
 	if(msg.rID == uniqueID){
+		console.log("Returned " + msg + " TIME " + counter4KeyCmds);
 		returnedKeyMessage = msg;
 		if(waitReturnedKeyMessage)
 			updateGamePVP();
@@ -354,9 +356,8 @@ socket.on("returnedKeyCodeUp2", function(msg){
 socket.on('allComplete_rival2', function(msg){
 	if(msg.uID == rivalID){
 
-
+		console.log("other guy complete");
 		//if(msg.tCounter == rivalTimeCounter){
-
 			rivalCompleted = true;
 			if(waitingForRival) //if I've also completed
 				allComplete2();
