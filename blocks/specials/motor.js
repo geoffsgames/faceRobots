@@ -830,6 +830,7 @@ Person.prototype.stopMotors = function(){
 	this.dontStartMotors = true;
 	otherRob = this.getOtherRobot();
 	if(!otherRob.partsMoving){
+			//other robot is moving fast due to reason other than motor/spring (i.e. fans) and we would come out currently in an intermediate time because of this
 			if(enemy.readyToMove && otherRob.movefastCounter > 0 && (otherRob.movefastCounter != otherRob.fastSpeed_changing) && (otherRob.movX != 0 || otherRob.movY != 0) && !otherRob.collided && !otherRob.recreated){
 				//is intermediate - don't reset interval just yet
 				this.faster = true;
@@ -840,8 +841,7 @@ Person.prototype.stopMotors = function(){
 				this.fastSpeed_fixed = maxSpeed / this.fastSpeed_changing;
 				this.movethistime = true; //allows single one off movement
 			}
-			else{
-				//not intermediate so can go back to normal interval
+			else{//not intermediate so can go back to normal interval
 				justResumed = true;
 				this.resetInterval();
 			}
