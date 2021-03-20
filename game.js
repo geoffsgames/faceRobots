@@ -410,17 +410,19 @@ function updateGamePVP(){
 	waitReturnedKeyMessage = false;
 	messageSent = false;
 	
+	console.log("keyzone " + counter4KeyCmds);
+	
 	keyDangerZone = true;
 	//keyCodes during PVP = rival's key codes
 	if(keyMessage != null){
-		console.log("doing his: " + keyMessage);
+		console.log("doing his: " + keyMessage + " TIME " + counter4KeyCmds);
 		if(keyMessage.time <= counter4KeyCmds){ //if he sent it at n we know he won't do it until n + 1
 			changeStateEnemy(keyMessage.key,keyMessage.dc);
 			keyMessage = null
 		}
 	}
 	if(savedKeyPress.key != null){
-		console.log("doing mine: " + savedKeyPress + " " + returnedKeyMessage);
+		console.log("doing mine: SAV " + savedKeyPress + " RET " + returnedKeyMessage + " TIME " + counter4KeyCmds);
 		if(counter4KeyCmds >= returnedKeyMessage.time){
 			changeState(savedKeyPress.key, savedKeyPress.dc); //actually activate key code instruction - second parameter is true if doubleclicked
 			savedKeyPress = {key:null}
@@ -463,6 +465,7 @@ function updateGame2(){
 	oldTime2 = new Date();
 	if(inPVP){
 		counter4KeyCmds ++;
+		console.log("incremented to " + counter4KeyCmds);
 		message.set("fill", "yellow");
 		message.set("text", "" + counter4KeyCmds);
 	}
