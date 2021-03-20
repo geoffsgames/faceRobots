@@ -100,6 +100,8 @@ var oldTime2 = null;
 
 var socket = null;
 
+var lastKeyCounter = null;
+
 //confusingly - for restarting after death NOT for starting at the beginning
 function startWholeGame(){
 	changedBlocks = undefined;
@@ -411,6 +413,9 @@ function updateGamePVP(){
 	messageSent = false;
 	
 	console.log("keyzone " + counter4KeyCmds);
+	if(lastKeyCounter != null && counter4KeyCmds - lastKeyCounter > 1)
+		alert("keycounter error: " + (counter4KeyCmds - lastKeyCounter))
+	lastKeyCounter = counter4KeyCmds;
 	
 	keyDangerZone = true;
 	//keyCodes during PVP = rival's key codes
@@ -456,7 +461,7 @@ function updateGamePVP(){
 }
 
 function updateGame2(){
-	//console.trace();
+	console.trace();
 	if(oldTime2 != null){
 		actualIntv = new Date() - oldTime2; //shouldn't happen as updateGame() in display should handle the delays completely - this is just a failsafe, with appropriate error message
 		if((interval * 0.7) > actualIntv){
