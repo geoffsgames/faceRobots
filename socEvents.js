@@ -256,6 +256,10 @@ function moveToRival2(msg){
 	scrollToPlayer();
 	//initialise animating out of corner
 	player.animateOutOfCorner(moveToRival3);
+	
+	//the host (not invader) always moves first - this is to ensure consistency between remote machines
+	player.isInvader = true;
+	enemy.isInvader = false;
 }
 
 
@@ -271,6 +275,7 @@ function moveToRival3(){
 	inPVP = true;
 	enteringRival = false;
 	rivalTimeCounter = 0; //counter ensures I'm at the same game time as rival (increments on every game update)
+	enemy.readyToMove = true; //non human players fade in. Human plays don't so ready to move from start
 	updateGame();
 }
 
@@ -294,6 +299,11 @@ function addRival(grid, rivalX, rivalY, rivalFacing){
 //(receiver) attacker spins into my land (as also happens on their screen)
 function animateRivalArriving(msg){
 	addRival(msg.grid, msg.rivalX, msg.rivalY, msg.facing);
+	
+	//the host (not invader) always moves first - this is to ensure consistency between remote machines
+	enemy.isInvader = true;
+	player.isInvader = false;
+	
 	enemy.group.left = curRival.left;
 	enemy.group.top = curRival.top;
 	enemy.group.opacity = 0.8;
