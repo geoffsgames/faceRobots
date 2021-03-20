@@ -399,15 +399,17 @@ function updateGame(){
 	}
 	
 	if(inPVP)
-		updateGamePVP(); //extra potential wait loop required in PVP to ensure key presses are kept in sync. Method in socEvents like all PVP stuff
-	updateGame2();
+		if(updateGamePVP() == -1) //extra potential wait loop required in PVP to ensure key presses are kept in sync. Method in socEvents like all PVP stuff
+			return;
+	if(updateGame2() == -1)
+		return;
 }
 
 function updateGamePVP(){
 	
 	if(messageSent && returnedKeyMessage == null){
 		waitReturnedKeyMessage = true;
-		return;
+		return(-1);
 	}
 	waitReturnedKeyMessage = false;
 	messageSent = false;
@@ -442,7 +444,7 @@ function updateGamePVP(){
 	//////same with keyup
 	if(messageSentUp && returnedKeyMessageUp == null){
 		waitReturnedKeyMessageUp = true;
-		return;
+		return(-1);
 	}
 	waitReturnedKeyMessageUp = false;
 	messageSentUp = false;
@@ -467,7 +469,7 @@ function updateGame2(){
 		if((interval * 0.7) > actualIntv){
 			console.error("something went wrong with timing");
 			waitForTimeout(interval - actualIntv);
-			return;
+			return(-1);
 		}
 	}
 	oldTime2 = new Date();
