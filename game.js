@@ -416,6 +416,7 @@ function updateGamePVP(){
 	//keyCodes during PVP = rival's key codes
 	if(keyMessage != null){
 		console.log("doing his: " + keyMessage + " TIME " + counter4KeyCmds);
+		console.log(keyMessage)
 		if(keyMessage.time <= counter4KeyCmds){ //if he sent it at n we know he won't do it until n + 1
 			changeStateEnemy(keyMessage.key,keyMessage.dc);
 			keyMessage = null
@@ -423,6 +424,8 @@ function updateGamePVP(){
 	}
 	if(savedKeyPress.key != null){
 		console.log("doing mine: SAV " + savedKeyPress + " RET " + returnedKeyMessage + " TIME " + counter4KeyCmds);
+		console.log(savedKeyPress)
+		console.log(counter4KeyCmds)
 		if(counter4KeyCmds >= returnedKeyMessage.time){
 			changeState(savedKeyPress.key, savedKeyPress.dc); //actually activate key code instruction - second parameter is true if doubleclicked
 			savedKeyPress = {key:null}
