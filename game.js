@@ -563,13 +563,13 @@ function updateGame2(){
 		else{
 			if(!reallyWaitingForRotate){
 				if(inPVP && player.isInvader){ //switch order of player and enemy in PVP to ensure it's the same on both machines
-				   	if(!justResumed)
-						enemy.checkIntermediate();
-					player.checkIntermediate();
+				   	enemy.checkIntermediate();
+					if(!justResumed) //if just stopped the motors I've effectively already checked intermediate so rechecking could create clash (Check??? Old code commented late)
+						player.checkIntermediate();
 				}
 				else{
 					player.checkIntermediate();
-					if(!justResumed && enemy.readyToMove)
+					if(!justResumed && enemy.readyToMove) //if just stopped the motors I've effectively already checked intermediate (Check??? Old code commented late)
 						enemy.checkIntermediate();
 				}
 			}
