@@ -231,8 +231,8 @@ window.onkeyup = function(e) {
 			return;
 		savedKeyPressUp = {time:counter4KeyCmds, rID:rivalID, key:e.keyCode};
 		messageSentUp = true;
-		console.log("sending: ");
-		console.log(savedKeyPressUp);
+		//console.log("sending: ");
+		//console.log(savedKeyPressUp);
 		socket.emit("rivalKeyCodeUp",savedKeyPressUp);
 	}
 	else{
