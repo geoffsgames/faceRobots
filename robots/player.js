@@ -462,20 +462,23 @@ Player.prototype.tryToSelectWhatIHadSelectedBefore = function(lastSelectedInd){
 
 Player.prototype.activateEditMode = function(){
 	this.recreateable = false;
-	canvas.setActiveObject(delImg);
-	this.damagedBlocks = new Array();
-
-	//add the delete icon to the inventory
-	delImg.left = ((this.inventoryTypes.length + 1.5) * gridWidth) + (window.pageXOffset || document.documentElement.scrollLeft);
-	delImg.top = (gridHeight * 0.5) + (window.pageYOffset || document.documentElement.scrollTop);
-	delImg.setCoords();
-	canvas.add(delImg);
-
 	
-	for(var i =0, len = this.inventoryImages.length; i < len; i+= 1){
-		this.inventoryImages[i].setCoords();
-		this.inventoryImages[i].bringToFront();
-		this.inventoryImages[i].selectable = true;
+	if(this != enemy){ //don't do the stuff connected to actual editing if this is the rival in PVP
+		canvas.setActiveObject(delImg);
+		this.damagedBlocks = new Array();
+
+		//add the delete icon to the inventory
+		delImg.left = ((this.inventoryTypes.length + 1.5) * gridWidth) + (window.pageXOffset || document.documentElement.scrollLeft);
+		delImg.top = (gridHeight * 0.5) + (window.pageYOffset || document.documentElement.scrollTop);
+		delImg.setCoords();
+		canvas.add(delImg);
+
+
+		for(var i =0, len = this.inventoryImages.length; i < len; i+= 1){
+			this.inventoryImages[i].setCoords();
+			this.inventoryImages[i].bringToFront();
+			this.inventoryImages[i].selectable = true;
+		}
 	}
 	
 	canvas.remove(this.group);
@@ -562,6 +565,9 @@ Player.prototype.activateEditMode = function(){
 				block.isDeletePlace = true;
 				block.myX = x + this.myX;
 				block.myY = y + this.myY;
+				
+				if(this == enemy) //can't edit if this is rival in PVP
+					block.selectable = false;
 
 			}
 			
@@ -649,16 +655,20 @@ Player.prototype.scrollInventory = function(absolute){
 		}
 	}
 };
-
+//marker is a translucent red square indicating a place where a block can be added in edit mode
 Player.prototype.addMarker = function(x, y) {
-	if(gameGrid[this.myX + x][this.myY + y] != 1)
+	if(gameGrid[this.myX + x][this.myY + y] != 1) //don't add markers off the screen
 		return;
+
+	var addColour = 'red'
+	if(this == enemy)
+		addColour = 'yellow'
 	
 	// create a rectangle object
 	var rect = new fabric.Rect({
 	  left: (this.myX + x) * gridWidth,
 	  top: (this.myY + y) * gridHeight,
-	  fill: 'red',
+	  fill: addColour,
 	  width: gridWidth,
 	  height: gridHeight,
 	  opacity: 0.2,
@@ -674,6 +684,10 @@ Player.prototype.addMarker = function(x, y) {
 	rect.lockMovementY = true;
 	rect.hasControls = false;
 	this.rects.push(rect);
+	
+	if(this == enemy)
+		rect.selectable = false;
+	
 	canvas.add(rect);
 
 };
