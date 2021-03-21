@@ -209,6 +209,13 @@ function checkPVP(){
 function jumpToPVPimpl(){
 	if(jumpToPVPmsg == null)
 		return false;
+	
+		
+	player.movX = 0;
+	player.movY = 0;
+	enemy.movY = 0;
+	enemy.movY = 0;
+	
 	var msg = jumpToPVPmsg;
 	jumpToPVPmsg = null;
 	enteringRival = true; //stops anything else happening while I'm animating across
@@ -223,6 +230,13 @@ function jumpToPVPimpl(){
 function acceptPVPimpl(){
 	if(acceptPVPmsg == null)
 		return false;
+	
+		
+	player.movX = 0;
+	player.movY = 0;
+	enemy.movY = 0;
+	enemy.movY = 0;
+	
 	var msg = acceptPVPmsg;
 	acceptPVPmsg = null;
 	if(enemy != null){
@@ -305,11 +319,6 @@ function moveToRival3(){
 	player.group.originX = "left";
 	player.group.originY = "top";
 	canvas.remove(player.group);
-	
-	player.movX = 0;
-	player.movY = 0;
-	enemy.movY = 0;
-	enemy.movY = 0;
 	
 	player.restart();
 	canvas.requestRenderAll();
