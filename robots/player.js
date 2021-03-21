@@ -86,8 +86,8 @@ Player.prototype.deselected = function(){
 		return;
 	selectedBlock = null;
 	
-	for(var i = 0, len = editBlocks.length; i < len; i+= 1)
-		editBlocks[i].selectable = true;
+	for(var i = 0, len = this.editBlocks.length; i < len; i+= 1)
+		this.editBlocks[i].selectable = true;
 	for(var i = 0, len = this.rects.length; i < len; i+= 1)
 		this.rects[i].selectable = true;
 
@@ -169,7 +169,7 @@ Player.prototype.deleteBlock = function(block, mustDelete, isRival){
 	if(!mustDelete && tempBlock.usePoints && canEditRotations){//will rotate - selected by selecting the same type in inventory when there is a suitable adjacent wall TODO - make special icon
 		//make all the others unselectable
 		selectedBlock = block;
-		for(var i = 0, len = editBlocks.length; i < len; i+= 1){
+		for(var i = 0, len = this.editBlocks.length; i < len; i+= 1){
 			if(this.editBlocks[i] != selectedBlock)
 				this.editBlocks[i].selectable = false;
 		}
