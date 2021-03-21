@@ -61,6 +61,7 @@ var testingMotors = false;
 var testingNoRotateDelay = false;
 
 //PVP
+var checkPVP = null;
 var waitRivalLag = false; //?? - Still used?
 var enteringRival = false; //don't respond to any input when entrance of rival animation happening
 var inPVP = false;
@@ -71,12 +72,12 @@ var messageSent = false;
 var returnedKeyMessage = null;
 var waitReturnedKeyMessage = false;
 var keyDangerZone = false;
+var rivalAddDelBlocks = [];
 //some had to be copied for keyup events
 var keyMessageUp = null; //stores key commands received from rival
 var messageSentUp = false;
 var returnedKeyMessageUp = null;
 var waitReturnedKeyMessageUp = false;
-var checkPVP = null;
 
 start();
 addPlayer();
