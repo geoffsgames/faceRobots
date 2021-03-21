@@ -749,13 +749,14 @@ Player.prototype.willSetMovement = function(movX, movY,creep){
 };
 
 Player.prototype.update = function(){
-	
-	this.adjustScroll();
-	this.possiblyLeaveGrid();//check entered next landscape or close enough to at least generate next landscape
-	this.possiblyUpdateBlind();
-	if(willRestart){//possiblyLeaveGrid sets this if have just moved to next landscape
-		this.restart();
-		willRestart = false;
+	if(!this.isRival){
+		this.adjustScroll();
+		this.possiblyLeaveGrid();//check entered next landscape or close enough to at least generate next landscape
+		this.possiblyUpdateBlind();
+		if(willRestart){//possiblyLeaveGrid sets this if have just moved to next landscape
+			this.restart();
+			willRestart = false;
+		}
 	}
 	Person.prototype.update.call(this);
 };
