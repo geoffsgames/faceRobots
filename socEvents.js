@@ -517,7 +517,7 @@ function addDelRivalBlocksImpl(){
 		block = rivalAddDelBlocks.pop();
 		var oldSelected = selectedBlock;
 		if(block.delete)
-			enemy.deleteBlock(block,!block.rotate,true);
+			enemy.deleteBlock(gameGrid[block.myX][block.myY].image,!block.rotate,true);
 		else
 			enemy.addBlockInEdit(block.myX, block.myY, block.type);
 		selectedBlock = oldSelected; //(TODO a bit hacky) some code in these functions changes selectedBlock (the block currently selected) as it's written for the player. 
