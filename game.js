@@ -469,7 +469,7 @@ function updateGamePVP(){
 }
 
 function updateGame2(){
-	console.trace();
+	//console.trace();
 	if(!inPVP && oldTime2 != null){
 		actualIntv = new Date() - oldTime2; //shouldn't happen as updateGame() in display should handle the delays completely - this is just a failsafe, with appropriate error message
 		if((interval * 0.7) > actualIntv){
@@ -481,9 +481,9 @@ function updateGame2(){
 	oldTime2 = new Date();
 	if(inPVP){
 		counter4KeyCmds ++;
-		console.log("incremented to " + counter4KeyCmds);
-		message.set("fill", "yellow");
-		message.set("text", "" + counter4KeyCmds);
+		//console.log("incremented to " + counter4KeyCmds);
+		//message.set("fill", "yellow");
+		//message.set("text", "" + counter4KeyCmds);
 	}
 	//TESTING - just for testing lag
 	if(willLag){
