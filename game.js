@@ -3,7 +3,7 @@ var randsSeeded =false; //debugMode;
 var scrollingX = 0;
 var scrollingY = 0;
 
-Math.seed = 0; //Math.round(Math.random() * 1000);
+Math.seed = Math.round(Math.random() * 1000);
 alert(Math.seed);
 var startGlobalSeed = Math.seededRandomDouble();
 var globalSeed = startGlobalSeed;
