@@ -56,7 +56,7 @@ io.on('connection', function(socket){
 	  io.emit("returnedKeyCodeUp2", msg)
   })
 	
-  socket.on('rivalAddDelBlock', function(msg){
+  socket.on('rivalAddDelBlock2', function(msg){
 	  io.emit('rivalAddDelBlock', msg)
   })
 });
