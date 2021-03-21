@@ -55,6 +55,10 @@ io.on('connection', function(socket){
   socket.on('returnedKeyCodeUp', function(msg){
 	  io.emit("returnedKeyCodeUp2", msg)
   })
+	
+  socket.on('rivalAddDelBlock', function(msg){
+	  io.emit('rivalAddDelBlock', msg)
+  })
 });
 
 http.listen(port, function(){
