@@ -49,7 +49,7 @@ Player.prototype.convertAddPlace = function(addPlace){
 				this.recordInventoryNum(this.inventoryQuants[this.selectedType], this.selectedType);
 			}
 		}
-		socket.emit("rivalAddDelBlock", {rID:rivalID ,newX, newY, delete:false, type:type});
+		socket.emit("rivalAddDelBlock", {rID:rivalID ,myX:newX, myY:newY, delete:false, type:type});
 
 	}
 };
@@ -235,7 +235,7 @@ Player.prototype.deleteBlock = function(block, mustDelete, isRival){
 		this.spring.weapon = this;
 	
 	if(!isRival)
-		socket.emit("rivalAddDelBlock", {rID:rivalID ,blockX:block.myX, blockY:block.myY, delete:true, type:null, rotate:!mustDelete});
+		socket.emit("rivalAddDelBlock", {rID:rivalID ,myX:block.myX, myY:block.myY, delete:true, type:null, rotate:!mustDelete});
 
 };
 
