@@ -154,7 +154,7 @@ Player.prototype.redoSpringBlock = function(oldBlock,gameBlock){
 	return newBlock;
 };
 
-Player.prototype.deleteBlock = function(block, mustDelete){
+Player.prototype.deleteBlock = function(block, mustDelete, isRival){
 	var x = block.myX;
 	var y = block.myY;
 	var tempBlock = this.grid[x - this.myX][y - this.myY];
@@ -166,7 +166,7 @@ Player.prototype.deleteBlock = function(block, mustDelete){
 		tempBlock.selectable = false;
 		return;//can't delete heart
 	}
-	if(!mustDelete && tempBlock.usePoints && canEditRotations){//will rotate
+	if(!mustDelete && tempBlock.usePoints && canEditRotations){//will rotate - selected by selecting the same type in inventory when there is a suitable adjacent wall TODO - make special icon
 		//make all the others unselectable
 		selectedBlock = block;
 		for(var i = 0, len = editBlocks.length; i < len; i+= 1){
@@ -211,15 +211,17 @@ Player.prototype.deleteBlock = function(block, mustDelete){
 			block = newBlock;
 			this.stoppedBlocks.push(block);
 			block.isDeletePlace = true;
-			selectedBlock = block;
-			this.inventoryQuants[this.selectedType] -= 1;
-			if(this.inventoryQuants[this.selectedType] == 0){
-				this.removeFromInventory(this.selectedType);
-			}
-			else{
-				this.recordInventoryNum(this.inventoryQuants[this.selectedType], this.selectedType);
-			}
 			
+			if(!isRival){
+				selectedBlock = block;
+				this.inventoryQuants[this.selectedType] -= 1;
+				if(this.inventoryQuants[this.selectedType] == 0){
+					this.removeFromInventory(this.selectedType);
+				}
+				else{
+					this.recordInventoryNum(this.inventoryQuants[this.selectedType], this.selectedType);
+				}
+			}
 
 		}
 		for(var i =0; i < quantDeleted; i+= 1) //in case deleted multiple copies of this block or deleted this block without called deleteBlock2 (i.e. wasn't completely removed)
@@ -232,13 +234,14 @@ Player.prototype.deleteBlock = function(block, mustDelete){
 	if(this.spring != null)
 		this.spring.weapon = this;
 	
-	socket.emit("rivalAddDelBlock", {rID:rivalID ,blockX:block.myX, blockY:block.myY, delete:true, type:null});
+	if(!isRival)
+		socket.emit("rivalAddDelBlock", {rID:rivalID ,blockX:block.myX, blockY:block.myY, delete:true, type:null, rotate:!mustDelete});
 
 };
 
 //method that actually does the deleting
 Player.prototype.deleteBlock2 = function(tempBlock, block, x, y){
-	player.weapons.delete(this.grid[x - this.myX][y - this.myY]);
+	this.weapons.delete(this.grid[x - this.myX][y - this.myY]);
 
 	
 	for(var i = 0, len = editBlocks.length; i < len; i+= 1){
@@ -251,7 +254,7 @@ Player.prototype.deleteBlock2 = function(tempBlock, block, x, y){
 	selectedBlock = null;
 	if(tempBlock.type == "motor"){ //deleting a motor
 		
-		newMots = player.motors;
+		newMots = this.motors;
 		var deletedMot = false
 		for(var i = 0; i < newMots.length && !deletedMot; i+= 1){
 			var mot = newMots[i];
@@ -264,7 +267,7 @@ Player.prototype.deleteBlock2 = function(tempBlock, block, x, y){
 			//TODO figure out how to handle properly
 			alert("motor to be deleted not found");
 		}
-		player.motors = newMots
+		this.motors = newMots
 	}
 	this.grid[x - this.myX][y - this.myY] = null;
 	if(debugMode)
