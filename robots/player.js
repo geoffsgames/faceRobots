@@ -482,7 +482,7 @@ Player.prototype.activateEditMode = function(){
 	this.stoppedBlocks = new Array();
 	var heart = null;
 	selectedBlock = null;
-	editBlocks = new Array();
+	this.editBlocks = new Array();
 	//transfer my blocks from part of me to individual entities on the game grid (allows clicking and deleting them)
 	for(var x = 0; x < this.gridSize; x+= 1){
 		for(var y = 0; y < this.gridSize; y+= 1){
@@ -540,7 +540,7 @@ Player.prototype.activateEditMode = function(){
 				block.lockMovementY = true;
 				block.lockScalingX = true;
 				block.lockScalingY = true;
-				editBlocks.push(block);
+				this.editBlocks.push(block);
 				if(this.grid[x][y].usePoints){
 					 	//only rotation allowed
 					    block.setControlsVisibility({
@@ -695,8 +695,8 @@ Player.prototype.setMovement = function(x, y) {
 		clearMarkers(this.rects);
 		for(var i =0; i < this.damagedBlocks.length; i+=1)
 			canvas.remove(this.damagedBlocks[i]);
-		for(var i =0; i < editBlocks.length; i+= 1)
-			canvas.remove(editBlocks[i]);
+		for(var i =0; i < this.editBlocks.length; i+= 1)
+			canvas.remove(this.editBlocks[i]);
 		this.rects = null;
 		this.stoppedBlocks = null;
 		for(var i =0, len = this.inventoryImages.length; i < len; i+= 1){
