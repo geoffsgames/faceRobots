@@ -39,6 +39,23 @@ Player.prototype.convertAddPlace = function(addPlace){
 			type = this.inventoryTypes[this.selectedType];
 		var newX = addPlace.gridX;
 		var newY = addPlace.gridY;
+		this.addBlockInEdit(type,newX,newY);
+		if(!playingBack){
+			this.inventoryQuants[this.selectedType] -= 1;
+			if(this.inventoryQuants[this.selectedType] == 0){
+				this.removeFromInventory(this.selectedType);
+			}
+			else{
+				this.recordInventoryNum(this.inventoryQuants[this.selectedType], this.selectedType);
+			}
+		}
+		socket.emit("rivalAddDelBlock", {rID:rivalID ,blockX:block.myX, blockY:block.myY, delete:false, type:type});
+
+	}
+};
+
+//adds the block when type and location have been worked out
+Player.prototype.addBlockInEdit = function(newX, newY, type){
 		clearMarkers(this.rects); //clear the red add squares
 		this.addPiece(newX, newY, type);
 		if(newX < 0 || newY < 0){
@@ -61,20 +78,8 @@ Player.prototype.convertAddPlace = function(addPlace){
 			
 		this.stoppedBlocks.push(block);
 		this.addAllMarkers();//redo markers - markers go in every place adjacent to existing blocks so with new block need redoing
-		if(!playingBack){
-			this.inventoryQuants[this.selectedType] -= 1;
-			if(this.inventoryQuants[this.selectedType] == 0){
-				this.removeFromInventory(this.selectedType);
-			}
-			else{
-				this.recordInventoryNum(this.inventoryQuants[this.selectedType], this.selectedType);
-			}
-		}
-		
-		socket.emit("rivalAddDelBlock", {rID:rivalID ,blockX:block.myX, blockY:block.myY, delete:false, type:type});
 
-	}
-};
+}
 
 Player.prototype.deselected = function(){
 	if(this.rects == undefined)
