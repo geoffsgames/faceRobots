@@ -516,7 +516,8 @@ function addDelRivalBlocksImpl(){
 		if(block.delete)
 			enemy.deleteBlock(block,false);
 		else
-			enemy.convertAddPlace(block);
+			enemy.addBlockInEdit(block.myX, block.myY, block.type);
+		
 	}
 	
 }
