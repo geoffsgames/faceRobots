@@ -378,8 +378,8 @@ function animateRivalArriving(msg){
 
 socket.on("rivalKeyCode2", function(msg){
 	if(msg.rID == uniqueID){
-		console.log("Returning " + msg + " TIME " + counter4KeyCmds);
-		console.log(msg);
+		//console.log("Returning " + msg + " TIME " + counter4KeyCmds);
+		//console.log(msg);
 		msg.time = counter4KeyCmds; //if HIS term when HE will do it is ahead of mine, then I will wait. I MY term when I will do it is ahead of his, then he will wait
 		msg.rID = rivalID;
 		returnKeyCode(msg);
@@ -394,8 +394,8 @@ function returnKeyCode(msg){
 
 socket.on("returnedKeyCode2", function(msg){
 	if(msg.rID == uniqueID){
-		console.log("Returned " + msg + " TIME " + counter4KeyCmds);
-		console.log(msg);
+		//console.log("Returned " + msg + " TIME " + counter4KeyCmds);
+		//console.log(msg);
 		returnedKeyMessage = msg;
 		if(waitReturnedKeyMessage)
 			updateGame();
@@ -436,7 +436,7 @@ function parseISOString(s) {
 socket.on('allComplete_rival2', function(msg){
 	if(msg.uID == rivalID){
 
-		console.log("other guy complete");
+		//console.log("other guy complete");
 		rivalCompleted = true;
 		if(waitingForRival) //if I've also completed
 			allComplete2();
