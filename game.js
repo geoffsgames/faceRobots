@@ -392,7 +392,7 @@ function wakeRotateWait(){
 }
 
 function updateGame(){
-	if(checkPVP()) //possibly move into PVP - suspends main gameloop and will implement new one
+	if(checkPVP != undefined && checkPVP()) //possibly move into PVP - suspends main gameloop and will implement new one
 		return;
 	
 	//failsafe enemy.isEnemy should ONLY be false for non null enemy's in PVP
