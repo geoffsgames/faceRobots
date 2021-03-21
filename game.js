@@ -445,6 +445,8 @@ function updateGamePVP(){
 	}
 	
 	
+	
+	
 	//////same with keyup
 	if(messageSentUp && returnedKeyMessageUp == null){
 		waitReturnedKeyMessageUp = true;
