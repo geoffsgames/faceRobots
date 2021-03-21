@@ -307,6 +307,12 @@ function moveToRival3(){
 	canvas.remove(player.group);
 	player.restart();
 	canvas.requestRenderAll();
+	
+	player.movX = 0;
+	player.movY = 0;
+	enemy.movY = 0;
+	enemy.movY = 0;
+	
 	completeCounter = 0;
 	inPVP = true;
 	enteringRival = false;
