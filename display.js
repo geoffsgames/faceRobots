@@ -328,8 +328,6 @@ function handleBlockSelection(block){
 			message.set('fill','red');
 		}
 		canvas.setActiveObject(player.tryToSelectWhatIHadSelectedBefore(lastSelectedBlock));
-		
-		socket.emit("rivalAddedBlock", {rID:rivalID ,blockX:block.myX, blockY:block.myY});
 	}
 	else if(block.isDeletePlace){
 		if(deleting){
@@ -345,8 +343,6 @@ function handleBlockSelection(block){
 				player.convertAddPlace(block);
 			canvas.setActiveObject(player.tryToSelectWhatIHadSelectedBefore(lastSelectedBlock));
 		}
-		
-		socket.emit("rivalDeletedBlock", {rID:rivalID ,blockX:block.myX, blockY:block.myY});
 	}
 	else if(block.inventory != undefined){
 		lastSelectedBlock = block.inventory;
