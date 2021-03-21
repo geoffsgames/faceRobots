@@ -339,7 +339,7 @@ function moveToRival3(){
 	//so random events are identical in both machines
 	Math.seed = sharedSeed;
 	randsSeeded = true; 
-	
+	reversePoint = 0; //this ensures when weapons which point (e.g. knives) are added both robots choose the same direction for them to point in
 	updateGame();
 }
 
