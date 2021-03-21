@@ -246,7 +246,7 @@ Player.prototype.deleteBlock2 = function(tempBlock, block, x, y, isRival){
 	this.weapons.delete(this.grid[x - this.myX][y - this.myY]);
 
 	
-	for(var i = 0, len = editBlocks.length; i < len; i+= 1){
+	for(var i = 0, len = this.editBlocks.length; i < len; i+= 1){
 		if(this.editBlocks[i] != selectedBlock)
 			this.editBlocks[i].selectable = false;
 	}
