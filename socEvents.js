@@ -432,11 +432,10 @@ socket.on('allComplete_rival2', function(msg){
 
 		console.log("other guy complete");
 		rivalCompleted = true;
-		if(waitingForRival){ //if I've also completed
-			oldTime = msg.time //sync finishing times
+		if(waitingForRival) //if I've also completed
 			allComplete2();
-		}
-
+		else
+			oldTime = msg.time //sync finishing times - slower one always uses time of faster
 	}
 });
 
