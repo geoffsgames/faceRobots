@@ -502,7 +502,7 @@ function changeStateEnemyUp(code){
 //////////////////////////////////////ADDING / DELETING BLOCKS ///////////////////////////////////////////////
 
 socket.on('rivalAddDelBlock2', function(msg){
-	if(msg.uID == rivalID){
+	if(msg.rID == uniqueID){
 		rivalAddDelBlocks.push(msg);
 	}
 });
