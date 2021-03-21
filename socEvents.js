@@ -427,6 +427,12 @@ socket.on("returnedKeyCodeUp2", function(msg){
 });
 //////
 
+//https://stackoverflow.com/questions/27012854/change-iso-date-string-to-date-object-javascript
+function parseISOString(s) {
+  var b = s.split(/\D+/);
+  return new Date(Date.UTC(b[0], --b[1], b[2], b[3], b[4], b[5], b[6]));
+}
+
 socket.on('allComplete_rival2', function(msg){
 	if(msg.uID == rivalID){
 
@@ -435,7 +441,7 @@ socket.on('allComplete_rival2', function(msg){
 		if(waitingForRival) //if I've also completed
 			allComplete2();
 		else
-			oldTime = msg.time //sync finishing times - slower one always uses time of faster
+			oldTime = parseISOString(msg.time); //sync finishing times - slower one always uses time of faster
 	}
 });
 
