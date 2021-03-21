@@ -513,10 +513,13 @@ socket.on('rivalAddDelBlock2', function(msg){
 function addDelRivalBlocksImpl(){
 	while(rivalAddDelBlocks.length > 0){
 		block = rivalAddDelBlocks.pop();
+		var oldSelected = selectedBlock;
 		if(block.delete)
-			enemy.deleteBlock(block,false);
+			enemy.deleteBlock(block,!block.rotate,true);
 		else
 			enemy.addBlockInEdit(block.myX, block.myY, block.type);
+		selectedBlock = oldSelected; //(TODO a bit hacky) some code in these functions changes selectedBlock (the block currently selected) as it's written for the player. 
+							//Shouldn't do so for rival so stop it interfering in case I'm editing player at same time.
 		
 	}
 	
