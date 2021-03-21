@@ -49,7 +49,7 @@ Player.prototype.convertAddPlace = function(addPlace){
 				this.recordInventoryNum(this.inventoryQuants[this.selectedType], this.selectedType);
 			}
 		}
-		socket.emit("rivalAddDelBlock", {rID:rivalID ,blockX:block.myX, blockY:block.myY, delete:false, type:type});
+		socket.emit("rivalAddDelBlock", {rID:rivalID ,newX, newY, delete:false, type:type});
 
 	}
 };
