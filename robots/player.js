@@ -1,6 +1,5 @@
 Player.prototype = new Person();   
 Player.prototype.constructor=Player;
-var editBlocks = new Array();
 
 var edgeDetectDis = 3;//calculate landscape of adjacent grid when get this close to edge of current grid
 
@@ -10,6 +9,7 @@ var stairDuration = 1024;
 
     
 function Player(myX, myY, facing) {
+	this.editBlocks = new Array();
 	this.deadFace = "goodfaceDead";
 	this.mainFace = "goodface";
 	this.startFace = this.mainFace;
