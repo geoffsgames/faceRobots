@@ -209,6 +209,7 @@ function checkPVP(){
 function jumpToPVPimpl(){
 	if(jumpToPVPmsg == null)
 		return false;
+	var msg = jumpToPVPmsg;
 	enteringRival = true; //stops anything else happening while I'm animating across
 	rivalID = msg.targID;
 	if(enemy != null)
@@ -221,6 +222,7 @@ function jumpToPVPimpl(){
 function acceptPVPimpl(){
 	if(acceptPVPmsg == null)
 		return false;
+	var msg = acceptPVPmsg;
 	if(enemy != null){
 		enemy.updateGrid(true); //clear old enemy;
 		canvas.remove(enemy.group);
