@@ -749,7 +749,7 @@ Player.prototype.willSetMovement = function(movX, movY,creep){
 };
 
 Player.prototype.update = function(){
-	if(!this.isRival){
+	if(this != enemy){ //if it's the rival in PVP (i.e. not directly controlled by this player) don't scroll to it and do the stuff related to it leaving the grid
 		this.adjustScroll();
 		this.possiblyLeaveGrid();//check entered next landscape or close enough to at least generate next landscape
 		this.possiblyUpdateBlind();
