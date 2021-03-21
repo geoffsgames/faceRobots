@@ -492,7 +492,7 @@ function allComplete(){
 		if(inPVP){
 			console.log("I'm completed");
 			//"I'm done"
-			socket.emit("allComplete_rival", {uID:uniqueID, tCounter:rivalTimeCounter});
+			socket.emit("allComplete_rival", {uID:uniqueID, tCounter:rivalTimeCounter, time:oldTime});
 			
 			//move on only if rival also done
 			if(rivalCompleted)
