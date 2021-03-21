@@ -305,13 +305,14 @@ function moveToRival3(){
 	player.group.originX = "left";
 	player.group.originY = "top";
 	canvas.remove(player.group);
-	player.restart();
-	canvas.requestRenderAll();
 	
 	player.movX = 0;
 	player.movY = 0;
 	enemy.movY = 0;
 	enemy.movY = 0;
+	
+	player.restart();
+	canvas.requestRenderAll();
 	
 	completeCounter = 0;
 	inPVP = true;
