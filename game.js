@@ -620,6 +620,8 @@ function updateGame2(){
 				player.tryToSpeedUp();
 				enemy.tryToSpeedUp();
 			}
+			if(inPVP)
+				 addDelRivalBlocksImpl(); //if rival is building add/delete blocks
 			if(inPVP && player.isInvader){ //switch order of player and enemy in PVP to ensure it's the same on both machines
 				enemy.update();
 				player.update();
