@@ -184,6 +184,10 @@ socket.on('jumpToRival_response', function(msg){
 	if(msg.otherID == uniqueID){
 		if(confirm('Accept challenge from ' + msg.myID) + '?'){ //prompt the user
 			enteringRival = true; //stops anything else happening while I'm accepting the rival
+			player.movX = 0;
+			player.movY = 0;
+			player.willMovX = 0;
+			player.willMovY = 0;
 			socket.emit("jumpToPVPAccepted", {targID:uniqueID, visID:msg.myID, pX:player.myX, pY:player.myY, facing:player.facing,  //send all details of me and my landscape so rival can join it
 								seed:land.seed,globalSeed:globalSeed, startSeed:startSeed, startGlobalSeed:startGlobalSeed});
 			acceptPVPmsg = msg;
