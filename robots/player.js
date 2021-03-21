@@ -39,7 +39,7 @@ Player.prototype.convertAddPlace = function(addPlace){
 			type = this.inventoryTypes[this.selectedType];
 		var newX = addPlace.gridX;
 		var newY = addPlace.gridY;
-		this.addBlockInEdit(type,newX,newY);
+		this.addBlockInEdit(newX,newY,type);
 		if(!playingBack){
 			this.inventoryQuants[this.selectedType] -= 1;
 			if(this.inventoryQuants[this.selectedType] == 0){
