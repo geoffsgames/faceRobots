@@ -607,9 +607,9 @@ function updateGame2(){
 			else{
 				player.tryToChangeDir();
 				if(inPVP) //not a rival in two player mode
-					enemy.intelligence();
-				else
 					enemy.tryToChangeDir();
+				else
+					enemy.intelligence();
 			}
 			if(inPVP && player.isInvader){ //switch order of player and enemy in PVP to ensure it's the same on both machines
 				enemy.tryToSpeedUp();
