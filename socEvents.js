@@ -16,6 +16,8 @@ var rivalArrivedMsgUp = null;
 var jumpToPVPmsg = null;
 var acceptPVPmsg = null;
 
+var sharedSeed = NaN; //ensures both machines use same seeded random numbers for random events
+
 if(usingSocket){
 	socket.emit('newPlayer', {uID:uniqueID, gr:getStringArray(player.grid), trueNewPlayer:true});
 }
@@ -230,8 +232,10 @@ function acceptPVPimpl(){
 
 //(receiver) add attacker when position attacker ends up in has been calculated
 socket.on('rivalHasArrived', function(msg){
-	if(msg.yourID == uniqueID)
+	if(msg.yourID == uniqueID){
+		sharedSeed = msg.seed;
 		animateRivalArriving(msg);
+	}
 });
 
 //(attacker) move into the rival's arena - part1: initialise animating into corner to show about to move
@@ -278,7 +282,9 @@ function moveToRival2(msg){
 		if(Math.random() > 0.5)
 			player.myY -= 10;
 	}
-	socket.emit('reportRivalArrived', {yourID:rivalID, grid:getStringArray(player.grid), rivalX:player.myX, rivalY:player.myY, facing:player.facing});
+	
+	sharedSeed = Math.random() * 1000;
+	socket.emit('reportRivalArrived', {yourID:rivalID, grid:getStringArray(player.grid), rivalX:player.myX, rivalY:player.myY, facing:player.facing, seed:sharedSeed});
 	scrollToPlayer();
 	//initialise animating out of corner
 	player.animateOutOfCorner(moveToRival3);
@@ -302,6 +308,12 @@ function moveToRival3(){
 	enteringRival = false;
 	rivalTimeCounter = 0; //counter ensures I'm at the same game time as rival (increments on every game update)
 	enemy.readyToMove = true; //non human players fade in. Human plays don't so ready to move from start
+	
+	//random numbers need to be seeded with shared (randomly generated seperate to seed which keeps landscape consistant) seed 
+	//so random events are identical in both machines
+	Math.seed = sharedSeed;
+	randsSeeded = true; 
+	
 	updateGame();
 }
 
