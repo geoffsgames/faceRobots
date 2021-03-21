@@ -170,13 +170,13 @@ Player.prototype.deleteBlock = function(block, mustDelete, isRival){
 		//make all the others unselectable
 		selectedBlock = block;
 		for(var i = 0, len = editBlocks.length; i < len; i+= 1){
-			if(editBlocks[i] != selectedBlock)
-				editBlocks[i].selectable = false;
+			if(this.editBlocks[i] != selectedBlock)
+				this.editBlocks[i].selectable = false;
 		}
 		for(var i = 0, len = this.rects.length; i < len; i+= 1)
 			this.rects[i].selectable = false;
-
-		message.set("text","");
+		if(!isRival)
+			message.set("text","");
 		block.bringToFront();
 		selectedBlock.initialAngle = selectedBlock.angle;
 	}
@@ -204,7 +204,7 @@ Player.prototype.deleteBlock = function(block, mustDelete, isRival){
 		else{
 			var newBlock = this.redoSpringBlock(block,tempBlock);
 			canvas.add(newBlock);
-			editBlocks.push(newBlock);
+			this.editBlocks.push(newBlock);
 			newBlock.myX = block.myX;
 			newBlock.myY = block.myY;
 	
@@ -224,11 +224,13 @@ Player.prototype.deleteBlock = function(block, mustDelete, isRival){
 			}
 
 		}
-		for(var i =0; i < quantDeleted; i+= 1) //in case deleted multiple copies of this block or deleted this block without called deleteBlock2 (i.e. wasn't completely removed)
-			this.addBlockToInventory(tempBlock.type);
+		if(!isRival){
+			for(var i =0; i < quantDeleted; i+= 1) //in case deleted multiple copies of this block or deleted this block without called deleteBlock2 (i.e. wasn't completely removed)
+				this.addBlockToInventory(tempBlock.type);
+		}
 	}
 	else{ //not an item like a spring where multiple blocks can be added to one position
-		this.deleteBlock2(tempBlock, block, x, y);
+		this.deleteBlock2(tempBlock, block, x, y, isRival);
 	
 	}
 	if(this.spring != null)
@@ -240,13 +242,13 @@ Player.prototype.deleteBlock = function(block, mustDelete, isRival){
 };
 
 //method that actually does the deleting
-Player.prototype.deleteBlock2 = function(tempBlock, block, x, y){
+Player.prototype.deleteBlock2 = function(tempBlock, block, x, y, isRival){
 	this.weapons.delete(this.grid[x - this.myX][y - this.myY]);
 
 	
 	for(var i = 0, len = editBlocks.length; i < len; i+= 1){
-		if(editBlocks[i] != selectedBlock)
-			editBlocks[i].selectable = false;
+		if(this.editBlocks[i] != selectedBlock)
+			this.editBlocks[i].selectable = false;
 	}
 	for(var i = 0, len = this.rects.length; i < len; i+= 1)
 		this.rects[i].selectable = false;
@@ -279,8 +281,8 @@ Player.prototype.deleteBlock2 = function(tempBlock, block, x, y){
 		canvas.remove(block);
 		gameGrid[x][y] = 1;
 		this.addAllMarkers();
-		
-		this.addBlockToInventory(tempBlock.type);
+		if(!isRival)
+			this.addBlockToInventory(tempBlock.type);
 	}
 	else{//if it would leave a gap = can't remove replace block
 		this.grid[x - this.myX][y - this.myY] = tempBlock;
