@@ -76,7 +76,7 @@ var keyMessageUp = null; //stores key commands received from rival
 var messageSentUp = false;
 var returnedKeyMessageUp = null;
 var waitReturnedKeyMessageUp = false;
-
+var checkPVP = null;
 
 start();
 addPlayer();
@@ -392,7 +392,7 @@ function wakeRotateWait(){
 }
 
 function updateGame(){
-	if(checkPVP != undefined && checkPVP()) //possibly move into PVP - suspends main gameloop and will implement new one
+	if(checkPVP != null && checkPVP()) //possibly move into PVP - suspends main gameloop and will implement new one
 		return;
 	
 	//failsafe enemy.isEnemy should ONLY be false for non null enemy's in PVP
