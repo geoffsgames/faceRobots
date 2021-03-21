@@ -287,6 +287,11 @@ function scrollToPlayer(){
 
 }
 
+function scrollToEnemy(){	
+	window.scrollTo(Math.round(Math.max(canvas._offset.left,(enemy.myX * gridWidth) - (clientWidth / 2))), 
+			Math.round(Math.max(canvas._offset.top,(enemy.myY * gridHeight) - (clientHeight / 2))));
+}
+
 function addRandomDirScenery(x,y,type){
 	var pointX, pointY;
 	if(Math.maybeSeededRandom(0,0.5))//random horizontal or vertical
