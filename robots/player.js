@@ -70,6 +70,9 @@ Player.prototype.convertAddPlace = function(addPlace){
 				this.recordInventoryNum(this.inventoryQuants[this.selectedType], this.selectedType);
 			}
 		}
+		
+		socket.emit("rivalAddDelBlock", {rID:rivalID ,blockX:block.myX, blockY:block.myY, delete:false, type:type});
+
 	}
 };
 
@@ -223,6 +226,9 @@ Player.prototype.deleteBlock = function(block, mustDelete){
 	}
 	if(this.spring != null)
 		this.spring.weapon = this;
+	
+	socket.emit("rivalAddDelBlock", {rID:rivalID ,blockX:block.myX, blockY:block.myY, delete:true, type:null});
+
 };
 
 //method that actually does the deleting
