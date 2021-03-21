@@ -496,3 +496,30 @@ function changeStateEnemyUp(code){
 	if(code == 13 || code == 16)//finish rotation
 		enemy.finishRotating();
 }
+
+
+
+//////////////////////////////////////ADDING / DELETING BLOCKS ///////////////////////////////////////////////
+
+socket.on('rivalAddDelBlock2', function(msg){
+	if(msg.uID == rivalID){
+		rivalAddDelBlocks.push(msg);
+	}
+});
+
+
+
+//add/delete rival block in sync with main game loop
+function addDelRivalBlocksImpl(){
+	while(rivalAddDelBlocks.length > 0){
+		block = rivalAddDelBlocks.pop();
+		if(block.delete)
+			enemy.deleteBlock(block,false);
+		else
+			enemy.convertAddPlace(block);
+	}
+	
+}
+
+
+
