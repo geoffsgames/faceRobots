@@ -431,13 +431,12 @@ socket.on('allComplete_rival2', function(msg){
 	if(msg.uID == rivalID){
 
 		console.log("other guy complete");
-		//if(msg.tCounter == rivalTimeCounter){
-			rivalCompleted = true;
-			if(waitingForRival) //if I've also completed
-				allComplete2();
-		//}
-		//else
-		//	alert("something went wrong");
+		rivalCompleted = true;
+		if(waitingForRival){ //if I've also completed
+			oldTime = msg.time //sync finishing times
+			allComplete2();
+		}
+
 	}
 });
 
