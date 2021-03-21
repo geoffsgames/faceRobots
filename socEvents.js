@@ -284,6 +284,8 @@ function moveToRival2(msg){
 	willAddEnemy = false;
 	addRival(curRival.grid, msg.pX, msg.pY, msg.facing);
 	
+	scrollToEnemy();
+	
 	player.myX = Math.round((curRival.left + scrollLeft) / gridWidth);
 	player.myY = Math.round((curRival.top + scrollTop) / gridHeight);
 	
