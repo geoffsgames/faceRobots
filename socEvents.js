@@ -13,6 +13,9 @@ var uniqueID = "" + Math.random();
 var rivalArrivedMsg = null;
 var rivalArrivedMsgUp = null;
 
+var jumpToPVPmsg = null;
+var acceptPVPmsg = null;
+
 if(usingSocket){
 	socket.emit('newPlayer', {uID:uniqueID, gr:getStringArray(player.grid), trueNewPlayer:true});
 }
@@ -181,10 +184,7 @@ socket.on('jumpToRival_response', function(msg){
 			enteringRival = true; //stops anything else happening while I'm accepting the rival
 			socket.emit("jumpToPVPAccepted", {targID:uniqueID, visID:msg.myID, pX:player.myX, pY:player.myY, facing:player.facing,  //send all details of me and my landscape so rival can join it
 								seed:land.seed,globalSeed:globalSeed, startSeed:startSeed, startGlobalSeed:startGlobalSeed});
-			if(enemy != null)
-				canvas.remove(enemy.group);
-			canvas.remove(player.group)
-			rivalID = msg.myID;
+			acceptPVPmsg = msg;
 		}
 	}
 })
@@ -194,13 +194,39 @@ socket.on('jumpToRival_response', function(msg){
 //(attacker)
 socket.on('jumpToPVP', function(msg){
 	if(uniqueID == msg.visID){ //I AM the one moving
-		enteringRival = true; //stops anything else happening while I'm animating across
-		rivalID = msg.targID;
-		if(enemy != null)
-			canvas.remove(enemy.group)
-		moveToRival(msg); //move to new landscape
+		jumpToPVPmsg = msg;
 	}
-})
+})		
+
+//implementation of PVP entry stuff synced with main game loop
+function checkPVP(){
+	return (jumpToPVPimpl() || acceptPVPimpl())
+}
+
+//socket.on('jumpToPVP' implementation in sync with main game loop
+function jumpToPVPimpl(){
+	if(jumpToPVPmsg == null)
+		return false;
+	enteringRival = true; //stops anything else happening while I'm animating across
+	rivalID = msg.targID;
+	if(enemy != null)
+		canvas.remove(enemy.group)
+	moveToRival(msg); //move to new landscape
+	return true;
+}
+
+//socket.on('jumpToRival_response' implementation in sync with main game loop
+function acceptPVPimpl(){
+	if(acceptPVPmsg == null)
+		return false;
+	if(enemy != null){
+		enemy.updateGrid(true); //clear old enemy;
+		canvas.remove(enemy.group);
+	}
+	canvas.remove(player.group)
+	rivalID = msg.myID;
+	return true;
+}
 
 //(receiver) add attacker when position attacker ends up in has been calculated
 socket.on('rivalHasArrived', function(msg){
