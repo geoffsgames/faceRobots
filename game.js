@@ -467,7 +467,7 @@ function updateGamePVP(){
 
 function updateGame2(){
 	console.trace();
-	if(oldTime2 != null){
+	if(!inPVP && oldTime2 != null){
 		actualIntv = new Date() - oldTime2; //shouldn't happen as updateGame() in display should handle the delays completely - this is just a failsafe, with appropriate error message
 		if((interval * 0.7) > actualIntv){
 			console.error("something went wrong with timing");
