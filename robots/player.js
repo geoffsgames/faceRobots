@@ -462,11 +462,10 @@ Player.prototype.tryToSelectWhatIHadSelectedBefore = function(lastSelectedInd){
 
 Player.prototype.activateEditMode = function(){
 	this.recreateable = false;
-	
+	this.damagedBlocks = new Array();
+
 	if(this != enemy){ //don't do the stuff connected to actual editing if this is the rival in PVP
 		canvas.setActiveObject(delImg);
-		this.damagedBlocks = new Array();
-
 		//add the delete icon to the inventory
 		delImg.left = ((this.inventoryTypes.length + 1.5) * gridWidth) + (window.pageXOffset || document.documentElement.scrollLeft);
 		delImg.top = (gridHeight * 0.5) + (window.pageYOffset || document.documentElement.scrollTop);
