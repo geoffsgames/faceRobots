@@ -83,7 +83,7 @@ Person.prototype.setupWeapons = function(){
 	for(var i =0; i < this.motors.length; i+= 1){
 		this.motors[i].calculateMovement();
 	}
-	this.findWeapons();
+	this.findWeapons(); //A.I. uses this to work out which of it's sides are strongest
 	//alert(JSON.stringify(player.dangerZones));
 }
 
