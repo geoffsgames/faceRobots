@@ -275,7 +275,7 @@ Player.prototype.deleteBlock2 = function(tempBlock, block, x, y, isRival, mustDe
 			for(var i = 0; i < newMots.length && !deletedMot; i+= 1){
 				var mot = newMots[i];
 				if(mot != null && (mot.myX == (x - this.myX) && mot.myY == (y - this.myY))){//found the motor that we want to delete
-					newMots = newMots.splice(i,i);
+					newMots = newMots.splice(i,1);
 					deletedMot = true;
 				}
 			}
