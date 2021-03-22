@@ -513,6 +513,7 @@ socket.on('rivalAddDelBlock2', function(msg){
 
 //add/delete rival block in sync with main game loop
 function addDelRivalBlocksImpl(){
+	rivalAddDelBlocks.reverse(); //to ensure additions/deletions happen in same order as original
 	while(rivalAddDelBlocks.length > 0){
 		block = rivalAddDelBlocks.pop();
 		var oldSelected = selectedBlock;
