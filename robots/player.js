@@ -159,9 +159,6 @@ Player.prototype.deleteBlock = function(block, mustDelete, isRival, invSelected)
 	var x = block.myX;
 	var y = block.myY;
 	
-	if(mustDelete == undefined)
-		mustDelete = false;
-	
 	if(!isRival){ //if same type is selected in inventory then will increment (for things like springs) -
 		//info for whether this is the case either comes from which block is selected in my inventory or as a message from rival
 		invSelected = this.inventoryTypes[this.selectedType] 
@@ -252,7 +249,7 @@ Player.prototype.deleteBlock = function(block, mustDelete, isRival, invSelected)
 };
 
 //method that actually does the deleting
-Player.prototype.deleteBlock2 = function(tempBlock, block, x, y, isRival, deleting){
+Player.prototype.deleteBlock2 = function(tempBlock, block, x, y, isRival, mustDelete){
 	for(var i = 0, len = this.editBlocks.length; i < len; i+= 1){
 		if(this.editBlocks[i] != selectedBlock)
 			this.editBlocks[i].selectable = false;
