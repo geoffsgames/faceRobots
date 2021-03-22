@@ -205,7 +205,7 @@ Player.prototype.deleteBlock = function(block, mustDelete, isRival, invSelected)
 		}
 		
 		if(tempBlock.quantity == 0){
-			this.deleteBlock2(tempBlock, block, x, y);
+			this.deleteBlock2(tempBlock, block, x, y, isRival, mustDelete);
 			quantDeleted -= 1; //because 1 will already be added in deleteBlock2
 		}
 		else{
