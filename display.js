@@ -13,7 +13,7 @@ canvas.controlsAboveOverlay = true;
 var character;
 
 //character speed
-var initialInterval = 128;
+var initialInterval = 256;
 var minInt = 16;
 var maxSpeed = initialInterval / minInt;
 var numSpeeds = (Math.log(maxSpeed) / Math.log(2));
