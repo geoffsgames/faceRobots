@@ -243,7 +243,7 @@ Player.prototype.deleteBlock = function(block, mustDelete, isRival, invSelected)
 		this.spring.weapon = this;
 	
 	if(!isRival)
-		socket.emit("rivalAddDelBlock", {rID:rivalID ,myX:block.myX, myY:block.myY, delete:true, type:null, rotate:!mustDelete}, invSelected);
+		socket.emit("rivalAddDelBlock", {rID:rivalID ,myX:block.myX, myY:block.myY, delete:true, type:null, rotate:!mustDelete, invSelected});
 
 };
 
