@@ -249,27 +249,7 @@ Player.prototype.deleteBlock = function(block, mustDelete, isRival, invSelected)
 };
 
 //method that actually does the deleting
-Player.prototype.deleteBlock2 = function(tempBlock, block, x, y, isRival, mustDelete){
-	this.weapons.delete(this.grid[x - this.myX][y - this.myY]);
-
-	if(tempBlock.type == "motor"){ //deleting a motor
-		
-		newMots = this.motors;
-		var deletedMot = false
-		for(var i = 0; i < newMots.length && !deletedMot; i+= 1){
-			var mot = newMots[i];
-			if(mot != null && (mot.myX == (x - this.myX) && mot.myY == (y - this.myY))){//found the motor that we want to delete
-				newMots = newMots.splice(i,i);
-				deletedMot = true;
-			}
-		}
-		if(!deletedMot){
-			//TODO figure out how to handle properly
-			alert("motor to be deleted not found");
-		}
-		this.motors = newMots
-	}
-	
+Player.prototype.deleteBlock2 = function(tempBlock, block, x, y, isRival, mustDelete){	
 	for(var i = 0, len = this.editBlocks.length; i < len; i+= 1){
 		if(this.editBlocks[i] != selectedBlock)
 			this.editBlocks[i].selectable = false;
@@ -285,7 +265,29 @@ Player.prototype.deleteBlock2 = function(tempBlock, block, x, y, isRival, mustDe
 	this.totalNumBlocks -= 1;
 	var foundGaps = false;
 	if(playingBack || !mustDelete || !this.areGaps(x - this.myX,y - this.myY)){
-		//can delete
+
+		this.weapons.delete(this.grid[x - this.myX][y - this.myY]);
+
+		if(tempBlock.type == "motor"){ //deleting a motor
+		
+			newMots = this.motors;
+			var deletedMot = false
+			for(var i = 0; i < newMots.length && !deletedMot; i+= 1){
+				var mot = newMots[i];
+				if(mot != null && (mot.myX == (x - this.myX) && mot.myY == (y - this.myY))){//found the motor that we want to delete
+					newMots = newMots.splice(i,i);
+					deletedMot = true;
+				}
+			}
+			if(!deletedMot){
+				//TODO figure out how to handle properly
+				alert("motor to be deleted not found");
+			}
+			this.motors = newMots
+		}
+		
+		
+		
 		clearMarkers(this.rects);
 		canvas.remove(block);
 		gameGrid[x][y] = 1;
@@ -305,9 +307,8 @@ Player.prototype.deleteBlock2 = function(tempBlock, block, x, y, isRival, mustDe
 				this.grid[ix][iy].checkedForGaps = false;
 		}
 	}
-	
-	if(foundGaps)
-		return; 
+
+
 
 };
 
