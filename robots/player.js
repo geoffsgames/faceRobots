@@ -14,6 +14,7 @@ function Player(myX, myY, facing) {
 	this.mainFace = "goodface";
 	this.startFace = this.mainFace;
 	this.hurtFace = "goodfaceHurt";
+	this.stoppedPressingMotor = false;
 	this.directionFaces = ["goodfaceLeft", "goodfaceUp", "goodfaceRight", "goodfaceDown"];
 	if(myX != undefined)
 		this.setup(myX, myY, facing);
