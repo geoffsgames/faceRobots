@@ -176,7 +176,7 @@ Motor.prototype.destroy = function(other){
 		for(var i = 0; i < newMots.length && !deletedMot; i+= 1){
 			var mot = newMots[i];
 			if(mot == this){//found the motor that we want to delete
-				newMots = newMots.splice(i,i);
+				newMots.splice(i,1);
 				deletedMot = true;
 			}
 		}
