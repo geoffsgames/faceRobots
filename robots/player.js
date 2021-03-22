@@ -237,7 +237,7 @@ Player.prototype.deleteBlock = function(block, mustDelete, isRival, invSelected)
 		}
 	}
 	else{ //not an item like a spring where multiple blocks can be added to one position
-		this.deleteBlock2(tempBlock, block, x, y, isRival);
+		this.deleteBlock2(tempBlock, block, x, y, isRival, mustDelete);
 	
 	}
 	if(this.spring != null)
@@ -249,10 +249,7 @@ Player.prototype.deleteBlock = function(block, mustDelete, isRival, invSelected)
 };
 
 //method that actually does the deleting
-Player.prototype.deleteBlock2 = function(tempBlock, block, x, y, isRival){
-	this.weapons.delete(this.grid[x - this.myX][y - this.myY]);
-
-	
+Player.prototype.deleteBlock2 = function(tempBlock, block, x, y, isRival, deleting){
 	for(var i = 0, len = this.editBlocks.length; i < len; i+= 1){
 		if(this.editBlocks[i] != selectedBlock)
 			this.editBlocks[i].selectable = false;
@@ -261,6 +258,38 @@ Player.prototype.deleteBlock2 = function(tempBlock, block, x, y, isRival){
 		this.rects[i].selectable = false;
 
 	selectedBlock = null;
+
+	this.grid[x - this.myX][y - this.myY] = null;
+	if(debugMode)
+		this.textGrid[x - this.myX][y - this.myY] = 0;
+	this.totalNumBlocks -= 1;
+	var foundGaps = false;
+	if(playingBack || !mustDelete || !this.areGaps(x - this.myX,y - this.myY)){
+		//can delete
+		clearMarkers(this.rects);
+		canvas.remove(block);
+		gameGrid[x][y] = 1;
+		this.addAllMarkers();
+		if(!isRival)
+			this.addBlockToInventory(tempBlock.type);
+	}
+	else{//if it would leave a gap = can't remove replace block
+		foundGaps = true;
+		this.grid[x - this.myX][y - this.myY] = tempBlock;
+		this.totalNumBlocks += 1;
+	}
+	//reset gap checking
+	for(var ix = 0; ix < this.gridSize; ix += 1){
+		for(var iy = 0; iy < this.gridSize; iy += 1){
+			if(this.grid[ix] != undefined && this.grid[ix][iy] != undefined && this.grid[ix][iy] != null)
+				this.grid[ix][iy].checkedForGaps = false;
+		}
+	}
+	
+	if(foundGaps)
+		return; 
+	this.weapons.delete(this.grid[x - this.myX][y - this.myY]);
+
 	if(tempBlock.type == "motor"){ //deleting a motor
 		
 		newMots = this.motors;
@@ -278,31 +307,6 @@ Player.prototype.deleteBlock2 = function(tempBlock, block, x, y, isRival){
 		}
 		this.motors = newMots
 	}
-	this.grid[x - this.myX][y - this.myY] = null;
-	if(debugMode)
-		this.textGrid[x - this.myX][y - this.myY] = 0;
-	this.totalNumBlocks -= 1;
-	if(playingBack || !this.areGaps(x - this.myX,y - this.myY)){
-		//can delete
-		clearMarkers(this.rects);
-		canvas.remove(block);
-		gameGrid[x][y] = 1;
-		this.addAllMarkers();
-		if(!isRival)
-			this.addBlockToInventory(tempBlock.type);
-	}
-	else{//if it would leave a gap = can't remove replace block
-		this.grid[x - this.myX][y - this.myY] = tempBlock;
-		this.totalNumBlocks += 1;
-	}
-	//reset gap checking
-	for(var ix = 0; ix < this.gridSize; ix += 1){
-		for(var iy = 0; iy < this.gridSize; iy += 1){
-			if(this.grid[ix] != undefined && this.grid[ix][iy] != undefined && this.grid[ix][iy] != null)
-				this.grid[ix][iy].checkedForGaps = false;
-		}
-	}
-
 };
 
 
