@@ -301,9 +301,12 @@ Spring.prototype.pointToKnife = function(dir,knife){
 };
 
 Spring.prototype.calculatePoints = function(){
-	if(this.weapon != null)
-		return;
-	Block.prototype.calculatePoints.call(this);
+	if(this.weapon != null){
+		if(this.pointX == 0 && this.pointY == 0)
+			this.weapon.calculatePoints()
+	}
+	else
+		Block.prototype.calculatePoints.call(this);
 
 };
 
