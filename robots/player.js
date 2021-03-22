@@ -154,9 +154,15 @@ Player.prototype.redoSpringBlock = function(oldBlock,gameBlock){
 	return newBlock;
 };
 
-Player.prototype.deleteBlock = function(block, mustDelete, isRival){
+Player.prototype.deleteBlock = function(block, mustDelete, isRival, invSelected){
 	var x = block.myX;
 	var y = block.myY;
+	
+	if(!isRival){ //if same type is selected in inventory then will increment (for things like springs) -
+		//info for whether this is the case either comes from which block is selected in my inventory or as a message from rival
+		invSelected = this.inventoryTypes[this.selectedType] 
+	}
+	
 	var tempBlock = this.grid[x - this.myX][y - this.myY];
 	
 	
@@ -183,7 +189,7 @@ Player.prototype.deleteBlock = function(block, mustDelete, isRival){
 	else if(tempBlock.canAddMore){ //for items like springs where more than one block can be added to a single position
 		var quantDeleted = 0;
 		if(!mustDelete){
-			if(this.inventoryTypes[this.selectedType] == tempBlock.type){
+			if(invSelected == tempBlock.type){
 				tempBlock.increment(1);
 			}
 			else{ //if have other item selected remove all and reset
@@ -237,7 +243,7 @@ Player.prototype.deleteBlock = function(block, mustDelete, isRival){
 		this.spring.weapon = this;
 	
 	if(!isRival)
-		socket.emit("rivalAddDelBlock", {rID:rivalID ,myX:block.myX, myY:block.myY, delete:true, type:null, rotate:!mustDelete});
+		socket.emit("rivalAddDelBlock", {rID:rivalID ,myX:block.myX, myY:block.myY, delete:true, type:null, rotate:!mustDelete}, invSelected);
 
 };
 
