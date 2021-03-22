@@ -643,6 +643,15 @@ Person.prototype.addPiece = function(newX, newY, blocktype, fromTextGrid, recrea
 	
 
 	addGridSquare(newX, newY, blocktype, this.grid, this.group,this,    ((this.gridSize * gridWidth) / 2), ((this.gridSize * gridWidth) / 2),pointX,pointY);
+	
+	if(this.grid[newX][newY].isWeapon){
+		this.weapons.add(this.grid[newX][newY]);
+		this.grid[newX][newY].checkForSprings();
+	}
+	if(this.grid[newX][newY].type == "spring"){
+		this.grid[newX][newY].checkForWeapons();
+	}
+	
 	if(!recreatingGroup){
 			if(this.occupied(newX + 1, newY)){
 				this.grid[newX + 1][newY].calculatePoints();
@@ -660,14 +669,6 @@ Person.prototype.addPiece = function(newX, newY, blocktype, fromTextGrid, recrea
 				this.grid[newX][newY - 1].calculatePoints();
 				this.grid[newX][newY - 1].redraw(true);
 			}
-	}
-	
-	if(this.grid[newX][newY].isWeapon){
-		this.weapons.add(this.grid[newX][newY]);
-		this.grid[newX][newY].checkForSprings();
-	}
-	if(this.grid[newX][newY].type == "spring"){
-		this.grid[newX][newY].checkForWeapons();
 	}
 	return this.grid[newX][newY];
 	
