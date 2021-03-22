@@ -485,7 +485,7 @@ function changeStateEnemy(code,doubleclick){
     		enemy.willStop = true;
     }
     else if(code >= 49 && code <= 58){ //numbers
-		  enemyStoppedPressingMotor = false;
+		  enemy.stoppedPressingMotor = false;
     	enemy.motorWillStart = code - 49;
     }
 
