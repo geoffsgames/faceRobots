@@ -270,11 +270,11 @@ Motor.prototype.animate = function() {
 	
 	
 	if(!this.owner.recreated && (movX != 0 || movY != 0 )){
-		if((interval < 50 || dist >= (gridWidth / 2))){
+		/**if((interval < 50 || dist >= (gridWidth / 2))){
 			tinyAnimate(dist,group,movX,movY,this);
 			allComplete();
 			return;
-		}
+		}*/
 		this.tinyAnimateCount = 0;
 		group.originX = "center";
 		group.originY = "center";
