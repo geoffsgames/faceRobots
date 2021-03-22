@@ -493,7 +493,7 @@ function changeStateEnemy(code,doubleclick){
 
 function changeStateEnemyUp(code){
 	if(code >= 49 && code <= 58) //motors
-		enemyStoppedPressingMotor = true;
+		enemy.stoppedPressingMotor = true;
 
 	if(code == 13 || code == 16)//finish rotation
 		enemy.finishRotating();
