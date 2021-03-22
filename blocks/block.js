@@ -109,75 +109,76 @@ Block.prototype.calculatePoints = function(){
 
 	var pointDir = -1;
 	var springSquare = null;
-			//which way points for things like knives
-			var basesX = []; //left, top, right, down
-			var basesY = [];
-			if(this.owner.occupied(this.myX + 1, this.myY) && this.owner.grid[this.myX + 1][this.myY].isBase){
-				basesX.push(0);
-				if(this.owner.grid[this.myX + 1][this.myY].type == "spring" && this.isWeapon){
-					pointDir = 0;
-					springSquare = this.owner.grid[this.myX + 1][this.myY];
+	
+	//which way points for things like knives
+	var basesX = []; //left, top, right, down
+	var basesY = [];
+	if(this.owner.occupied(this.myX + 1, this.myY) && this.owner.grid[this.myX + 1][this.myY].isBase){
+		basesX.push(0);
+		if(this.owner.grid[this.myX + 1][this.myY].type == "spring" && this.isWeapon){
+			pointDir = 0;
+			springSquare = this.owner.grid[this.myX + 1][this.myY];
+		}
+	}
+	if(this.owner.occupied(this.myX - 1, this.myY) && this.owner.grid[this.myX - 1][this.myY].isBase){
+		basesX.push(1);
+		if(this.owner.grid[this.myX - 1][this.myY].type == "spring" && this.isWeapon){
+			pointDir = 1;
+			springSquare = this.owner.grid[this.myX - 1][this.myY];
+		}
+	}
+	if(pointDir == -1){
+			if(this.owner.occupied(this.myX, this.myY + 1) && this.owner.grid[this.myX][this.myY + 1].isBase){
+				basesY.push(0);
+				if(this.owner.grid[this.myX][this.myY + 1].type == "spring" && this.isWeapon){
+					pointDir = 2;
+					springSquare = this.owner.grid[this.myX][this.myY + 1];
 				}
+
 			}
-			if(this.owner.occupied(this.myX - 1, this.myY) && this.owner.grid[this.myX - 1][this.myY].isBase){
-				basesX.push(1);
-				if(this.owner.grid[this.myX - 1][this.myY].type == "spring" && this.isWeapon){
-					pointDir = 1;
-					springSquare = this.owner.grid[this.myX - 1][this.myY];
+			if(this.owner.occupied(this.myX, this.myY - 1) && this.owner.grid[this.myX][this.myY - 1].isBase){
+				basesY.push(1);
+				if(this.owner.grid[this.myX][this.myY - 1].type == "spring" && this.isWeapon){
+					pointDir = 3;
+					springSquare = this.owner.grid[this.myX][this.myY - 1];
 				}
-			}
-			if(pointDir == -1){
-					if(this.owner.occupied(this.myX, this.myY + 1) && this.owner.grid[this.myX][this.myY + 1].isBase){
-						basesY.push(0);
-						if(this.owner.grid[this.myX][this.myY + 1].type == "spring" && this.isWeapon){
-							pointDir = 2;
-							springSquare = this.owner.grid[this.myX][this.myY + 1];
-						}
 
-					}
-					if(this.owner.occupied(this.myX, this.myY - 1) && this.owner.grid[this.myX][this.myY - 1].isBase){
-						basesY.push(1);
-						if(this.owner.grid[this.myX][this.myY - 1].type == "spring" && this.isWeapon){
-							pointDir = 3;
-							springSquare = this.owner.grid[this.myX][this.myY - 1];
-						}
+			}
+	}
 
-					}
+
+	if(springSquare == null){
+			//if surrounded on both (opposite) sides by blocks will be point directly at other block
+			if(basesX.length > 1)
+				basesX = [];
+			if(basesY.length > 1)
+				basesY = [];
+
+			if(basesX.length == 1){
+				pointDir = basesX[0];
 			}
-			
-			
-			if(springSquare == null){
-					//if surrounded on both (opposite) sides by blocks will be point directly at other block
-					if(basesX.length > 1)
-						basesX = [];
-					if(basesY.length > 1)
-						basesY = [];
-					
-					if(basesX.length == 1){
-						pointDir = basesX[0];
-					}
-					if(basesY.length == 1 && (pointDir == -1 || (this.reversePoint % 2 == 0) )) //reversePoint just ensures when adding blocks in edit mode doesn't always go the same way (can't use random as that will course knives to randomly change direction at other times)
-						pointDir = basesY[0] + 2;
-					//unlikely except in giants - either isolated or completely surrounded
-					if(pointDir == -1)
-						pointDir = this.reversePoint % 4;
-			}
-			else{
-				springSquare.pointToKnife(pointDir,this);
-			}
-			
-			if(pointDir == 0){
-				this.pointX = -1;
-				
-			}
-			else if(pointDir == 1){
-				this.pointX = 1;
-			}
-			else if(pointDir == 2)
-				this.pointY = -1;
-			else if(pointDir == 3)
-				this.pointY = 1;
-			this.getPoints();
+			if(basesY.length == 1 && (pointDir == -1 || (this.reversePoint % 2 == 0) )) //reversePoint just ensures when adding blocks in edit mode doesn't always go the same way (can't use random as that will course knives to randomly change direction at other times)
+				pointDir = basesY[0] + 2;
+			//unlikely except in giants - either isolated or completely surrounded
+			if(pointDir == -1)
+				pointDir = this.reversePoint % 4;
+	}
+	else{
+		springSquare.pointToKnife(pointDir,this);
+	}
+
+	if(pointDir == 0){
+		this.pointX = -1;
+
+	}
+	else if(pointDir == 1){
+		this.pointX = 1;
+	}
+	else if(pointDir == 2)
+		this.pointY = -1;
+	else if(pointDir == 3)
+		this.pointY = 1;
+	this.getPoints();
 
 };
 
