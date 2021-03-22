@@ -774,7 +774,7 @@ Motor.prototype.nextStep = function(){
 				this.reverse();
 				this.willReverse = false;
 			}
-			else if(this.owner.isEnemy && enemy.checkMotors(this) || (!this.owner.isEnemy && !this.stoppedPressingMotor)){
+			else if(this.owner.isEnemy && enemy.checkMotors(this) || (!this.owner.isEnemy && !this.owner.stoppedPressingMotor)){
 				//if motor is continuing moving on a loop 
 				this.reverse();
 				if(this.chainedMotors != undefined && this.chainedMotors != null){
