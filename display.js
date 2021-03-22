@@ -19,7 +19,6 @@ var maxSpeed = initialInterval / minInt;
 var numSpeeds = (Math.log(maxSpeed) / Math.log(2));
 
 var selectedBlock = null;
-var stoppedPressingMotor = false;
 
 var interval = initialInterval;
 var oldInterval = interval;
@@ -180,7 +179,7 @@ function changeState(code,doubleclick){
     	saving = false;
     }
     else if(code >= 49 && code <= 58){ //numbers
-		stoppedPressingMotor = false;
+	player.stoppedPressingMotor = false;
     	player.motorWillStart = code - 49;
     }
     else if(code==82){//r
@@ -242,7 +241,7 @@ window.onkeyup = function(e) {
 
 function changeStateUp(code){
 	if(code >= 49 && code <= 58) //motors
-		stoppedPressingMotor = true;
+		player.stoppedPressingMotor = true;
 
 	if(code == 13 || code == 16)//finish rotation
 		player.finishRotating();
