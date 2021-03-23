@@ -82,7 +82,7 @@ function getStringArray(inArr){
 socket.on('rivalChanged', function(msg){
 		if(msg.uID != uniqueID){
 			var img = convertGridToRivalIcon(msg.gr);
-			img.add(new fabric.text(msg.name,{fontSize: 20}));
+			img.add(new fabric.Text(msg.name,{fontSize: 20}));
 			img.grid = msg.gr;
 			rivalGrids[msg.uID] = img
 			if("" + msg.uID == curRivalID){ //if currently viewing this rival then update the image shown
