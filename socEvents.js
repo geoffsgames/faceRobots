@@ -100,7 +100,7 @@ socket.on('newRival', function(msg){
 		if(msg.uID != uniqueID && rivalGridIDs.indexOf(msg.uID) == -1){
 			var rivImg = convertGridToRivalIcon(msg.gr);
 			updateRivalShown(rivImg, msg.uID, msg.gr);
-			rivImg.add(new fabric.text(msg.name,{fontSize: 20}));
+			rivImg.add(new fabric.Text(msg.name,{fontSize: 20}));
 			if(msg.trueNewPlayer) //if player is completely new (i.e. it's not me that's just joined and I've just learned of the existing players)
 				socket.emit('newPlayer', {uID:uniqueID, gr:getStringArray(player.grid), trueNewPlayer:false, name}); //so new rival/player knows about me in return
 
