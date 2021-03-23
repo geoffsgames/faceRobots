@@ -71,6 +71,7 @@ Player.prototype.addBlockInEdit = function(newX, newY, type){
 		block.lockMovementY = true;
 		block.hasControls = false;
 		block.isDeletePlace = true;
+		block.origOwner = this;
 		gameGrid[newX + this.myX][newY + this.myY].isDeletePlace = true;
 		block.myX = newX + this.myX;
 		block.myY = newY + this.myY;
