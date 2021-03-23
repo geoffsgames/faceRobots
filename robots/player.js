@@ -576,6 +576,7 @@ Player.prototype.activateEditMode = function(){
 					block.hasControls = false;
 				}
 				block.isDeletePlace = true;
+				block.origOwner = this;
 				block.myX = x + this.myX;
 				block.myY = y + this.myY;
 				
