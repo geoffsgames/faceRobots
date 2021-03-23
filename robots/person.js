@@ -821,7 +821,7 @@ Person.prototype.checkCollision = function(dummyRun) {
 						addRandomDirScenery(this.myX + x,this.myY + y,"obstacle");//draw obstacle wonky indicating damage
 						otherBlock = gameGrid[this.myX + x][this.myY + y];
 					}
-					if(otherBlock != 1 && otherBlock != null && !otherBlock.isAddPlace && !(this == player && otherBlock.isDeletePlace)){//is an obstacle
+					if(otherBlock != 1 && otherBlock != null && !otherBlock.isAddPlace && !(otherBlock.isDeletePlace && otherBlock.origOwner == this)){//is an obstacle
 						if(otherBlock.ownerImage != this.group){//there is a collision
 							if(this == enemy){
 								//console.log("enemy collision");
