@@ -1082,8 +1082,10 @@ Person.prototype.changeDir = function(restarting){
 		if(this == player)
 			reportMass(mass,this.fasterSpeeds[dir],newFastSpeed);
 	}
-	else if(this == player && message.text.search("boosters") > 0)//clear any mass messages
-		message.set("text","");
+	else if(this == player && message.text.search("boosters") > 0){//clear any mass messages
+		message.set("fill", "green");
+		message.set("text","World " + origSeed);
+	}
 	if(newFastSpeed != this.fastSpeed_fixed || restarting){
 		this.fastSpeed_fixed = newFastSpeed;
 		if(otherRob.readyToMove || restarting){
@@ -1400,6 +1402,11 @@ Person.prototype.recreateGroup = function(offsetX, offsetY) {
 
 	this.actualWidth = gridWidth * this.gridSize;
 	this.actualHeight = gridHeight * this.gridSize;
+	
+	//identifies the player
+	if(inPVP && this == player){
+		this.group.add(new fabric.Circle({left:0, top:0, radius:50, fill:"yellow", opacity:0.2, originX:"center",originY:"center"}));
+	}
 };
 
 Person.prototype.collect = function(block){

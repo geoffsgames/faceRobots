@@ -7,6 +7,8 @@ var edgeDetectDis = 3;//calculate landscape of adjacent grid when get this close
 var stairRotations = 5;
 var stairDuration = 1024;
 
+var scrollMargin = 10;
+
     
 function Player(myX, myY, facing) {
 	this.editBlocks = new Array();
@@ -50,7 +52,8 @@ Player.prototype.convertAddPlace = function(addPlace){
 				this.recordInventoryNum(this.inventoryQuants[this.selectedType], this.selectedType);
 			}
 		}
-		socket.emit("rivalAddDelBlock", {rID:rivalID ,myX:newX, myY:newY, delete:false, type:type});
+		if(usingSocket)
+			socket.emit("rivalAddDelBlock", {rID:rivalID ,myX:newX, myY:newY, delete:false, type:type});
 
 	}
 };
@@ -183,8 +186,10 @@ Player.prototype.deleteBlock = function(block, mustDelete, isRival, invSelected)
 		}
 		for(var i = 0, len = this.rects.length; i < len; i+= 1)
 			this.rects[i].selectable = false;
-		if(!isRival)
-			message.set("text","");
+		if(!isRival){
+			message.set("fill", "green");
+			message.set("text","World " + origSeed);
+		}
 		block.bringToFront();
 		selectedBlock.initialAngle = selectedBlock.angle;
 	}
@@ -244,7 +249,7 @@ Player.prototype.deleteBlock = function(block, mustDelete, isRival, invSelected)
 	if(this.spring != null)
 		this.spring.weapon = this;
 	
-	if(!isRival)
+	if(usingSocket && !isRival)
 		socket.emit("rivalAddDelBlock", {rID:rivalID ,myX:block.myX, myY:block.myY, delete:true, type:null, rotate:!mustDelete, invSelected});
 
 };
@@ -323,14 +328,15 @@ Player.prototype.checkCollision = function() {
 		var background = new fabric.Rect({
 			  left: activatedStairs.x * gridWidth,
 			  top: activatedStairs.y * gridHeight,
-			  fill: 'red',
+			  fill: 'yellow',
 			  width: gridWidth * 2,
 			  height: gridHeight * 2,
 			});	
 		canvas.add(background);
 		activatedStairs.background = background;
-		var zindex = canvas.getObjects().indexOf(activatedStairs.image);
-		background.moveTo(zindex - 1);
+		this.group.bringToFront();
+		activatedStairs.image.moveTo(-1);
+		background.moveTo(-2);
 		canvas._objects[canvas._objects.length - 1].selectable = false;
 
 	}
@@ -377,7 +383,7 @@ Player.prototype.addBlockToInventory = function(type){
 			});
 		}
 		
-		img.borderColor = 'red';
+		img.borderColor = 'yellow';
 		img.strokeWidth = 5;
 
 		img.inventory = this.inventoryTypes.length;
@@ -448,7 +454,7 @@ Player.prototype.recordInventoryNum = function(num, ind){
 				{ left: (gridWidth * (ind + 1)) + scrollLeft - 10, 
 			top: (gridHeight * 2) - 10 + scrollTop, 
 			fontSize: 20,
-			stroke: '#ff0000' });
+			stroke: 'white' });
 		this.inventoryText.push(text);
 		canvas.add(text);
 		text.selectable = false;
@@ -663,7 +669,7 @@ Player.prototype.scrollInventory = function(absolute){
 		message.left += scrollingX;
 		message.top += scrollingY;
 		
-		if(curRival != undefined && curRival != null){
+		if(usingSocket && curRival != undefined && curRival != null){
 			curRival.left += scrollingX;
 			curRival.top += scrollingY;
 			curRival.setCoords();
@@ -675,7 +681,7 @@ Player.prototype.addMarker = function(x, y) {
 	if(gameGrid[this.myX + x][this.myY + y] != 1) //don't add markers off the screen
 		return;
 
-	var addColour = 'red'
+	var addColour = 'blue'
 	if(this == enemy)
 		addColour = 'yellow'
 	
@@ -1079,11 +1085,11 @@ Player.prototype.emergeFromStairs = function(stairs){
 Player.prototype.adjustScroll = function() {
 	var windowLeft = window.pageXOffset || document.documentElement.scrollLeft;
 	var windowTop = window.pageYOffset || document.documentElement.scrollTop;
-	var offTop = this.group.top - windowTop < (4 * gridHeight);
-	var offBottom = this.group.top + this.group.height - windowTop > (clientHeight - (4 * gridHeight));
+	var offTop = this.group.top - windowTop < (scrollMargin * gridHeight);
+	var offBottom = this.group.top + this.group.height - windowTop > (clientHeight - (scrollMargin * gridHeight));
 	
-	var offLeft = this.group.left - windowLeft < (4 * gridWidth);
-	var offRight = this.group.left + this.group.width - windowLeft > (clientWidth - (4 * gridWidth));
+	var offLeft = this.group.left - windowLeft < (scrollMargin * gridWidth);
+	var offRight = this.group.left + this.group.width - windowLeft > (clientWidth - (scrollMargin * gridWidth));
 	var speedUp = (scrollDelay / initialInterval) * gridWidth * this.fastSpeed_fixed * scrollSpeedup;
 	
 	

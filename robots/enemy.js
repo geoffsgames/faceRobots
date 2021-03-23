@@ -275,7 +275,7 @@ Enemy.prototype.checkMotors = function(mot){
 		dis = motX - (player.myX + player.maxX);
 		movX = -1;
 	}
-	if(mot.movX == movX != 0 && motY > player.myY + player.minY && motY < player.myY + player.maxY){
+	if(mot.oldMovX == movX != 0 && motY > player.myY + player.minY && motY < player.myY + player.maxY){
 		startProb = this.motorProb * (mot.getDis() / dis);
 	}
 	
@@ -289,7 +289,7 @@ Enemy.prototype.checkMotors = function(mot){
 			dis = motY - (player.myY + player.maxY);
 			movY = -1;
 		}
-		if(mot.movY == movY != 0 && motX > player.myX + player.minX && motX < player.myX + player.maxX){
+		if(mot.oldMovY == movY != 0 && motX > player.myX + player.minX && motX < player.myX + player.maxX){
 			startProb = this.motorProb * (mot.getDis() / dis);
 		}
 	}
