@@ -8,6 +8,8 @@ var rivalIconMargin = 20;
 var rivalID = null; //when we're actually fighting
 var socket = io();
 var uniqueID = "" + Math.random();
+var name = prompt("Enter your name: ");
+
 var rivalArrivedMsg = null;
 var rivalArrivedMsgUp = null;
 
@@ -16,11 +18,8 @@ var acceptPVPmsg = null;
 
 var sharedSeed = NaN; //ensures both machines use same seeded random numbers for random events
 
-var usingSocket = true;
+socket.emit('newPlayer', {uID:uniqueID, gr:getStringArray(player.grid), trueNewPlayer:true, name});
 
-if(usingSocket){
-	socket.emit('newPlayer', {uID:uniqueID, gr:getStringArray(player.grid), trueNewPlayer:true});
-}
 
 //add arrows for scrolling through rivals""
 var scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
@@ -83,6 +82,7 @@ function getStringArray(inArr){
 socket.on('rivalChanged', function(msg){
 		if(msg.uID != uniqueID){
 			var img = convertGridToRivalIcon(msg.gr);
+			img.add(new fabric.text(msg.name,{fontSize: 20}));
 			img.grid = msg.gr;
 			rivalGrids[msg.uID] = img
 			if("" + msg.uID == curRivalID){ //if currently viewing this rival then update the image shown
@@ -100,8 +100,9 @@ socket.on('newRival', function(msg){
 		if(msg.uID != uniqueID && rivalGridIDs.indexOf(msg.uID) == -1){
 			var rivImg = convertGridToRivalIcon(msg.gr);
 			updateRivalShown(rivImg, msg.uID, msg.gr);
+			rivImg.add(new fabric.text(msg.name,{fontSize: 20}));
 			if(msg.trueNewPlayer) //if player is completely new (i.e. it's not me that's just joined and I've just learned of the existing players)
-				socket.emit('newPlayer', {uID:uniqueID, gr:getStringArray(player.grid), trueNewPlayer:false}); //so new rival/player knows about me in return
+				socket.emit('newPlayer', {uID:uniqueID, gr:getStringArray(player.grid), trueNewPlayer:false, name}); //so new rival/player knows about me in return
 
 			curRivalIDind = rivalGridIDs.length;
 			rivalGridIDs.push(msg.uID);
@@ -175,14 +176,13 @@ function updateLeftRightArrows(){
 
 //(attacker) after request to try moving to rival (see Display.js) alert server
 function jumpToRival(){
-	if(usingSocket)
-		socket.emit("jumpToRival_request", {gr:getStringArray(player.grid),myID:uniqueID,otherID:curRivalID, });
+	socket.emit("jumpToRival_request", {gr:getStringArray(player.grid),myID:uniqueID,otherID:curRivalID,name });
 }
 
 //(receiver) response to attacker's request 
 socket.on('jumpToRival_response', function(msg){
 	if(msg.otherID == uniqueID){
-		if(confirm('Accept challenge from ' + msg.myID) + '?'){ //prompt the user
+		if(confirm('Accept challenge from ' + msg.name) + '?'){ //prompt the user
 			enteringRival = true; //stops anything else happening while I'm accepting the rival
 			player.movX = 0;
 			player.movY = 0;
