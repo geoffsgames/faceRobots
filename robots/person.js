@@ -1395,6 +1395,10 @@ Person.prototype.recreateGroup = function(offsetX, offsetY) {
 		}
 	}
 	if(this.heart != undefined){
+		//identifies the player
+		if(inPVP && this == player){
+			this.group.add(new fabric.Circle({left:0, top:0, radius:50, fill:"yellow", opacity:0.5, originX:"center",originY:"center"}));
+		}
 		this.resetFace(this.lastFace, true);
 		this.heart.image.bringToFront();
 
@@ -1403,10 +1407,7 @@ Person.prototype.recreateGroup = function(offsetX, offsetY) {
 	this.actualWidth = gridWidth * this.gridSize;
 	this.actualHeight = gridHeight * this.gridSize;
 	
-	//identifies the player
-	if(inPVP && this == player){
-		this.group.add(new fabric.Circle({left:0, top:0, radius:50, fill:"yellow", opacity:0.2, originX:"center",originY:"center"}));
-	}
+
 };
 
 Person.prototype.collect = function(block){
