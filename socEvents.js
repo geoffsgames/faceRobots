@@ -16,6 +16,8 @@ var acceptPVPmsg = null;
 
 var sharedSeed = NaN; //ensures both machines use same seeded random numbers for random events
 
+var usingSocket = true;
+
 if(usingSocket){
 	socket.emit('newPlayer', {uID:uniqueID, gr:getStringArray(player.grid), trueNewPlayer:true});
 }
