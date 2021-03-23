@@ -1397,7 +1397,7 @@ Person.prototype.recreateGroup = function(offsetX, offsetY) {
 	if(this.heart != undefined){
 		//identifies the player
 		if(inPVP && this == player){
-			this.group.add(new fabric.Circle({left:0, top:0, radius:50, fill:"red", opacity:0.5, originX:"center",originY:"center"}));
+			this.group.add(new fabric.Circle({left:0, top:0, radius:50, fill:"blue", opacity:0.5, originX:"center",originY:"center"}));
 		}
 		this.resetFace(this.lastFace, true);
 		this.heart.image.bringToFront();
