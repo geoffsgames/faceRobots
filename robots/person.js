@@ -40,13 +40,14 @@ Person.prototype.setup = function(myX, myY, facing) {
 	this.inventoryText = new Array();
 	this.collecting = new Array();
 	this.motors = new Array();
-	this.fasterSpeeds = [0,0,0,0];
-	this.fastSpeed_fixed = 1;
+	this.fasterSpeeds = [0,0,0,0]; //Function of how many fans there are on N,E,S or W side of robot
+	this.fastSpeed_fixed = 1; //how many times default speed I'm now travelling (check?)
+	this.justResumed = false;
 	this.hasLeftGrid = false;
 	//this.myBlocks = new Array();
 	
 	this.movefastCounter = 1;
-	this.fastSpeed_changing = 1;
+	this.fastSpeed_changing = 1; //how many times other robot's speed I'm now travelling (check?)
 	
 	this.motorWillStart = null;
 	
