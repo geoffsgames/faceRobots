@@ -720,7 +720,7 @@ Player.prototype.collectAll = function() {
 
 Player.prototype.updateRivals = function(){
 	if(usingSocket)
-		socket.emit('playerShapeChanged', {gr:getStringArray(this.grid),uID:uniqueID});
+		socket.emit('playerShapeChanged', {gr:getStringArray(this.grid),uID:uniqueID,name});
 }
 
 Player.prototype.setMovement = function(x, y) {
