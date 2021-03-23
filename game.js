@@ -1,15 +1,20 @@
 var debugMode = false;
-var randsSeeded =false; //debugMode;
+var randsSeeded = false; //debugMode;
 var scrollingX = 0;
 var scrollingY = 0;
 
-Math.seed = Math.round(Math.random() * 1000);
-alert(Math.seed);
+Math.seed = Math.round(Math.random() * 10000); //7465
+var s = prompt("Entering world: " + Math.seed + " or enter number of alternative world: ");
+if(s != null && !isNaN(parseInt(s, 10)))
+	Math.seed = parseInt(s, 10);
+
+var origSeed = Math.seed;
+
 var startGlobalSeed = Math.seededRandomDouble();
 var globalSeed = startGlobalSeed;
 var startSeed = Math.seededRandom(1000000,2000000);
 
-var thiefProb = 1; 0.1;
+var thiefProb = 1; //0.1;
 //var handyThiefProb = 0.1;
 var handyThiefProb = 0;
 
@@ -83,7 +88,7 @@ start();
 addPlayer();
 oldTime = new Date();
 updateGame();
-//enemy.extractFromOverlap();
+enemy.extractFromOverlap();
 
 loading = false; //[DON'T CHANGE TO MAKE IT LOAD - go to loadSave.js] so doesn't load at the start of each level
 
@@ -102,6 +107,9 @@ var oldTime2 = null;
 var socket = null;
 
 var lastKeyCounter = null;
+
+message.set("text", "World " + origSeed);
+
 
 //confusingly - for restarting after death NOT for starting at the beginning
 function startWholeGame(){
@@ -364,6 +372,8 @@ function addScenerySquare(x, y, blocktype, pointX, pointY){
 function addGridSquare(x, y, blocktype, grid, ownerImage, owner, offsetX, offsetY,pointX,pointY) {	
 	if(blocktype == "knife")
 		grid[x][y] = new Knife(blocktype, grid, ownerImage, owner, x, y, offsetX, offsetY,pointX,pointY);
+	else if(blocktype == "crystal")
+		grid[x][y] = new Crystal(blocktype, grid, ownerImage, owner, x, y, offsetX, offsetY,pointX,pointY);
 	else if(blocktype == "heart")
 		grid[x][y] = new Heart(blocktype, grid, ownerImage, owner, x, y, offsetX, offsetY,pointX,pointY);
 	else if(blocktype == "obstacle")
@@ -516,9 +526,10 @@ function updateGame2(){
 			player.changeDir(true);
 		}
 		messageTimer -= 1;
-		if(messageTimer == 0 && message.text == "Thiefbot has appeared!")
-			message.set("text","");
-		
+		if(messageTimer == 0 && message.text == "Thiefbot has appeared!"){
+			message.set("fill", "green");
+			message.set("text","World " + origSeed);
+		}
 		oldInterval = interval;
 		frozeWaitingForEnemy = false;//enemy fade in taking too long;
 		if(debugMode && timeStamp == (fadeFrames - arrivalTime) && !enemy.readyToMove) 
@@ -655,8 +666,6 @@ function countBlocks(){
 }
 	
 function addThief(){
-	//Math.seed = 1000;
-	
 	console.log("adding thief");
 	oldEnemy = enemy;
 	var side =0; //left up right down
@@ -723,6 +732,7 @@ function addThief(){
 	enemy.movX = movX;
 	enemy.movY = movY;
 	
+
 	clearThiefsPassage(movX, movY,enemy.myX + enemy.minX,enemy.myY + enemy.minY, enemy.width, enemy.minX, enemy.minY);
 	willAddThief = false;
 }
@@ -730,38 +740,41 @@ function addThief(){
 //clears passage thief came through from neighbouring land
 function clearThiefsPassage(movX, movY, thiefX, thiefY, width, minX, minY){
 	var adjacentX, adjacentY; //where the passage starts in the neighbouring land - i.e. neighbouring land co-ords adjacent to thief's location in this land
-	
+	var allowedDis = 0;
 	var thiefLand = null;
 	if(movX == 1){
 		leftGrid = generateNextGrid(leftGrid, -seedJumpX)
 		thiefLand = leftGrid;
 		adjacentY = newXYForNeighbour(leftGrid,thiefY,width,gameGrid[0].length,leftGrid.grid[0].length,leftGrid.grid.length, true, "right");
-		adjacentX = numPiecesX;
+		adjacentX = leftGrid.grid.length - 1; //starts at far right end of grid coming from
+		allowedDis = adjacentX;
 	}
 	else if(movX == -1){
 		rightGrid = generateNextGrid(rightGrid, seedJumpX)
 		thiefLand = rightGrid;	
 		adjacentY = newXYForNeighbour(rightGrid,thiefY,width,gameGrid[0].length,rightGrid.grid[0].length, rightGrid.grid.length,true,"left");
-		adjacentX = 0;			
+		adjacentX = 0;
+		allowedDis = rightGrid.grid.length - 1;
 	}
 	else if(movY == 1){
 		topGrid = generateNextGrid(topGrid, -seedJumpY)
 		thiefLand = topGrid;
 		adjacentX = newXYForNeighbour(topGrid,thiefX,width,gameGrid.length,topGrid.grid.length, topGrid.grid[0].length,true,"bottom");
-		adjacentY = numPiecesY;
+		adjacentY = topGrid.grid[0].length - 1; //starts at far bottom end of grid coming from
+		allowedDis = adjacentY;
 	}
 	else if(movY == -1){
 		bottomGrid = generateNextGrid(bottomGrid, seedJumpY)
 		thiefLand = bottomGrid;
 		adjacentX = newXYForNeighbour(bottomGrid,thiefX,width,gameGrid.length,bottomGrid.grid.length, bottomGrid.grid[0].length,true,"top");
 		adjacentY = 0;
-
+		allowedDis = bottomGrid.grid[0].length - 1;
 	}
 	thiefChanged = thiefLand.changedBlocks;
 	
 	var allClear = false;
 	var step = 0;
-	while(!allClear){
+	while(!allClear && step < (allowedDis * 0.75)){	//clearing a passage in *it's own land* by working backwards.
 		
 		allClear = true;
 		for(var i =0; i < width; i += 1){
@@ -787,6 +800,8 @@ function clearThiefsPassage(movX, movY, thiefX, thiefY, width, minX, minY){
 		else
 			step -= 1;
 	}
+	if(!allClear) //if tried to move across most of the landscape but still not managed to clear passage
+		addThief()//then try creating thief all over again
 }
 
 

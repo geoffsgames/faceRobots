@@ -25,10 +25,15 @@ var minNeighbourOffset = -5;
 
 var enemySize = 0;
 
-var plainProb = 0.4;
-var motorProb = 0.6;
-var springProb = 0.8
-var blinderProb = 0.9
+//enemy special block probabilities
+var plainProb = 0.5;
+var motorProb = 0.7; //0.2;
+var springProb = 0.8; //0.1;
+var blinderProb = 0.85; //0.05;
+var scramblerProb = 0.9; //0.05;
+var crystalProb = 1; //0.1;
+
+
 
 var Landscape = function(seed, globalSeed){
 	this.seed = seed;
@@ -79,7 +84,7 @@ Landscape.prototype.makeGrid = function(){
 	//this.enemyGrid = designEnemy(false,false);
 
 	if(init)
-		this.enemyGrid = designEnemy(true,false);
+		this.enemyGrid = designEnemy(false,false,"blinder");
 	else{
 		var prob = Math.seededRandomDouble();
 		if(prob < plainProb){
@@ -91,8 +96,11 @@ Landscape.prototype.makeGrid = function(){
 			this.enemyGrid = designEnemy(false,true);
 		else if(prob < blinderProb)
 			this.enemyGrid = designEnemy(false,false,"blinder");
-		else
+		else if(prob < scramblerProb)
 			this.enemyGrid = designEnemy(false,false,"scrambler");
+		else
+			this.enemyGrid = designEnemy(false,false,"crystal");
+
 	}
 
 	

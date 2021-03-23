@@ -4,6 +4,12 @@ var maxEnemyBlocks = 15;
 var minEnemyGrid = 6;
 var maxEnemyGrid = 9;
 
+var minEnemyBlocksCrystal = 5;
+var maxEnemyBlocksCrystal = 10;
+var minEnemyGridCrystal = 4;
+var maxEnemyGridCrystal = 7;
+
+
 //motor
 var minEnemyMotorGrid = 10;
 var maxEnemyMotorGrid = 15;
@@ -19,8 +25,15 @@ var springProb = 0.6;
 
 designEnemy = function(initialLandscape, addSprings, special){
 	var size = Math.seededRandom(minEnemyGrid, maxEnemyGrid);
-	
 	var numBlocks = Math.seededRandom(minEnemyBlocks, (size - 2)  * (size - 2) );
+	var wallType = "wall";
+
+	if(special == "crystal"){
+		size = Math.seededRandom(minEnemyGridCrystal, maxEnemyGridCrystal);
+		numBlocks = Math.seededRandom(minEnemyBlocksCrystal, (size - 2)  * (size - 2) );
+		wallType = "crystal";
+	}
+	
 	
 	var enemyGrid =[];
 	for(var i =0; i < size; i+= 1){
@@ -80,7 +93,7 @@ designEnemy = function(initialLandscape, addSprings, special){
 		}
 		
 		
-		var block = new TempBlock("wall",newX,newY);
+		var block = new TempBlock(wallType,newX,newY);
 		enemyGrid[newX][newY] = block;
 		blockArray.push(block);
 				
@@ -165,7 +178,7 @@ designEnemy = function(initialLandscape, addSprings, special){
 			}
 				
 
-			if(enemyGrid[x][y] != undefined && enemyGrid[x][y].type == "wall"){
+			if(enemyGrid[x][y] != undefined && enemyGrid[x][y].type == wallType){
 				if(enemyGrid[nextoX][nextoY] == undefined){
 					var type = "knife";
 					if(special != undefined && (nKnives == 0 || (nKnives < numKnives - 1 && Math.seededRandomDouble() < 0.5 )))
@@ -189,7 +202,7 @@ designEnemy = function(initialLandscape, addSprings, special){
 		var y = blockArray[index].myY;
 		
 		//can't put heart where knife or other weapon is so only put if it is wall
-		if(blockArray[index].type == "wall"){
+		if(blockArray[index].type == wallType){
 			//weighted = give higher probability that heart will be in centre
 			//centrality should be almost 0 when at edge and 1 when at centre
 			var centrality = Math.pow(Math.min((Math.min((size - x),x) / (size / 2)),(Math.min((size - y),y) / (size / 2))),4);

@@ -3,7 +3,7 @@ document.body.style.overflow = 'hidden'; //prevent scrolling
 var canvasBG = document.getElementById('canvasBG');
 var context = canvasBG.getContext('2d');
 
-
+var usingSocket = false;
 
 var canvas = new fabric.Canvas("canvas");
 
@@ -13,8 +13,8 @@ canvas.controlsAboveOverlay = true;
 var character;
 
 //character speed
-var initialInterval = 1028;
-var minInt = 64;
+var initialInterval = 256;
+var minInt = 16;
 var maxSpeed = initialInterval / minInt;
 var numSpeeds = (Math.log(maxSpeed) / Math.log(2));
 
@@ -91,7 +91,7 @@ var message = new fabric.Text("Face Robots!", {
 	fontWeight: 'bold',
 	originX: 'center',
 	originY: 'center',
-	stroke: '#black',
+	stroke: 'white',
 	strokeWidth: 2
 });
 
@@ -105,15 +105,23 @@ var countLag = 0;
 document.onkeydown = keyListener;
 
 function initCanvas(){
-	canvas.setWidth(numPiecesX * gridWidth);
-	canvas.setHeight(numPiecesY * gridHeight);
+	var canvWidth = numPiecesX * gridWidth;
+	var canvHeight = numPiecesY * gridHeight
+	canvas.setWidth(canvWidth);
+	canvas.setHeight(canvHeight);
 	canvas.calcOffset();
 	canvasBG.width  = numPiecesX * gridWidth + (canvas._offset.left * 2); // in pixels
 	canvasBG.height = numPiecesY * gridHeight + (canvas._offset.top * 2);
 	canvasBG.style.left = "-" + canvas._offset.left + "px";
 	canvasBG.style.top = "-" + canvas._offset.top + "px";
 	var img=document.getElementById("grass");
-    context.drawImage(img,0,0);
+	var imgWidth =img.width;
+	var imgHeight = img.height;
+	for(var w =0; w < Math.ceil(canvWidth / imgWidth); w++){
+		for(var h =0; h < Math.ceil(canvHeight / imgHeight); h++){
+			context.drawImage(img,imgWidth * w,imgHeight * h);
+		}
+	}
 	//context.fillStyle = "#DAF7A6";
 	//context.fillRect(0,0,numPiecesX * gridWidth,numPiecesY * gridHeight);
 }
@@ -147,23 +155,13 @@ function changeState(code,doubleclick){
     }
     else if(code == "anticlockwise"){
     	//enter
-	message.set("fill", "yellow");
-	message.set("text", "" + player.willFinishRotating );
-    	if(player.willFinishRotating == -1){ //not already rotating?
-    		player.willRotate = -1;//anti-clockwise
-		message.set("fill", "white");
-		message.set("text", "" + player.willRotate);
-	}
+    	if(player.willFinishRotating == -1) //not already rotating?
+    		player.willRotate = -1;//anti-clockwise	}
     }
     else if(code == "clockwise"){
     	//shift
-	message.set("fill", "yellow");
-	message.set("text", "" + player.willFinishRotating );
-    	if(player.willFinishRotating == -1){
+    	if(player.willFinishRotating == -1)
     		player.willRotate = 1;//clockwise
-		message.set("fill", "white");
-		message.set("text", "" + player.willRotate);
-	}
     }
     else if(code== 68){//d - down stairs
     	if(activatedStairs != null)
@@ -286,17 +284,17 @@ canvas.on('selection:updated', function(e){
 });
 
 function reactToSelection(e){
-	if(e.target == curRival){
+	if(usingSocket && e.target == curRival){
 		alert("ENTERING PVP");
 		jumpToRival();
 
 	}
-	else if(e.target == leftArrow){
+	else if(usingSocket && e.target == leftArrow){
 		curRivalIDind -= 1;
 		curRivalID = rivalGridIDs[curRivalIDind];
 		updateRivalShown(rivalGrids[curRivalID],curRivalID);
 	}
-	else if(e.target == rightArrow){
+	else if(usingSocket && e.target == rightArrow){
 		curRivalIDind += 1;
 		curRivalID = rivalGridIDs[curRivalIDind];
 		updateRivalShown(rivalGrids[curRivalID],curRivalID);

@@ -5,8 +5,6 @@ var curRival = null;
 var curRivalID = null;
 var curRivalIDind = 0;
 var rivalIconMargin = 20;
-//switch off when editing locally
-var usingSocket = true;
 var rivalID = null; //when we're actually fighting
 var socket = io();
 var uniqueID = "" + Math.random();
