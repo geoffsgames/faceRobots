@@ -843,7 +843,7 @@ Person.prototype.stopMotors = function(){
 				this.movethistime = true; //allows single one off movement
 			}
 			else{//not intermediate so can go back to normal interval
-				this.owner.justResumed = true;
+				this.justResumed = true;
 				this.resetInterval();
 			}
 			otherRob.recreated = false;
