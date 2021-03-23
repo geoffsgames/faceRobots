@@ -555,6 +555,18 @@ Motor.prototype.getDir = function(){
 		weaponR = Math.max(weaponR,1);
 	}
 	
+	//calculate which direction I should move based on distance and power
+	weaponT = weaponT * Math.min(maxSpeed,Math.pow(2,t));
+	if(t == 0){ //if distance is zero always go other way regardless of weapon power
+		weaponT = 0;
+		weaponB = Math.max(weaponB,1);
+	}
+	weaponB = weaponB * Math.min(maxSpeed,Math.pow(2,b));
+	if(b == 0){
+		weaponB = 0;
+		weaponT = Math.max(weaponT,1);
+	}
+	
 	if(weaponR > weaponL)
 		movX = 1;
 	else if(weaponL > weaponR)

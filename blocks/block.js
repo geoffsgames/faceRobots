@@ -247,6 +247,9 @@ Block.prototype.makeImage = function(type,offsetX,offsetY,pointAngle,pointOffset
 		type = "chainDark";
 
 	
+	
+	
+	
 	//pointOffset and offset- see above
 	this.image = new fabric.Image(document.getElementById(type), {
 		originX: "center",
@@ -590,6 +593,7 @@ Block.prototype.flyAway = function() {
 		  myImg: img,
 		  endX: newX,
 		  endY: newY,
+		  onChange: canvas.requestRenderAll.bind(canvas),
 		  myGameGrid: gameGrid, //to ensure doesn't add if I've just restarted the game
           onComplete: function() {
         	  	if(gameGrid == this.myGameGrid){

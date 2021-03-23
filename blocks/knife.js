@@ -4,6 +4,10 @@
 Knife.prototype = new Block();        // Here's where the inheritance occurs 
 Knife.prototype.constructor=Knife;       // Otherwise instances of Cat would have a constructor of Mammal 
 function Knife(type, ownerGrid, ownerImage,  owner, myX, myY, offsetX, offsetY, pointX, pointY){
+	this.setup(type, ownerGrid, ownerImage, owner, myX, myY, offsetX, offsetY, pointX, pointY);
+}
+
+Knife.prototype.setup = function(type, ownerGrid, ownerImage,  owner, myX, myY, offsetX, offsetY, pointX, pointY){
 	this.usePoints = true;
 	this.isWeapon = true;
 	//TODO - weaponStrength supersedes isWeapon as for non weapons will = 0, but keep for now to avoid recoding
