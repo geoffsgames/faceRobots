@@ -340,6 +340,7 @@ function moveToRival3(){
 	Math.seed = sharedSeed;
 	randsSeeded = true; 
 	reversePoint = 0; //this ensures when weapons which point (e.g. knives) are added both robots choose the same direction for them to point in
+	player.recreateGroup(0,0);
 	updateGame();
 }
 
