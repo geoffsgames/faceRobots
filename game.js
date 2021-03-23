@@ -607,7 +607,8 @@ function updateGame2(){
 
 			
 			
-			justResumed = false;
+			player.justResumed = false;
+			enemy.justResumed = false;
 			if(inPVP && player.isInvader){ //switch order of player and enemy in PVP to ensure it's the same on both machines
 				enemy.tryToChangeDir();
 				player.tryToChangeDir();
