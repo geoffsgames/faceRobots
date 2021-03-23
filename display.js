@@ -3,7 +3,7 @@ document.body.style.overflow = 'hidden'; //prevent scrolling
 var canvasBG = document.getElementById('canvasBG');
 var context = canvasBG.getContext('2d');
 
-var usingSocket = false;
+var usingSocket = true;
 
 var canvas = new fabric.Canvas("canvas");
 
