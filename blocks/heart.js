@@ -28,14 +28,11 @@ Heart.prototype.makeImage = function(type,offsetX,offsetY,pointAngle,pointOffset
 	var tallImgOffset = gridHeight;
 	var startFace = null;
 
-	if(type != "heart") //injured face/scrambler face etc. etc.
-		startFace = type;
-	else{
-		if(this.owner == null)//if owner is null assume player editing
-			startFace = player.startFace;
-		else
-			startFace = this.owner.startFace;
-	}
+
+	if(this.owner == null)//if owner is null assume player editing
+		startFace = player.startFace;
+	else
+		startFace = this.owner.startFace;
 	var myAngle = 0;
 	
 	//if I reset before I've finished rotating for some reason stick head on side for rotating back (shouldn't really happen but leave in just in case)
