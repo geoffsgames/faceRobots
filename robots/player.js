@@ -727,7 +727,7 @@ Player.prototype.isEditing = function(){
 	return (this.rects != undefined && this.rects != null);
 }
 
-Player.protoype.leaveEditing = function(){
+Player.prototype.leaveEditing = function(){
 	this.recreateable = true;
 	this.shrink();
 	clearMarkers(this.rects);
