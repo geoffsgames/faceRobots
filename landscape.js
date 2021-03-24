@@ -84,7 +84,7 @@ Landscape.prototype.makeGrid = function(){
 	//this.enemyGrid = designEnemy(false,false);
 
 	if(init)
-		this.enemyGrid = designEnemy(false,false,"blinder");
+		this.enemyGrid = designEnemy(false,false);
 	else{
 		var prob = Math.seededRandomDouble();
 		if(prob < plainProb){
