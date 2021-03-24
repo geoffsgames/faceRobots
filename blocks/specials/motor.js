@@ -714,7 +714,7 @@ Motor.prototype.makeImage = function(type, offsetX, offsetY, pointAngle, pointOf
 		originY: 'center'
 	});
 	
-	message.set('fill', 'red')
+	text.set('fill', 'red')
 
 	
 	var l = this.image.left;
