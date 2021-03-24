@@ -708,10 +708,11 @@ Motor.prototype.makeImage = function(type, offsetX, offsetY, pointAngle, pointOf
 	var text = new fabric.Text(caption, {
 		left: 0,
 		top: 0,
-		fontSize: 15,
+		fontSize: 20,
 		fontFamily: 'Comic Sans',
 		originX: 'center',
-		originY: 'center'
+		originY: 'center',
+		fontWeight: 'bold'
 	});
 	
 	text.set('fill', 'red')
