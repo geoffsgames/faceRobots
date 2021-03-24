@@ -822,7 +822,7 @@ function generateNextGrid(grid, seedJump){
 
 function addEnemy(){
 	willAddEnemy = false;
-	var which = 0; //Math.floor(Math.maybeSeededRandom(0,land.enemyXs.length));
+	var which = Math.floor(Math.maybeSeededRandom(0,land.enemyXs.length));
 	
 	if(enemyStr == undefined){//not loading from saved game
 		enemy = new Enemy(land.enemyXs[which],land.enemyYs[which],0);
