@@ -747,7 +747,7 @@ Player.prototype.leaveEditing = function(){
 }
 
 Player.prototype.setMovement = function(x, y) {
-	if(isEditing()){//I'm just resuming movement after being in edit mode
+	if(this.isEditing()){//I'm just resuming movement after being in edit mode
 		this.leaveEditing();
 	}
 	if(this.willRotate != 0){
