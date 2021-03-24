@@ -1416,7 +1416,7 @@ Person.prototype.recreateGroup = function(offsetX, offsetY) {
 	
 	//identifies the player
 	if(inPVP && this == player){
-		this.group.add(new fabric.Circle({left:0, top:0, radius:50, fill:"yellow", opacity:0.2, originX:"center",originY:"center"}));
+		this.group.add(new fabric.Circle({left:0, top:0, radius:50, fill:"blue", opacity:0.2, originX:"center",originY:"center"}));
 	}
 };
 
