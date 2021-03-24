@@ -265,13 +265,14 @@ Spring.prototype.getImageGroup = function(addNumber){
 			var text = new fabric.Text((this.motNum + 1) +  "", {
 				left: (gridWidth / 2),
 				top: (gridHeight / 2),
-				fontSize: 15,
+				fontSize: 20,
+				fontWeight: 'bold',
 				fontFamily: 'Arial',
 				originX: 'center',
 				originY: 'center'
 			});
 			
-			message.set('fill', 'red')
+			text.set('fill', 'red')
 
 			//wall not rotated so don't want the same rotation offset as spring
 	
