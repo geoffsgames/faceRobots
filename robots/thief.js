@@ -200,19 +200,21 @@ Thief.prototype.pickDirection = function(){
 				for(var i =0; i < collectables.length; i += 1){
 					var colX = collectables[i][0];
 					var colY = collectables[i][1];
-					var col = gameGrid[colX][colY];
-					//if(Math.seededRandomDouble() > (1/this.missProb)){
-						var dis = Math.abs(colX - centerX) + Math.abs(colY - centerY);
-						if(col.special)
-							dis = dis / this.preferenceForSpecials;
-						else if(col.type == "knife")
-							dis = dis / this.preferenceForKnives;
-		
-						if(dis < minDis){
-							minDis = dis;
-							minCollect = col;
-						}
-					//}
+					if(colX < numPiecesX && colX >= 0 && colY < numPiecesY && colY >= 0){
+						var col = gameGrid[colX][colY];
+						//if(Math.seededRandomDouble() > (1/this.missProb)){
+							var dis = Math.abs(colX - centerX) + Math.abs(colY - centerY);
+							if(col.special)
+								dis = dis / this.preferenceForSpecials;
+							else if(col.type == "knife")
+								dis = dis / this.preferenceForKnives;
+
+							if(dis < minDis){
+								minDis = dis;
+								minCollect = col;
+							}
+						//}
+					}
 				}
 				
 				this.collectMinDis = minDis;
