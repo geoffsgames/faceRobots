@@ -553,6 +553,8 @@ Player.prototype.activateEditMode = function(){
 				}
 				//end of resettings
 				gameGrid[x + this.myX][y + this.myY].isDeletePlace = true;
+				gameGrid[x + this.myX][y + this.myY].origOwner = this;
+
 				
 				if(gameGrid[x + this.myX][y + this.myY].type == "heart")
 					heart = gameGrid[x + this.myX][y + this.myY];
