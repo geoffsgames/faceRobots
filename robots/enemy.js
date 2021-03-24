@@ -1172,9 +1172,11 @@ Enemy.prototype.resetFace = function(url, override){
 			return;
 	}
 	if( this.heart.image._objects != undefined){
-		this.heart.type = url;
-		this.heart.redraw(true);
-		this.heart.type = "heart"
+		var oldWidth = this.heart.image._objects[0].width;
+		var oldHeight = this.heart.image._objects[0].height;
+		this.heart.image._objects[0].setElement(document.getElementById(url));
+		this.heart.image._objects[0].width = oldWidth;
+		this.heart.image._objects[0].height = oldHeight;		
 		this.lastFace = url;
 	}
 };
