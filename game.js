@@ -234,14 +234,14 @@ function addPlayer(){
 		player.motorWillStart = 0;
 	}
 	
-	//for(var i =0 ; i < 10; i += 1){
-	//	player.addBlockToInventory("wall");
+	for(var i =0 ; i < 10; i += 1){
+		player.addBlockToInventory("wall");
 		
-	//	player.addBlockToInventory("knife");
-	//	player.addBlockToInventory("motor");
-	//	player.addBlockToInventory("spring");
+		player.addBlockToInventory("knife");
+		player.addBlockToInventory("motor");
+		player.addBlockToInventory("spring");
 
-	//}
+	}
 	
 	player.group.bringToFront();
 }
