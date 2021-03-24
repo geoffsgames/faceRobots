@@ -720,7 +720,7 @@ Player.prototype.collectAll = function() {
 
 Player.prototype.updateRivals = function(){
 	if(usingSocket)
-		socket.emit('playerShapeChanged', {gr:getStringArray(this.grid),uID:uniqueID,name});
+		socket.emit('playerShapeChanged', {gr:getStringArray(this.grid),uID:uniqueID});
 }
 
 Player.prototype.setMovement = function(x, y) {
@@ -1133,7 +1133,9 @@ Player.prototype.adjustScroll = function() {
 ///////////////////////////SPECIALS/////////////////////////////////////
 
 Player.prototype.scramble = function(scrambler){
-	this.resetFace("goodfaceConfused");
+	this.resetFace("goodfaceConfused", true);
+	message.set("fill","purple");
+	message.set("text","You've been scrambled!");
 	Person.prototype.scramble.call(this, scrambler);
 
 }
@@ -1154,6 +1156,7 @@ Player.prototype.possiblyUpdateBlind = function(code){
 		return;
 	if(Math.maybeSeededRandom(0,1) < (this.blindedCounter / (blindedCounterMax))){
 		this.blinder.addCircle(Math.maybeSeededRandom(0, displayWidth), Math.maybeSeededRandom(0, displayHeight), Math.maybeSeededRandom(10,200), true)
+		message.bringToFront();
 	}
 	if(this.blinder.numBubbles == 0){
 		this.blinder.loseEffect();
@@ -1167,9 +1170,12 @@ Player.prototype.possiblyUpdateBlind = function(code){
 
 Player.prototype.blind = function(blinder){
 	this.blinder = blinder;
+	message.set("fill","black");
+	message.set("text","You've been blinded!");
 	blinder.fillWithBubbles();
+	message.bringToFront();
 	this.blindedCounter = Math.maybeSeededRandom(blindedCounterMin, blindedCounterMax);
-	this.resetFace("goodfaceBlind");
+	this.resetFace("goodfaceBlind",true);
 }
 
 

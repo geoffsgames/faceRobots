@@ -1137,11 +1137,9 @@ Person.prototype.resetFace = function(url,override){
 		if(this.blinder != undefined || this.blinder != null || this.scrambler != undefined || this.scrambler != null)
 			return;
 	}
-	var oldWidth = this.heart.image._objects[0].width;
-	var oldHeight = this.heart.image._objects[0].height;
-	this.heart.image._objects[0].setElement(document.getElementById(url));
-	this.heart.image._objects[0].width = oldWidth;
-	this.heart.image._objects[0].height = oldHeight;
+	this.heart.type = url;
+	this.heart.redraw(true);
+	this.heart.type = "heart"
 	this.lastFace = url;
 
 };
@@ -1395,10 +1393,6 @@ Person.prototype.recreateGroup = function(offsetX, offsetY) {
 		}
 	}
 	if(this.heart != undefined){
-		//identifies the player
-		if(inPVP && this == player){
-			this.group.add(new fabric.Circle({left:0, top:0, radius:50, fill:"blue", opacity:0.5, originX:"center",originY:"center"}));
-		}
 		this.resetFace(this.lastFace, true);
 		this.heart.image.bringToFront();
 
@@ -1407,7 +1401,10 @@ Person.prototype.recreateGroup = function(offsetX, offsetY) {
 	this.actualWidth = gridWidth * this.gridSize;
 	this.actualHeight = gridHeight * this.gridSize;
 	
-
+	//identifies the player
+	if(inPVP && this == player){
+		this.group.add(new fabric.Circle({left:0, top:0, radius:50, fill:"yellow", opacity:0.2, originX:"center",originY:"center"}));
+	}
 };
 
 Person.prototype.collect = function(block){
@@ -1734,10 +1731,15 @@ Person.prototype.scramble = function(scrambler){
 	var ind;
 	for (const [key, value] of Object.entries(origKeyCodes)) {
 		if((key == "clockwise" || key == "anticlockwise") && dontScrambleRotations)
-			this.keyCodes[value] == key
+			this.keyCodes[value] = key
 		else{
 			ind = Math.maybeSeededRandom(0,options.length - 1);
-			this.keyCodes[options.splice(ind,1)] = key;
+			var option = options.splice(ind,1);
+			while(dontScrambleRotations && (origKeyCodes["clockwise"] ==  option || origKeyCodes["anticlockwise"] == option)){
+				ind = Math.maybeSeededRandom(0,options.length - 1);
+				option = options.splice(ind,1);
+			}
+			this.keyCodes[option] = key;
 		}
 	}
 	this.scrambler = scrambler;
