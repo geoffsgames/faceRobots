@@ -878,10 +878,21 @@ Person.prototype.checkCollision = function(dummyRun) {
 			damagedOther = true;
 		}
 		for(var i =0; i < destroyBlocks.length; i += 1){//record all enemies/landscape that possibly will be damaged
+			//collision in editing mode
+			var editingVictim = null;
+			if(destroyBlocks[i].origOwner != undefined && destroyBlocks[i].origOwner != null && destroyBlocks[i].origOwner.isEditing()){
+				editingVictim = destroyBlocks[i].origOwner
+				editingVictim.leaveEditing();
+			}
+			
 			//damage me or collect block in here
 			destroyBlocks[i].destroy(this);
 			if(destroyBlocks[i].owner != undefined && destroyBlocks[i].owner != null && owners.indexOf(destroyBlocks[i].owner) === -1) //TODO owners.indexOf not implemented IE 8 and lower
 				owners.push(destroyBlocks[i].owner);
+			
+			if(editingVictim != null)
+				editingVictim.activateEditMode();
+			
 		}
 		for(var i =0; i < owners.length; i += 1){//damage enemy/landscape
 			//don't call shrink now because when colliding 
@@ -1405,7 +1416,7 @@ Person.prototype.recreateGroup = function(offsetX, offsetY) {
 	
 	//identifies the player
 	if(inPVP && this == player){
-		this.group.add(new fabric.Circle({left:0, top:0, radius:50, fill:"blue", opacity:0.2, originX:"center",originY:"center"}));
+		this.group.add(new fabric.Circle({left:0, top:0, radius:50, fill:"yellow", opacity:0.2, originX:"center",originY:"center"}));
 	}
 };
 

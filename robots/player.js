@@ -720,27 +720,35 @@ Player.prototype.collectAll = function() {
 
 Player.prototype.updateRivals = function(){
 	if(usingSocket)
-		socket.emit('playerShapeChanged', {gr:getStringArray(this.grid),uID:uniqueID,name});
+		socket.emit('playerShapeChanged', {gr:getStringArray(this.grid),uID:uniqueID});
+}
+
+Player.prototype.isEditing = function(){
+	return (this.rects != undefined && this.rects != null);
+}
+
+Player.protoype.leaveEditing = function(){
+	this.recreateable = true;
+	this.shrink();
+	clearMarkers(this.rects);
+	for(var i =0; i < this.damagedBlocks.length; i+=1)
+		canvas.remove(this.damagedBlocks[i]);
+	for(var i =0; i < this.editBlocks.length; i+= 1)
+		canvas.remove(this.editBlocks[i]);
+	this.rects = null;
+	this.stoppedBlocks = null;
+	for(var i =0, len = this.inventoryImages.length; i < len; i+= 1){
+		this.inventoryImages[i].selectable = false;
+	}
+	canvas.setActiveObject(delImg); //deselect currently selected (until I figure out how to do it properly)
+	canvas.remove(delImg);
+	this.setupWeapons();
+	this.updateRivals();
 }
 
 Player.prototype.setMovement = function(x, y) {
-	if(this.rects != undefined && this.rects != null){//I'm just resuming movement after being in edit mode
-		this.recreateable = true;
-		this.shrink();
-		clearMarkers(this.rects);
-		for(var i =0; i < this.damagedBlocks.length; i+=1)
-			canvas.remove(this.damagedBlocks[i]);
-		for(var i =0; i < this.editBlocks.length; i+= 1)
-			canvas.remove(this.editBlocks[i]);
-		this.rects = null;
-		this.stoppedBlocks = null;
-		for(var i =0, len = this.inventoryImages.length; i < len; i+= 1){
-			this.inventoryImages[i].selectable = false;
-		}
-		canvas.setActiveObject(delImg); //deselect currently selected (until I figure out how to do it properly)
-		canvas.remove(delImg);
-		this.setupWeapons();
-		this.updateRivals();
+	if(isEditing()){//I'm just resuming movement after being in edit mode
+		this.leaveEditing();
 	}
 	if(this.willRotate != 0){
 		if(this.movepartsSpeed > 1){//don't rotate when moving slider
