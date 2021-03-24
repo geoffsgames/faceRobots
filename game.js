@@ -14,7 +14,7 @@ var startGlobalSeed = Math.seededRandomDouble();
 var globalSeed = startGlobalSeed;
 var startSeed = Math.seededRandom(1000000,2000000);
 
-var thiefProb = 1; //0.1;
+var thiefProb = 0.1;
 //var handyThiefProb = 0.1;
 var handyThiefProb = 0;
 
