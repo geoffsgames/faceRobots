@@ -81,6 +81,7 @@ Enemy.prototype.setup = function(myX, myY, facing) {
 	this.readyToMove = false;
 	this.contactX = null;
 
+	this.justReadyToMove = false;
 };
 
 
@@ -222,9 +223,13 @@ Enemy.prototype.update = function(){
 			}
 		}
 		Person.prototype.update.call(this);
-		
+		if(this.notReadyToMove){
+			this.justReadyToMove = true;
+			this.notReadyToMove = false;
+		}
 	}
 	else{
+		this.notReadyToMove = true;
 		this.moved = false;
 		allComplete();
 	}
@@ -235,6 +240,7 @@ Enemy.prototype.leaveGrid = function(){
 };
 
 Enemy.prototype.leftGrid = function(){
+	
 	if(this.willLeaveGrid)
 		return true;
 	if(this.myX + this.minX == numPiecesX-1 && this.movX == 1){ //heading out right
@@ -1195,7 +1201,6 @@ Enemy.prototype.completeFade = function(){
             			}
             		}
             	}
-            	
             	this.owner.readyToMove = true;
             },
 

@@ -805,8 +805,32 @@ Player.prototype.update = function(){
 			willRestart = false;
 		}
 	}
+	if(enemy.justReadyToMove){
+		if(this.overEnemy()){
+			this.extractionRetries = 1000;
+			this.willRotate = (Math.round(Math.maybeSeededRandom(0,1)) * 2) - 1;
+		}
+		else{
+			this.extractionRetries = 5;
+			enemy.justReadyToMove = false;
+		}
+	}
 	Person.prototype.update.call(this);
 };
+
+Player.prototype.overEnemy = function(){
+
+	for(var x = this.minX; x <= this.maxX; x += 1){
+		for(var y = this.minY; y <= this.maxY; y += 1){
+			if(this.grid[x][y] != null && this.grid[x][y] != 0)
+				if(this.grid[x] != undefined && x + this.myX >= 0 && x + this.myX < numPiecesX && y + this.myY >= 0 && y + this.myY < numPiecesY && this.grid[x][y] != undefined && this.grid[x][y] != null){
+					if(gameGrid[x + this.myX][y + this.myY] != undefined && gameGrid[x + this.myX][y + this.myY] != null && gameGrid[x + this.myX][y + this.myY] != 1 && gameGrid[x + this.myX][y + this.myY].owner == enemy)
+						return true;
+				}
+		}
+	}
+
+}
 
 Player.prototype.tryToChangeDir = function(){
 	if((this.willMoveX != undefined || this.willRotate != 0)&& !intermediate && !this.partsMoving){
@@ -1052,7 +1076,7 @@ Player.prototype.emergeFromStairs = function(stairs){
 	this.myY = stairs.y + 1 - Math.round((this.maxY - this.minY)/2) - this.minY;
 	this.movX = 0;
 	this.movY = 0;
-	if(this.extractFromOverlap()){//didn't manage to get out of corner last time (i.e. randomly picking directions to get away didn't work)
+	if(this.extractFromOverlap(20)){//didn't manage to get out of corner last time (i.e. randomly picking directions to get away didn't work)
 		this.emergeFromStairs(stairs);//try again
 	}
 	else{
@@ -1107,7 +1131,7 @@ Player.prototype.adjustScroll = function() {
 		scrollingX = 0;
 		scrollingY = 0;
 	}
-	if(this.movX == 1 && windowLeft < maxScrollX && offRight){
+	else if(this.movX == 1 && windowLeft < maxScrollX && offRight){
 		if(scrollingX == 0){
 			scrollingX = speedUp;
 			scrollLoop();

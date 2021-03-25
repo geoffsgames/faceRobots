@@ -76,7 +76,8 @@ Person.prototype.setup = function(myX, myY, facing) {
 	//scrambling key codes when hit with a scramble block
 	for (const [key, value] of Object.entries(origKeyCodes)) {
 		this.keyCodes[value] = key;
-	}	
+	}
+	this.extractionRetries = 5;
 };
 
 Person.prototype.setupWeapons = function(){
@@ -695,11 +696,10 @@ Person.prototype.recreateTextGrid = function(grid){
 
 
 //if overlapping a wall (e.g. after just gone down stairs)then move until not overlapping any more
-Person.prototype.extractFromOverlap = function(count_max){
+Person.prototype.extractFromOverlap = function(count_max, onlyScenery){
+	if(onlyScenery == undefined)
+		onlyScenery = false;
 	var isOverlap = true;
-	
-	if(count_max == undefined)
-		count_max = 20;
 	var count = 0;
 	while(isOverlap && count < count_max){
 		var overlaps = [];
@@ -707,7 +707,7 @@ Person.prototype.extractFromOverlap = function(count_max){
 		//for every square on me check if it overlaps landscape obstacles
 		for(var x = this.minX; x <= this.maxX; x += 1){
 			for(var y = this.minY; y <= this.maxY; y += 1){
-				if(this.grid[x][y] != null && this.grid[x][y] != undefined){ //if this square is a used square on me (note *on me*, not *on the landscape*)
+				if(this.grid[x][y] != null && this.grid[x][y] != undefined && (!onlyScenery || this.grid[x][y].owner == null)){ //if this square is a used square on me (note *on me*, not *on the landscape*)
 					if(this.myX + x < 0)//if a block is off grid to the left then record this so that moving right will be a possible correction
 						overlaps.push("left");
 					else if(this.myX + x >= numPiecesX)//if a block is off grid to the right then record left as possible correction
@@ -738,8 +738,30 @@ Person.prototype.extractFromOverlap = function(count_max){
 				this.myX -= Math.floor(Math.maybeSeededRandom(-1,2));//move any direction
 				this.myY += Math.floor(Math.maybeSeededRandom(-1,2));
 			}
-			else//move according to which side I overlap
+			else{//move according to which side I overlap
+				
+				//if trapped on both sides move at an adjacent direction. Prefer a direction already overlapping. 
+				if(overlaps.includes("top") && overlaps.includes("bottom") && this.maxY - this.minY > 4){
+					if(overlaps.includes("left") && !overlaps.includes("right"))
+						overlaps = ["left"];
+					else if(overlaps.includes("right") && !overlaps.includes("left"))
+						overlaps = ["right"];
+					else if(!overlaps.includes("right") && !overlaps.includes("left"))
+						overlaps = ["left", "right"];
+				}
+				else if(overlaps.includes("left") && overlaps.includes("right") && this.maxX - this.minX > 4){
+					if(overlaps.includes("top") && !overlaps.includes("bottom"))
+						overlaps = ["top"];
+					else if(overlaps.includes("bottom") && !overlaps.includes("top"))
+						overlaps = ["bottom"];
+					else if(!overlaps.includes("bottom") && !overlaps.includes("top"))
+						overlaps = ["bottom", "top"];
+				}
+				
+				
+				
 				dir = overlaps[Math.floor(Math.maybeSeededRandom(0, overlaps.length))];
+			}
 			if(dir == "left")
 				this.myX += 1;
 			else if(dir == "right")
@@ -1224,7 +1246,7 @@ Person.prototype.rotateAndExtract = function(){
 	this.rotate();
 	var oldX = this.myX;
 	var oldY = this.myY;
-	this.extracted = !this.extractFromOverlap(5);
+	this.extracted = !this.extractFromOverlap(this.extractionRetries);
 	if(testingStuckRotation)
 		this.extracted = false;
 	if(!this.extracted){//if in too tight a spot then just rotate back
