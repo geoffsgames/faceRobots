@@ -111,6 +111,7 @@ var lastKeyCounter = null;
 message.set("text", "World " + origSeed);
 
 
+
 //confusingly - for restarting after death NOT for starting at the beginning
 function startWholeGame(){
 	changedBlocks = undefined;

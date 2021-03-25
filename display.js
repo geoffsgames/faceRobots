@@ -3,7 +3,7 @@ document.body.style.overflow = 'hidden'; //prevent scrolling
 var canvasBG = document.getElementById('canvasBG');
 var context = canvasBG.getContext('2d');
 
-var usingSocket = true;
+var usingSocket = false;
 
 var canvas = new fabric.Canvas("canvas");
 
@@ -40,6 +40,8 @@ else
 	gridWidth = 32;
 var gridHeight = gridWidth;
 
+document.getElementById("diffSliderDiv").style.setProperty("left", (document.documentElement.clientWidth / 2) + "px");
+var slider = document.getElementById("difficultySlider");
 
 //number of pieces actually shown on screen
 //var numPiecesScreenX = Math.ceil(clientWidth / gridWidth);
@@ -235,6 +237,10 @@ window.onkeyup = function(e) {
 	else{
 		changeStateUp(e.keyCode);
 	}
+};
+
+slider.onchange = function(){
+	difficulty = slider.value;		
 };
 
 function changeStateUp(code){
