@@ -58,7 +58,7 @@ Enemy.prototype.setup = function(myX, myY, facing) {
 	//*************AI PARAMETERS = ROBOTS PERSONALITY***********//
 	this.stepSideProbabilityRun = Math.seededRandomDouble(0.2, 0.7); //higher = scared. More likely to run rather than sidestep
 	this.motorProb = 0.75;
-	this.faceAlertness = 1; //Math.seededRandomDouble(0.9, 1);//if = 1.0 will always turn correct way to face player (i.e. knives out) 
+	this.faceAlertness = Math.seededRandomDouble(0.9, 1);//if = 1.0 will always turn correct way to face player (i.e. knives out) 
 	this.alertness = Math.seededRandomDouble(1, 3);//determines how big intervals between making a decision are
 	this.stepSideProbabilityBlockedDecr = Math.seededRandomDouble(0.1, 0.2);//every time I'm blocked increase probability of back stepping next time
 	this.stepSideProbabilityBlockedOrig = Math.seededRandomDouble(0.5, 1);//lower = more likely to back step
