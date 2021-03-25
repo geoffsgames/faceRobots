@@ -1,6 +1,9 @@
 var fadeDuration = 600; //fading in body
 var fadeDuration2 = 100; //fading in face after body faded in
 var fadeFrames = (fadeDuration + fadeDuration2) / interval; //number of game frames takes to fade in
+//reset the difficulty
+var difficulty = 0;
+slider.value = difficulty;
 
 
 Enemy.prototype = new Person();        
@@ -58,8 +61,6 @@ Enemy.prototype.setup = function(myX, myY, facing) {
 	//*************AI PARAMETERS = ROBOTS PERSONALITY***********//
 	this.stepSideProbabilityRun = Math.seededRandomDouble(0.2, 0.7); //higher = scared. More likely to run rather than sidestep
 	this.motorProb = 0.75;
-	this.faceAlertness = Math.seededRandomDouble(0.9, 1);//if = 1.0 will always turn correct way to face player (i.e. knives out) 
-	this.alertness = Math.seededRandomDouble(1, 3);//determines how big intervals between making a decision are
 	this.stepSideProbabilityBlockedDecr = Math.seededRandomDouble(0.1, 0.2);//every time I'm blocked increase probability of back stepping next time
 	this.stepSideProbabilityBlockedOrig = Math.seededRandomDouble(0.5, 1);//lower = more likely to back step
 	this.chaseProb = Math.seededRandomDouble(0.9, 1);
@@ -67,6 +68,7 @@ Enemy.prototype.setup = function(myX, myY, facing) {
 	//FOR LANDSCAPE
 	this.retreatingProb = 0.1;
 	this.origRetreatingProb = 0.1;
+	this.alertness = Math.seededRandomDouble(1, 3);//determines how big intervals between making a decision are
 
 	
 	//***************End of AI Parameters********************//
@@ -83,8 +85,6 @@ Enemy.prototype.setup = function(myX, myY, facing) {
 
 	this.justReadyToMove = false;
 };
-
-
 
 
 Person.prototype.findWeapons = function() {
@@ -476,6 +476,14 @@ Enemy.prototype.intelligence = function(){
 					};
 					//TODO based on how far I am away may choose to ignore player and go after collectables
 		};
+		
+		
+		//difficulty - difficulty higher than 0 means potentially keep the old direction
+		if(Math.maybeSeededRandom(0,1) < difficulty){
+			this.movX = oldMovX;
+			this.movY = oldMovY;
+		}
+		
 		this.changedDir = this.movX != oldMovX || this.movY != oldMovY;
 		
 		
@@ -1076,17 +1084,18 @@ Enemy.prototype.setToFacing = function(targetCenterX, targetCenterY, preChoseX, 
 	else if(Math.maybeSeededRandom(0,1) < probs[2].val)
 		selectedTurn = probs[2];
 	
-	this.contactSide = null;
-	if(selectedTurn == null)
-		this.rotation = 0;
-	else
-		this.rotation = selectedTurn.turns;
-
-	if(this.rotation == 2){
-		this.rotation = (Math.round(Math.maybeSeededRandom(0,1)) * 2) - 1
-		this.willRotateNext = this.rotation;
-	}
+	if(Math.maybeSeededRandom(0,1) > difficulty){
+		this.contactSide = null;
+		if(selectedTurn == null)
+			this.rotation = 0;
+		else
+			this.rotation = selectedTurn.turns;
 	
+		if(this.rotation == 2){
+			this.rotation = (Math.round(Math.maybeSeededRandom(0,1)) * 2) - 1
+			this.willRotateNext = this.rotation;
+		}
+	}
 	
 	
 	//TODO - take into account of fans
