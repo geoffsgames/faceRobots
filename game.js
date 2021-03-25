@@ -88,7 +88,7 @@ start();
 addPlayer();
 oldTime = new Date();
 updateGame();
-enemy.extractFromOverlap();
+enemy.extractFromOverlap(20,true);
 
 loading = false; //[DON'T CHANGE TO MAKE IT LOAD - go to loadSave.js] so doesn't load at the start of each level
 
@@ -233,6 +233,7 @@ function addPlayer(){
 		stoppedPressingMotor = false;
 		player.motorWillStart = 0;
 	}
+	
 	/**
 	for(var i =0 ; i < 10; i += 1){
 		player.addBlockToInventory("wall");
@@ -774,7 +775,7 @@ function clearThiefsPassage(movX, movY, thiefX, thiefY, width, minX, minY){
 	
 	var allClear = false;
 	var step = 0;
-	while(!allClear && step < (allowedDis * 0.75)){	//clearing a passage in *it's own land* by working backwards.
+	while(!allClear && Math.abs(step) < (allowedDis * 0.75)){	//clearing a passage in *it's own land* by working backwards.
 		
 		allClear = true;
 		for(var i =0; i < width; i += 1){
@@ -872,7 +873,7 @@ function addEnemy(){
 	}
 	
 	enemy.heart.image.bringToFront();
-	enemy.extractFromOverlap();
+	enemy.extractFromOverlap(20,true);
 	enemy.recreateGroup(0,0);
 	enemy.setupWeapons();
 	

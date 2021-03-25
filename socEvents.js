@@ -298,7 +298,7 @@ function moveToRival2(msg){
 	canvas.remove(curRival);
 	
 	//get out of wall
-	while(player.extractFromOverlap()){
+	while(player.extractFromOverlap(20)){
 		if(Math.random() > 0.5){ //if extracting from wall doesn't work then try a few more times, moving to the left and down as likely to be in top right corner 
 											//(but may not be - depending on scroll - but can't be in bottom or left corner)
 			player.myX -= 10;
