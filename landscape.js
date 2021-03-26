@@ -192,7 +192,7 @@ Landscape.prototype.makeGrid = function(){
 		//will shrink down to size later
 		//TODO hard coded for max 5 squares
 		height = width = ((maxTubeLength + maxSquat + maxTubeLength + maxSquat + maxTubeLength) * 2);
-		grid = this.makeTubular(width,height, this.numStairs);
+		grid = this.makeTubular(width,height, numEnemies);
 		
 		height = grid[0].length;
 		width = grid.length;
