@@ -1094,32 +1094,30 @@ Enemy.prototype.setToFacing = function(targetCenterX, targetCenterY, preChoseX, 
 		if(this.rotation == 2){
 			this.rotation = (Math.round(Math.maybeSeededRandom(0,1)) * 2) - 1
 			this.willRotateNext = this.rotation;
-		}
-	}
+		}	
 	
-	
-	//TODO - take into account of fans
-	
-	if(this.rotation != 0)
-		this.rotateAndExtract();
+		//TODO - take into account of fans
 
-	if(side == "left"){
-		this.contactX = this.minX;
-		this.contactY = this.dangerZones.left.along;
-	}
-	else if(side == "top"){ //top
-		this.contactX = this.dangerZones.top.along;
-		this.contactY = this.minY;
-	}
-	else if(side == "right"){ //right
-		this.contactX = this.maxX;
-		this.contactY = this.dangerZones.right.along;
-	}
-	else if(side == "bottom"){ //bottom
-		this.contactX = this.dangerZones.bottom.along;
-		this.contactY = this.maxY;
-	}
-		
+		if(this.rotation != 0)
+			this.rotateAndExtract();
+
+		if(side == "left"){
+			this.contactX = this.minX;
+			this.contactY = this.dangerZones.left.along;
+		}
+		else if(side == "top"){ //top
+			this.contactX = this.dangerZones.top.along;
+			this.contactY = this.minY;
+		}
+		else if(side == "right"){ //right
+			this.contactX = this.maxX;
+			this.contactY = this.dangerZones.right.along;
+		}
+		else if(side == "bottom"){ //bottom
+			this.contactX = this.dangerZones.bottom.along;
+			this.contactY = this.maxY;
+		}
+	}	
 };
 
 function compare(a, b){
