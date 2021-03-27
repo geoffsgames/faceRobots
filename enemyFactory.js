@@ -42,7 +42,7 @@ designEnemy = function(initialLandscape, addSprings, special){
 	
 	var blockArray = [];
 	var options = [];
-
+	var dontAdd = false;
 	//add blocks to the grid at random
 	for(var i =0; i < numBlocks; i += 1){
 		var newX = -1;
@@ -53,7 +53,7 @@ designEnemy = function(initialLandscape, addSprings, special){
 			
 		}//subsequent blocks are added so that they are next to existing block
 		else{
-			
+			dontAdd = false;
 			var wrongPlace = true;
 			while(wrongPlace){
 				var index = 0;
@@ -63,40 +63,52 @@ designEnemy = function(initialLandscape, addSprings, special){
 				//[1] means can be added right, [2] means can be added top and [3] means can be added bottom
 				if(options.length > 1) //if more than one block has been added choose to add adjacent to one of them at random, get the appropriate option[]
 					index = Math.seededRandom(0, options.length - 1);
-				var option = options[index];
-				if(option == undefined)
-					alert("something went wrong in landscape.designEnemy(line 175)");
-				var oldBlock = blockArray[option[1]];
-				
-				newX = oldBlock.myX;
-				newY = oldBlock.myY;
-				if(option[0] == 0)
-					newX -= 1;
-				else if(option[0] == 1)
-					newX += 1;
-				else if(option[0] == 2)
-					newY -= 1;
-				else if(option[0] == 3)
-					newY += 1;
-				
-				if(newX < 1 || newX >= size - 1 || newY < 1 || newY >= size - 1 || enemyGrid[newX][newY] != undefined){
-					//I thought I could add to left/right/up/down of this block but turned out I can't or I already filled it
-					
-					options.splice(index, 1);//remove that option
-					wrongPlace = true;
-				}
-				else{
+				else if(options.length == 0){
+					dontAdd = true; //choose another block to add adjacent to
+					newX = Math.seededRandom(1, size - 1);
+					newY = Math.seededRandom(1, size - 1);
+					while(enemyGrid[newX][newY] == undefined){
+						newX = Math.seededRandom(1, size - 1);
+						newY = Math.seededRandom(1, size - 1);
+					}
 					wrongPlace = false;
+				}
+				if(!dontAdd){
+					var option = options[index];
+					if(option == undefined)
+						alert("something went wrong in landscape.designEnemy(line 175)");
+					var oldBlock = blockArray[option[1]];
+					
+					newX = oldBlock.myX;
+					newY = oldBlock.myY;
+					if(option[0] == 0)
+						newX -= 1;
+					else if(option[0] == 1)
+						newX += 1;
+					else if(option[0] == 2)
+						newY -= 1;
+					else if(option[0] == 3)
+						newY += 1;
+					
+					if(newX < 1 || newX >= size - 1 || newY < 1 || newY >= size - 1 || enemyGrid[newX][newY] != undefined){
+						//I thought I could add to left/right/up/down of this block but turned out I can't or I already filled it
+						
+						options.splice(index, 1);//remove that option
+						wrongPlace = true;
+					}
+					else{
+						wrongPlace = false;
+					}
 				}
 			};
 			
 		}
 		
-		
-		var block = new TempBlock(wallType,newX,newY);
-		enemyGrid[newX][newY] = block;
-		blockArray.push(block);
-				
+		if(!dontAdd){
+			var block = new TempBlock(wallType,newX,newY);
+			enemyGrid[newX][newY] = block;
+			blockArray.push(block);
+		}
 		if(newX > 1)
 			options.push([0,i]);
 		if(newX < size - 2)
