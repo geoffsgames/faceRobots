@@ -319,10 +319,6 @@ function handleBlockSelection(block){
 	if(block == delImg){
 		deleting = true;
 	}
-	else if(block.isDamagedBlock){
-		message.set("text","Can't modify broken block!");
-		message.set('fill','red');
-	}
 	else if(block.isAddPlace){
 		if(!deleting)
 			player.convertAddPlace(block); //TODO only player can add/remove blocks for now. 
