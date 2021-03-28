@@ -18,7 +18,9 @@ Spring.prototype.setup = function(type, ownerGrid, ownerImage,  owner, myX, myY,
 	this.quantity = 1;
 	Motor.prototype.setup.call(this, type, ownerGrid, ownerImage,  owner, myX, myY, offsetX, offsetY, pointX, pointY);
 	this.special = true;
-	this.resistance = 2;	
+	this.resistance = 5;
+	this.origStrength = 5;
+	this.startingStrength = 5;
 	this.canAddMore = true;
 	this.isBase = true;
 	this.weapon = null;
@@ -265,13 +267,15 @@ Spring.prototype.getImageGroup = function(addNumber){
 			var text = new fabric.Text((this.motNum + 1) +  "", {
 				left: (gridWidth / 2),
 				top: (gridHeight / 2),
-				fontSize: 15,
+				fontSize: 20,
 				fontFamily: 'Arial',
 				originX: 'center',
-				originY: 'center'
+				originY: 'center',
+				fontWeight: 'bold',
+				fill: 'red'
 			});
 			
-			message.set('fill', 'red')
+			message.set('text', 'press ' + (this.motNum + 1) + ' to run your new motor');
 
 			//wall not rotated so don't want the same rotation offset as spring
 	

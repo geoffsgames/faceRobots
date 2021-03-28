@@ -26,7 +26,9 @@ Motor.prototype.setup = function(type, ownerGrid, ownerImage,  owner, myX, myY, 
 	this.oldMovX = 0;
 	this.moving = false;
 	this.willDestroy = false;
-	this.resistance = 2;
+	this.resistance = 5;
+	this.origStrength = 5;
+	this.startingStrength = 5;
 	this.needsCalc = false;
 
 	
@@ -708,13 +710,15 @@ Motor.prototype.makeImage = function(type, offsetX, offsetY, pointAngle, pointOf
 	var text = new fabric.Text(caption, {
 		left: 0,
 		top: 0,
-		fontSize: 15,
-		fontFamily: 'Comic Sans',
+		fontSize: 20,
+		fontFamily: 'Arial',
 		originX: 'center',
-		originY: 'center'
+		originY: 'center',
+		fontWeight: 'bold',
+		fill: "red"
 	});
 	
-	message.set('fill', 'red')
+	message.set('text', 'press ' + caption + " to run your new motor")
 
 	
 	var l = this.image.left;
