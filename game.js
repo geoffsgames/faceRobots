@@ -3,7 +3,7 @@ var randsSeeded = false; //debugMode;
 var scrollingX = 0;
 var scrollingY = 0;
 
-Math.seed = Math.round(Math.random() * 10000); //7465
+Math.seed = Math.round(Math.random() * 10000); //147 - down portal, bottom grid
 var s = prompt("Entering world: " + Math.seed + " or enter number of alternative world: ");
 if(s != null && !isNaN(parseInt(s, 10)))
 	Math.seed = parseInt(s, 10);
@@ -14,7 +14,7 @@ var startGlobalSeed = Math.seededRandomDouble();
 var globalSeed = startGlobalSeed;
 var startSeed = Math.seededRandom(1000000,2000000);
 
-var thiefProb = 0.1;
+var thiefProb = 1;
 //var handyThiefProb = 0.1;
 var handyThiefProb = 0;
 
@@ -209,6 +209,10 @@ function addStandardPlayerPieces(rob){
 	rob.addPiece(2,2,"wall");
 	rob.addPiece(0,2,"wall");
 	rob.addPiece(1,3,"knife");
+	
+	rob.addPiece(3,0,"fan");
+	rob.addPiece(3,1,"fan");
+	rob.addPiece(3,2,"fan");
 }
 
 function addPlayer(){
@@ -218,7 +222,7 @@ function addPlayer(){
 		addStandardPlayerPieces(player);
 
 		
-		player.totalNumBlocks = 10;
+		player.totalNumBlocks = 13;
 		player.setupWeapons();
 
 	}
@@ -235,15 +239,16 @@ function addPlayer(){
 		player.motorWillStart = 0;
 	}
 	
-	/**
 	for(var i =0 ; i < 10; i += 1){
 		player.addBlockToInventory("wall");
 		
 		player.addBlockToInventory("knife");
 		player.addBlockToInventory("motor");
 		player.addBlockToInventory("spring");
+		player.addBlockToInventory("fan");
 
-	}*/
+
+	}
 	
 	player.group.bringToFront();
 }

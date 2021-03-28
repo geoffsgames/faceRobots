@@ -3,7 +3,7 @@ document.body.style.overflow = 'hidden'; //prevent scrolling
 var canvasBG = document.getElementById('canvasBG');
 var context = canvasBG.getContext('2d');
 
-var usingSocket = true;
+var usingSocket = false;
 
 var canvas = new fabric.Canvas("canvas");
 
@@ -316,13 +316,8 @@ canvas.on('selection:cleared', function(e) {
 
 //for adding and removing blocks when editing player shape
 function handleBlockSelection(block){
-	if(block == delImg){
+	if(block == delImg)
 		deleting = true;
-	}
-	else if(block.isDamagedBlock){
-		message.set("text","Can't modify broken block!");
-		message.set('fill','red');
-	}
 	else if(block.isAddPlace){
 		if(!deleting)
 			player.convertAddPlace(block); //TODO only player can add/remove blocks for now. 
