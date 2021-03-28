@@ -681,7 +681,7 @@ Landscape.prototype.makeTubular = function(totalWidth, totalHeight, numEnemies){
 
 	
 	if(((maxX - minX) * (maxY - minY)) > maxTotalSize)
-		grid = this.makeTubular(totalWidth, totalHeight, this.numStairs, numEnemies); //too big try again
+		grid = this.makeTubular(totalWidth, totalHeight, numEnemies); //too big try again
 	else 
 		grid = this.shrink(grid, minX, maxX, minY, maxY);
 	return grid;
