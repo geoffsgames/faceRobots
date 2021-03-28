@@ -415,6 +415,8 @@ Block.prototype.showDamage = function(){
 	if(this.type == "spring")
 		this.damageAngle -= this.pointAngle;
 	this.image.angle = this.damageAngle;
+	this.owner.group.remove(this.image);
+	this.owner.group.add(this.image);
 	this.image.left = this.origLeft + this.damageLeft;
 	this.image.top = this.origTop + this.damageUp;
 

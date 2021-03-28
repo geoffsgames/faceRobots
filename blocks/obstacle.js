@@ -6,8 +6,9 @@ Obstacle.prototype.constructor=Obstacle;       // Otherwise instances of Cat wou
 function Obstacle(type, ownerGrid, ownerImage,  owner, myX, myY, offsetX, offsetY, pointX, pointY){
 	this.usePoints = true;
 	Block.prototype.setup.call(this, type, ownerGrid, ownerImage,  owner, myX, myY, offsetX, offsetY, pointX, pointY);
-	this.resistance = 10;
-	this.startingStrength = 10;
+	this.resistance = 5;
+	this.startingStrength = 5;
+	this.origStrength = 5;
 }
 
 Obstacle.prototype.drawBackground = function() {
