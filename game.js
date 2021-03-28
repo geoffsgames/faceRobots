@@ -209,10 +209,6 @@ function addStandardPlayerPieces(rob){
 	rob.addPiece(2,2,"wall");
 	rob.addPiece(0,2,"wall");
 	rob.addPiece(1,3,"knife");
-	
-	rob.addPiece(3,0,"fan");
-	rob.addPiece(3,1,"fan");
-	rob.addPiece(3,2,"fan");
 }
 
 function addPlayer(){
@@ -222,7 +218,7 @@ function addPlayer(){
 		addStandardPlayerPieces(player);
 
 		
-		player.totalNumBlocks = 13;
+		player.totalNumBlocks = 10;
 		player.setupWeapons();
 
 	}
