@@ -496,8 +496,10 @@ function updateGame2(){
 			waitForTimeout(interval - actualIntv);
 			return(-1);
 		}
+		console.log(actualIntv)
 	}
 	oldTime2 = new Date();
+	
 	if(inPVP){
 		counter4KeyCmds ++;
 		//console.log("incremented to " + counter4KeyCmds);
@@ -505,11 +507,11 @@ function updateGame2(){
 		//message.set("text", "" + counter4KeyCmds);
 	}
 	//TESTING - just for testing lag
-	if(willLag){
-		time = new Date;
-		while(new Date - time < 1000){
-		}
-	}
+	//if(willLag){
+	//	time = new Date;
+	//	while(new Date - time < 1000){
+	//	}
+	//}
 	//END TESTING
 	
 	
