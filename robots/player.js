@@ -264,14 +264,18 @@ Player.prototype.deleteBlock2 = function(tempBlock, block, x, y, isRival, mustDe
 		this.rects[i].selectable = false;
 
 	selectedBlock = null;
-
+	var savedblock = this.grid[x - this.myX][y - this.myY];
 	this.grid[x - this.myX][y - this.myY] = null;
 	if(debugMode)
 		this.textGrid[x - this.myX][y - this.myY] = 0;
 	this.totalNumBlocks -= 1;
 	var foundGaps = false;
 	if(playingBack || !mustDelete || !this.areGaps(x - this.myX,y - this.myY)){
-
+		if(tempBlock.type == "fan"){
+			savedblock.updateFanSpeeds(1);
+			savedblock.calculatePoints();
+			savedblock.updateFanSpeeds(-2);
+		}
 		this.weapons.delete(this.grid[x - this.myX][y - this.myY]);
 
 		if(tempBlock.type == "motor"){ //deleting a motor
@@ -313,8 +317,7 @@ Player.prototype.deleteBlock2 = function(tempBlock, block, x, y, isRival, mustDe
 				this.grid[ix][iy].checkedForGaps = false;
 		}
 	}
-
-
+		
 
 };
 
@@ -500,7 +503,6 @@ Player.prototype.activateEditMode = function(){
 			this.inventoryImages[i].selectable = true;
 		}
 	}
-	
 	canvas.remove(this.group);
 	this.stoppedBlocks = new Array();
 	var heart = null;
@@ -522,7 +524,7 @@ Player.prototype.activateEditMode = function(){
 					gameGrid[x + this.myX][y + this.myY].getPoints();
 					gameGrid[x + this.myX][y + this.myY].redraw(true);
 				}
-				
+				/**
 				if(this.grid[x][y].resistance < this.grid[x][y].startingStrength){ //if block is damaged
 					gameGrid[x + this.myX][y + this.myY].damageAngle = this.grid[x][y].damageAngle;
 					gameGrid[x + this.myX][y + this.myY].damageLeft = this.grid[x][y].damageLeft;
@@ -551,6 +553,7 @@ Player.prototype.activateEditMode = function(){
 					gameGrid[x + this.myX][y + this.myY].selectable = false;
 					canvas.add(rect);
 				}
+				*/
 				//end of resettings
 				gameGrid[x + this.myX][y + this.myY].isDeletePlace = true;
 				gameGrid[x + this.myX][y + this.myY].origOwner = this;
@@ -796,6 +799,9 @@ Player.prototype.willSetMovement = function(movX, movY,creep){
 };
 
 Player.prototype.update = function(){
+	//if(recording && !(inPVP && this.isRival) && !intermediate) //if player has taken a decision
+		//recordStep();
+	
 	if(this != enemy){ //if it's the rival in PVP (i.e. not directly controlled by this player) don't scroll to it and do the stuff related to it leaving the grid
 		this.adjustScroll();
 		this.possiblyLeaveGrid();//check entered next landscape or close enough to at least generate next landscape
