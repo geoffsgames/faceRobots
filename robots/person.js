@@ -1641,7 +1641,8 @@ Person.prototype.recreateGroup = function(offsetX, offsetY) {
 		if(inPVP && this == player){
 			this.group.add(new fabric.Circle({left:0, top:0, radius:50, fill:"blue", opacity:0.5, originX:"center",originY:"center"}));
 		}
-		this.resetFace(this.lastFace, true);
+		if(this.lastFace != undefined && this.lastFace != null)
+			this.resetFace(this.lastFace, true);
 		this.heart.image.bringToFront();
 
 	}
