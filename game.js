@@ -1,7 +1,12 @@
+"use strict";
 var debugMode = false;
-var randsSeeded = false; //debugMode;
+var randsSeeded = false; //debugMode; //2143 and right //6040 //1573
 var scrollingX = 0;
 var scrollingY = 0;
+var gameGrid = null;
+var numPiecesX, numPiecesY;
+var willAddEnemy = false;
+var selectedSpawn = null;
 
 Math.seed = Math.round(Math.random() * 10000); //147 - down portal, bottom grid
 var s = prompt("Entering world: " + Math.seed + " or enter number of alternative world: ");
@@ -14,7 +19,7 @@ var startGlobalSeed = Math.seededRandomDouble();
 var globalSeed = startGlobalSeed;
 var startSeed = Math.seededRandom(1000000,2000000);
 
-var thiefProb = 1;
+var thiefProb = 0.5;
 //var handyThiefProb = 0.1;
 var handyThiefProb = 0;
 
@@ -34,7 +39,6 @@ var maxEnInv = 20;
 var minEnInv = 2;
 var justResumed = false;
 
-var landscapes = new Array();
 var land;
 
 var curSeed = startSeed;
@@ -43,7 +47,7 @@ const seedJumpY = 1;
 var leftGrid, rightGrid, topGrid, bottomGrid; //the next grids along
 var allLandscapes = [];
 
-var willRestart = false;
+var willRestart = null;
 
 var activatedStairs = null;
 
@@ -53,7 +57,7 @@ var goingDownStairs = false;
 var collectables = [];
 var newCollectables = [];
 var potentialCollectables = [];
-var intervalToNextenemy = getEnemyInterval();
+var intervalToNextEnemy = getEnemyInterval();
 
 var blackWallZindex;
 
@@ -108,6 +112,8 @@ var socket = null;
 
 var lastKeyCounter = null;
 
+var paused = false;
+
 message.set("text", "World " + origSeed);
 
 
@@ -137,6 +143,7 @@ function getEnemyInterval(){
 
 //enter new arena or start game
 function start(){
+	canvas.clear();
 	numPlayers = 2;
 	if(enemy != undefined && enemy != null)
 		enemy.readyToMove = false; 
@@ -179,7 +186,6 @@ function start(){
 	
 	//willAddThief = true;
 	//handyThief = true;
-	
 }
 
 
@@ -191,14 +197,26 @@ function drawSpawns(){//for enemies
 			left: (land.enemyXs[i] + 2) * gridWidth,
 			top: (land.enemyYs[i] + 2) * gridHeight,
 			width: gridWidth,
-			height: gridHeight
+			height: gridHeight,
+			opacity: 0.2
 		});
 		image.selectable = false;
 		canvas.add(image);
+		land.enemyImages[i] = image
 	};
 }
 
 function addStandardPlayerPieces(rob){
+	/**
+	for(var x = 0; x < 10; x++){
+		for(var y = 0; y < 10; y++){
+			if(x == 5 && y == 5)
+				rob.addPiece(x, y, "heart")
+			else
+				rob.addPiece(x, y,"wall");
+		}
+	}*/
+	
 	rob.addPiece(1,0,"wall");
 	rob.addPiece(2,0,"wall");
 	rob.addPiece(0,0,"wall");
@@ -236,7 +254,7 @@ function addPlayer(){
 	}
 	
 	/**
-	for(var i =0 ; i < 10; i += 1){
+	for(var i =0 ; i < 40; i += 1){
 		player.addBlockToInventory("wall");
 		
 		player.addBlockToInventory("knife");
@@ -366,7 +384,7 @@ function addScenerySquare(x, y, blocktype, pointX, pointY){
 		}
 		return;
 	}
-	//add it to display and to grid
+	//add it to display and to grid if obstacle
 	var owner = canvas;
 	if(blocktype == "obstacle")//scenery not collectable = draw to background
 		owner = context;
@@ -412,6 +430,12 @@ function wakeRotateWait(){
 }
 
 function updateGame(){
+	if(paused){
+		for(var i = 0; i < numPlayers; i++)
+			allComplete();
+		return;
+	}
+	
 	if(checkPVP != null && checkPVP()) //possibly move into PVP - suspends main gameloop and will implement new one
 		return;
 	
@@ -490,7 +514,7 @@ function updateGamePVP(){
 function updateGame2(){
 	//console.trace();
 	if(!inPVP && oldTime2 != null){
-		actualIntv = new Date() - oldTime2; //shouldn't happen as updateGame() in display should handle the delays completely - this is just a failsafe, with appropriate error message
+		var actualIntv = new Date() - oldTime2; //shouldn't happen as updateGame() in display should handle the delays completely - this is just a failsafe, with appropriate error message
 		if((interval * 0.7) > actualIntv){
 			console.error("something went wrong with timing");
 			waitForTimeout(interval - actualIntv);
@@ -505,11 +529,12 @@ function updateGame2(){
 		//message.set("text", "" + counter4KeyCmds);
 	}
 	//TESTING - just for testing lag
+	/**
 	if(willLag){
-		time = new Date;
+		var time = new Date;
 		while(new Date - time < 1000){
 		}
-	}
+	}*/
 	//END TESTING
 	
 	
@@ -577,12 +602,11 @@ function updateGame2(){
 	else{
 		if(!reallyWaitingForRotate){
 			goingDownStairs = false;
-			
 			//check to see if any collectables have finished their "fly away" animation and are ready to be added to the grid
 			addCollectables();
 		}
 		if(player.dead && !reallyWaitingForRotate){
-			alert("You have lost!"); //(haven't implemented restart yet - hit refresh)");
+			alert("You have lost! (click refresh as restart currently broken)"); //(haven't implemented restart yet - hit refresh)");
 			canvas.clear();
 			startWholeGame();
 		}
@@ -655,8 +679,10 @@ function updateGame2(){
 			}
 		}
 	}
-	//countBlocks();
 }
+
+
+
 
 function countBlocks(){
 	tot = 0
@@ -774,7 +800,7 @@ function clearThiefsPassage(movX, movY, thiefX, thiefY, width, minX, minY){
 		adjacentY = 0;
 		allowedDis = bottomGrid.grid[0].length - 1;
 	}
-	thiefChanged = thiefLand.changedBlocks;
+	var thiefChanged = thiefLand.changedBlocks;
 	
 	var allClear = false;
 	var step = 0;
@@ -852,22 +878,6 @@ function addEnemy(){
 		};
 
 
-	/**	
-		enemy.addPiece(0,0,"wall");
-		enemy.addPiece(1,0,"wall");
-		enemy.addPiece(2,0,"wall");
-		enemy.addPiece(0,1,"wall");
-		enemy.addPiece(1,1,"heart");
-		enemy.addPiece(2,1,"wall");
-		enemy.addPiece(3,1,"wall");
-		enemy.addPiece(4,1,"wall");
-		enemy.addPiece(4,2,"motor");
-		enemy.addPiece(4,3,"wall");
-		enemy.addPiece(3,3,"knife");
-		enemy.addPiece(0,2,"knife");
-		enemy.totalNumBlocks = 12;
-		*/
-
 	}else{
 		enemy = new Enemy();
 		enemy.loadFromText(enemyStr);
@@ -881,6 +891,12 @@ function addEnemy(){
 	enemy.setupWeapons();
 	
 	if(enemy.movX == 0 && enemy.movY == 0){
+		land.enemyImages[which].opacity = 1;
+		selectedSpawn = land.enemyImages[which];
+		enemy.group.left = (land.enemyXs[which] + 2) * gridWidth;
+		enemy.group.top = (land.enemyYs[which] + 2) * gridHeight;
+		enemy.group.scaleX = gridWidth / enemy.actualWidth;
+		enemy.group.scaleY = gridHeight / enemy.actualHeight;
 		enemy.fadeIn();
 	}else{
 	
@@ -889,11 +905,10 @@ function addEnemy(){
 	enemy.group.bringToFront();
 	
 }
-
 function addCollectables(){
 	//newCollectables contain the collectables that have landed but not been added to the grid. Add them now
 	while(newCollectables.length > 0){
-		var col = newCollectables[newCollectables.length - 1];
+		var col = newCollectables.pop();
 
 		//remove each from the set of collectables currently flying through the air
 		var foundPotential = false;
@@ -904,13 +919,19 @@ function addCollectables(){
 			}
 		}
 		
-		//add each to the grid
-		if(gameGrid[col[0]][col[1]] == 1){
-			collectables.push(col);
-			addRandomDirScenery(col[0], col[1], col[2]);
-			gameGrid[col[0]][col[1]].collectable = true;
+		var newPos = outFromUnderRobot(col[0],col[1]);
+		if(newPos != null){
+			col[0] = newPos.newX;
+			col[1] = newPos.newY;
+			//add each to the grid
+			if(gameGrid[col[0]][col[1]] == 1){
+				collectables.push(col);
+				addRandomDirScenery(col[0], col[1], col[2]);
+				gameGrid[col[0]][col[1]].collectable = true;
+				gameGrid[col[0]][col[1]].redraw(true); //for collectable colour
+			}
 		}
-		newCollectables.pop();
+		
 	}
 
 }
@@ -983,18 +1004,24 @@ function clearOldNeighbours(exclude){
 }
 
 function clearLandscape(){
-	
 	//collectables
 	for(var i = 0; i < collectables.length; i+= 1){
 		gameGrid[collectables[i][0]] [collectables[i][1]] = 1;
 	}
 	
+	//clear characters
+	
 	//enemy
-	for(var x = enemy.myX + enemy.minX; x <= enemy.myX + enemy.maxX; x+= 1){
-		for(var y = enemy.myY + enemy.minY; y <= enemy.myY + enemy.maxY; y+= 1){
+	var enMinX = Math.max(enemy.myX + enemy.minX,0);
+	var enMaxX = Math.min(enemy.myX + enemy.maxX,numPiecesX - 1);
+	var enMinY = Math.max(enemy.myY + enemy.minY,0);
+	var enMaxY = Math.min(enemy.myY + enemy.maxY,numPiecesY - 1);
+	for(var x = enMinX; x <= enMaxX; x+= 1){
+		for(var y = enMinY; y <= enMaxY; y+= 1){
 			gameGrid[x][y] = 1;
 		}
 	}
+
 	collectables = [];	
 	potentialCollectables = [];
 	newCollectables = [];
@@ -1008,7 +1035,6 @@ function randomFromRange(start, end){
 
 function goDownStairs(){
 	clearLandscape();
-	canvas.clear();
 	land.grid = null;
 	
 	//save and load new "allLandscapes" because land down stairs occupies different universe/different complete set of landscapes

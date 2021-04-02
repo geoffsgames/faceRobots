@@ -1,3 +1,4 @@
+"use strict";
 //plain - just knives
 var minEnemyBlocks = 5;
 var maxEnemyBlocks = 15;
@@ -23,7 +24,7 @@ var heartInBiggestProb = 0.95;
 var springProb = 0.6;
 
 
-designEnemy = function(initialLandscape, addSprings, special){
+function designEnemy(initialLandscape, addSprings, special){
 	var size = Math.seededRandom(minEnemyGrid, maxEnemyGrid);
 	var numBlocks = Math.seededRandom(minEnemyBlocks, (size - 2)  * (size - 2) );
 	var wallType = "wall";
@@ -237,7 +238,7 @@ designEnemy = function(initialLandscape, addSprings, special){
 
 
 
-designMotor = function(grid, baseX, baseY, movX, movY, gridSize, sideNum, edgeList){
+function designMotor(grid, baseX, baseY, movX, movY, gridSize, sideNum, edgeList){
 	
 	//boolean
 	var fullLength = Math.seededRandomDouble() < probMotorFullLength;
@@ -358,10 +359,10 @@ function union(setA, setB) {
     return _union
 }
 
-designEnemyMotor = function(){
+function designEnemyMotor(){
 	
-	gridSize = Math.seededRandom(minEnemyMotorGrid, maxEnemyMotorGrid);
-	enemyGrid =[];
+	var gridSize = Math.seededRandom(minEnemyMotorGrid, maxEnemyMotorGrid);
+	var enemyGrid =[];
 	for(var i =0; i < gridSize; i+= 1){
 		enemyGrid.push(new Array(gridSize));
 	};
@@ -374,14 +375,14 @@ designEnemyMotor = function(){
 	
 	var edgeList = Array();
 
-	
+	var side;
 	for(var i =0; i < numMotors; i+= 1){
 		var sideInd = Math.seededRandom(0,sides.length - 1);
 		if (sides.length == 1)
 			side = sides[0];
 		else
 			side = sides.splice(sideInd,1)
-		dir = Math.seededRandom(1,2);
+		var dir = Math.seededRandom(1,2);
 		if(side == 1){//top
 			//baseX, baseY, movX, movY
 			neighbours[0] = designMotor(enemyGrid, -1, 3, 0, -1, gridSize, 0, edgeList);
@@ -441,7 +442,7 @@ designEnemyMotor = function(){
 		
 		var sqX = 3
 		var sqY = 3
-		sqAttachSide = side;
+		var sqAttachSide = side;
 		var sqLongside = Math.seededRandom(3, gridSize - 6)
 		var sqShortside = Math.seededRandom(1,4);
 		
@@ -593,7 +594,7 @@ function isWall(grid,x,y){
 
 
 function addSquareArea(grid, stX,stY,sizeX,sizeY,neighbours,squareList, edgeList, heart){
-	newNeigh = new Set();
+	var newNeigh = new Set();
 	
 	var overlapsSomething = false;
 	var numAdded = 0;
@@ -656,7 +657,7 @@ function addSquareArea(grid, stX,stY,sizeX,sizeY,neighbours,squareList, edgeList
 	//if overlaps nothing then just get rid and return
 	if(!overlapsSomething){
 		for(var i = 0; i < numAdded; i+= 1){
-			sqPos = squareList[squareList.length - i - 1];
+			var sqPos = squareList[squareList.length - i - 1];
 			grid[sqPos[0]][sqPos[1]] = null;
 		}
 		squareList.splice(squareList.length - numAdded,numAdded);

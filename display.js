@@ -1,9 +1,10 @@
+"use strict";
 document.body.style.overflow = 'hidden'; //prevent scrolling
 
 var canvasBG = document.getElementById('canvasBG');
 var context = canvasBG.getContext('2d');
 
-var usingSocket = true;
+var usingSocket = false;
 
 var canvas = new fabric.Canvas("canvas");
 
@@ -43,6 +44,12 @@ var gridHeight = gridWidth;
 document.getElementById("diffSliderDiv").style.setProperty("left", (document.documentElement.clientWidth / 2) + "px");
 var slider = document.getElementById("difficultySlider");
 
+document.getElementById("commandsBtnDiv").style.setProperty("left", (document.documentElement.clientWidth * 0.75) + "px");
+var cmdButton = document.getElementById("commandsBtn");
+var cmdWindow = document.getElementById("commandsWindow");
+var switchBtn = document.getElementById("switchBtn");
+var cmdText = document.getElementById("commandsText");
+
 //number of pieces actually shown on screen
 //var numPiecesScreenX = Math.ceil(clientWidth / gridWidth);
 //var numPiecesScreenY = Math.ceil(clientHeight / gridHeight);
@@ -55,7 +62,7 @@ var code;
 var invBackground;
 var scrollSpeedup = 2;
 
-var canEditRotations = false;
+var canEditRotations = true;
 var dt = new Date();
 var scrollDelay = 16;
 
@@ -69,6 +76,85 @@ var savedKeyPress = {key:null, dc:0};
 var messageSent = false;
 var savedKeyPressUp = {key:null, dc:0};
 var messageSentUp = false;
+var setupGrass = false;
+
+var oldKeyCodes = {up:38, left:37, right:39, down:40, clockwise:16, anticlockwise:13, downstairs:68}
+var newKeyCodes = {up:87, right:68, down:83, left:65, clockwise:39, anticlockwise:37, downstairs:13}
+var selectedKeyCodes = newKeyCodes;
+var newKeyHTML = "<p>ROTATE: left and right arrows</p><p>MOVE UP: \"w\"</p><p>MOVE LEFT: \"a\"</p><p>MOVE RIGHT: \"d\"</p><p>MOVE DOWN: \"s\"</p>"
+	+"<p>STOP/EDIT: space</p><p>SWITCH MOTOR/SPRING: up and down arrows</p><p>GO DOWN PORTAL: enter</p><p>FIRE SPRING/MOTOR: shift</p>";
+var oldKeyHTML = "<p>ROTATE: shift and enter</p><p>MOVEMENT: arrow keys</p><p>STOP/EDIT: space</p><p>GO DOWN PORTAL: \"d\"</p><p>FIRE SPRING/MOTOR: number key corresponding to motor</p>";
+switchBtn.innerHTML = "Change to Classic"
+
+cmdText.innerHTML = newKeyHTML;
+
+function initGrass(){
+	var canvasGrass = document.getElementById('canvasGrass');
+	//TODO - hard coded from landscape max size
+	var canvWidth = gridWidth * 70;
+	var canvHeight = gridHeight * 70;
+
+	
+	canvasGrass.width  = canvWidth; // in pixels
+	canvasGrass.height = canvHeight;
+	canvasGrass.style.left = "-" + canvas._offset.left + "px";
+	canvasGrass.style.top = "-" + canvas._offset.top + "px";
+
+	
+	var context = canvasGrass.getContext('2d');
+	var img=document.getElementById("grass");
+	var imgWidth =img.width;
+	var imgHeight = img.height;
+	
+	for(var w =0; w < Math.ceil(canvWidth / imgWidth); w++){
+		for(var h =0; h < Math.ceil(canvHeight / imgHeight); h++){
+			context.drawImage(img,imgWidth * w,imgHeight * h);
+		}
+	}
+}
+/**
+var message = new fabric.Text("Commands", {
+	left: 0,
+	top: 5,
+	fontSize: 30,
+	fill: 'blue',
+	fontWeight: 'bold',
+	originX: 'center',
+	originY: 'center',
+	strokeWidth: 2,
+	opacity:0.5,
+});
+
+commands = new fabric.Group([cmdsBkgrnd, message],{
+	fill:"yellow",
+	width:100,
+	height:gridHeight,
+	opacity:0.3,
+	left:clientWidth - 120,
+	top:15
+})
+
+
+commands.addWithUpdate();
+
+canvasMenu.add(message);
+canvasMenu.add(commands);
+}
+
+canvasMenu.on('mouse:over', function(e) {
+if(e.target == commands){
+    e.target.set('opacity', '1');
+    canvasMenu.renderAll();
+}
+});
+
+canvasMenu.on('mouse:out', function(e) {
+if(e.target == commands){
+    e.target.set('opacity', '0.5');
+    canvasMenu.renderAll();
+}
+});*/
+
 
 var delImg = new fabric.Image(document.getElementById("delete"), {
 	lockScalingX: false,
@@ -116,27 +202,19 @@ function initCanvas(){
 	canvasBG.height = numPiecesY * gridHeight + (canvas._offset.top * 2);
 	canvasBG.style.left = "-" + canvas._offset.left + "px";
 	canvasBG.style.top = "-" + canvas._offset.top + "px";
-	var img=document.getElementById("grass");
-	var imgWidth =img.width;
-	var imgHeight = img.height;
-	for(var w =0; w < Math.ceil(canvWidth / imgWidth); w++){
-		for(var h =0; h < Math.ceil(canvHeight / imgHeight); h++){
-			context.drawImage(img,imgWidth * w,imgHeight * h);
-		}
-	}
-	//context.fillStyle = "#DAF7A6";
-	//context.fillRect(0,0,numPiecesX * gridWidth,numPiecesY * gridHeight);
+
+	var grassPic = document.getElementById("grass").style;
+	grassPic.width = canvasBG.width + "px";
+	grassPic.height = canvasBG.height + "px";
+
+	//if(!setupGrass)
+		//initGrass();
 }
 
 
 
 function changeState(code,doubleclick){
 	//http://keycode.info/
-   //TEST - pause for one second to simulate lag
-   if(code == 80) //p
-	willLag = true;	
-   if(code == 81) //q
-	willLag = false;	
 	
 	code = player.convertCode(code);
     if(code== "left"){
@@ -165,12 +243,12 @@ function changeState(code,doubleclick){
     	if(player.willFinishRotating == -1)
     		player.willRotate = 1;//clockwise
     }
-    else if(code== 68){//d - down stairs
+    else if(code== "downstairs"){
     	if(activatedStairs != null)
     		willGoDownStairs = true;
     }
     else if(code == 32){ //space
-    	if(player.movX != 0 || player.movY != 0)
+    	//if(player.movX != 0 || player.movY != 0)
     		player.willStop = true;
     }
     else if(code == 83){ //'s' key = stop replay
@@ -178,15 +256,27 @@ function changeState(code,doubleclick){
     	alert(countLag);
     	saving = false;
     }
-    else if(code >= 49 && code <= 58){ //numbers
-	player.stoppedPressingMotor = false;
+    else if(code >= 49 && code <= 58 && selectedKeyCodes == oldKeyCodes){ //original motor keycodes. number keys
+    	player.stoppedPressingMotor = false;
     	player.motorWillStart = code - 49;
     }
+    else if(code == 16 && selectedKeyCodes == newKeyCodes){ //new motor keycodes. shift fires selected motor
+    	if(player.selectedMotor != null){
+	    	player.stoppedPressingMotor = false;
+	    	player.motorWillStart = player.selectedMotorInd;
+    	}
+    }
+    else if(code == 38 && selectedKeyCodes == newKeyCodes) //new motor keycodes. up arrow increments selected motor
+    	player.changeSelectedMotor(1);
+    else if(code == 40 && selectedKeyCodes == newKeyCodes) //new motor keycodes. down arrow decrements selected motor
+    	player.changeSelectedMotor(-1);
     else if(code==82){//r
 		alert("Restarting!"); //(haven't implemented restart yet - hit refresh)");
-		canvas.clear();
-
     	startWholeGame();
+    }
+    else if(code==80){//p
+    	cmdWindow.hidden = !cmdWindow.hidden;
+    	paused = !paused;
     }
 }
 
@@ -222,6 +312,9 @@ function initInventory(){
 }
 
 window.onkeyup = function(e) {
+    if(!(e.keyCode in [27, 17, 18, 8])) //only keys with default behaviour allowed = ESC, CTRL, ALT, DEL
+		e.preventDefault();
+	
 	if(keyDangerZone)
 		return; 
 	
@@ -243,16 +336,46 @@ slider.onchange = function(){
 	difficulty = slider.value;		
 };
 
-function changeStateUp(code){
-	if(code >= 49 && code <= 58) //motors
-		player.stoppedPressingMotor = true;
+cmdButton.onclick = function(){
+	cmdWindow.hidden = !cmdWindow.hidden;
+	paused = !paused;
+};
 
-	if(code == 13 || code == 16)//finish rotation
+switchBtn.onclick = function(){
+	if(cmdText.innerHTML == oldKeyHTML){
+		cmdText.innerHTML = newKeyHTML;
+		selectedKeyCodes = newKeyCodes;
+		switchBtn.innerHTML = "Change to Classic"
+		player.updateKeyCodes();
+	}
+	else{
+		cmdText.innerHTML = oldKeyHTML;
+		selectedKeyCodes = oldKeyCodes;
+		switchBtn.innerHTML = "Change to New"
+		player.updateKeyCodes();
+	}
+};
+
+function changeStateUp(code){
+	code = player.convertCode(code);
+	if((code >= 49 && code <= 58 && selectedKeyCodes == oldKeyCodes) || (code == 16 && selectedKeyCodes))//motors
+		player.stoppedPressingMotor = true;
+		
+	if(code == "clockwise" || code == "anticlockwise")//finish rotation
 		player.finishRotating();
+}
+
+window.onkeypress = function(e){
+    if(!(e.keyCode in [27, 17, 18, 8])) //only keys with default behaviour allowed = ESC, CTRL, ALT, DEL
+		e.preventDefault();
 }
 
 
 function keyListener(e){
+    if(!(e.keyCode in [27, 17, 18, 8])) //only keys with default behaviour allowed = ESC, CTRL, ALT, DEL
+		e.preventDefault();
+
+	
 	if(keyDangerZone)
 		return;
 	
@@ -263,8 +386,6 @@ function keyListener(e){
 	        e = window.event;
 	    }
 		
-	    if((e.keyCode >= 37 && e.keyCode <= 40) || (e.keyCode >= 32 && e.keyCode <= 34))
-	    		e.preventDefault();
 	    	code = e.keyCode;
 		var doubleClick = new Date - lastTime < 500 && lastKey == code;
 		if(inPVP){//multiplayer
@@ -316,8 +437,13 @@ canvas.on('selection:cleared', function(e) {
 
 //for adding and removing blocks when editing player shape
 function handleBlockSelection(block){
-	if(block == delImg)
+	if(block == delImg){
 		deleting = true;
+	}
+	else if(block.isDamagedBlock){
+		//message.set("text","Can't modify broken block!");
+		//message.set('fill','red');
+	}
 	else if(block.isAddPlace){
 		if(!deleting)
 			player.convertAddPlace(block); //TODO only player can add/remove blocks for now. 

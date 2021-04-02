@@ -4,6 +4,45 @@
   <head>
     <title>Face Robots!</title>
     <style>
+    
+    .parallax {
+  /* The image used */
+  background-image: url("images/grass.jpg");
+
+  /* Set a specific height */
+  min-height: 500px; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+
+  /* Create the parallax scrolling effect */
+  background-position: center;
+  background-repeat: repeat;
+  background-size: "1000px";
+  
+  
+}
+
+.btn {
+  border-width: 3px;
+  border-style: outset;
+  background-color: greenyellow;
+  padding: 7px 14px;
+  font-size: 20px;
+  cursor: pointer;
+  display: inline-block;
+  color: black;
+}
+
+/* On mouse-over */
+.level1:hover {background: yellow;}
+
+.level1 {background-color: greenyellow; border-color: gold;}
+
+.level2 {background-color: rgba(205, 50, 50, 0.5); border-color: rgba(255, 0, 0, 0.7);}
+    
+.level2:hover {background-color: rgba(255, 0, 0, 0.7);}
+
 
 </style>
 
@@ -13,6 +52,7 @@
 <body>
 
 <img src="images/block.png" id="wall" hidden>
+<img src="images/blockMid.png" id="wallMid" hidden>
 <img src="images/blockDark.png" id="wallDark" hidden>
 <img src="images/knife.png" id="knife" hidden>
 <img src="images/motor.png" id="motor" hidden>
@@ -24,6 +64,7 @@
 <img src="images/stairs2.png" id="stairs" hidden>
 <img src="images/spawnsite.png" id="spawn" hidden>
 <img src="images/fan.png" id="fan" hidden>
+<img src="images/hook.png" id="hook" hidden>
 <img src="images/chain.png" id="chain" hidden>
 <img src="images/chainDark.png" id="chainDark" hidden>
 <img src="images/spring.png" id="spring" hidden>
@@ -66,15 +107,24 @@
 <img src="images/faces/thief.png" id="thiefFace" hidden>
 <img src="images/faces/thiefScared.png" id="thieffaceScared" hidden>
 
-<img src="images/grass.jpg" id="grass" hidden>
 
+<!--  <img src="images/grass.jpg" id="grass" width="1200" height="600" style="z-index: 1;
+position:absolute;
+left:0px;
+top:0px;">-->
 
-<canvas id="canvas" width="1200" height="600" style="z-index: 2;
+<div class="parallax" id="grass">
+<!--  <canvas id="canvasMenu" width="1200" height="600" style="z-index: 2;
+position:fixed;
+left:0px;
+top:0px;
+"></canvas>-->
+<canvas id="canvas" width="1200" height="600" style="z-index: 1;
 position:absolute;
 left:0px;
 top:0px;
 "></canvas>
-<canvas id="canvasBG" width="1200" height="600" style="z-index: 1;
+<canvas id="canvasBG" width="1200" height="600" style="z-index: 0;
 position:absolute;
 left:0px;
 top:0px;
@@ -91,6 +141,52 @@ top:0px;
 	position:relative; top:10px; direction:rtl;
 	"></p> 
 </div>
+<div id="commandsBtnDiv" style="z-index: 3;
+	position:fixed;
+	left:200px;
+	top:15px;
+	background-color: transparent;
+	opacity:0.5">
+	<button class="btn level1" id="commandsBtn" style="
+	position:fixed;">COMMANDS</button>
+
+</div>
+<div id="commandsWindow" hidden="true" style="z-index: 3;
+	position:fixed;
+	left:300px;
+	top:60px;
+	height:500px;
+	with:300px;
+	background-color: rgba(244, 208, 63, 0.6);
+  	border-width: 7px;
+  	border-color: rgb(255, 215, 0, 0.5);
+  	border-style: outset;
+	font-family: Arial, Helvetica, sans-serif;
+	padding: 14px 28px;
+	font-size: 20px;"><div id="commandsText">
+	<p>ROTATE: left and right arrows</p>
+	<p>MOVE UP: "w"</p>
+	<p>MOVE LEFT: "a"</p>
+	<p>MOVE RIGHT: "d"</p>
+	<p>MOVE DOWN: "s"</p>
+	<p>STOP/EDIT: space</p>
+	<p>SWITH MOTOR/SPRING: up and down arrows</p>
+	<p>GO DOWN PORTAL: enter</p>
+	<p>FIRE SPRING/MOTOR: shift</p></div>
+	<div style="font-size: 30px; background-color: rgba(255, 0, 0, 0.25);
+	border-color: black; border-width: 3px" >
+		GAME PAUSED PRESS "P" TO CONTINUE
+	</div>
+	<button class="btn level2" id="switchBtn" style="
+			position:fixed; left:750px; top:80px">
+			Switch to old
+	</button>
+
+</div></div>
+
+
+</div>
+</div>
 
 <!--<script src="test.js"></script>-->
 
@@ -98,15 +194,15 @@ top:0px;
 <script src="util/maths.js"></script>
 <script src="util/loadSave.js"></script>
 
-
 <script src="display.js"></script>
 <script src="landscape.js"></script>
 <script src="enemyFactory.js"></script>
 
+
 <script src="robots/person.js"></script>
 <script src="robots/enemy.js"></script>
 <script src="robots/thief.js"></script>
-<script src="robots/handyThief.js"></script>
+<!--  <script src="robots/handyThief.js"></script>-->
 <script src="robots/handyThief2.js"></script>
 <script src="robots/player.js"></script>
 
@@ -131,7 +227,7 @@ top:0px;
 <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 <script src="lib/socketiop2p.min.js"></script>
 <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
-<script src="socEvents.js"></script>
+<!--  <script src="socEvents.js"></script>-->
 
 
 </body>

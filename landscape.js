@@ -1,3 +1,4 @@
+"use strict";
 //compact - whole landscape is one big area
 var minCompactSize = 13;
 var maxCompactSize = 50;
@@ -28,12 +29,12 @@ var enemySize = 0;
 //enemy special block probabilities
 var plainProb = 0.5;
 var motorProb = 0.7; //0.2;
-var springProb = 0.8; //0.1;
+var sprProb = 0.8; //0.1;
 var blinderProb = 0.85; //0.05;
 var scramblerProb = 0.9; //0.05;
 var crystalProb = 1; //0.1;
 
-
+var enemyAttempts = 50;
 
 var Landscape = function(seed, globalSeed){
 	this.seed = seed;
@@ -48,9 +49,12 @@ Landscape.prototype.makeGrid = function(){
 	
 	this.enemyXs = [];
 	this.enemyYs = [];
+	this.enemyImages = [];
 	this.stairs = [];
 	this.enemyAreas = [];
 	this.areas = [];
+	this.areasAndNoise = [];
+
 
 	this.stairs = new Array();
 	
@@ -59,6 +63,7 @@ Landscape.prototype.makeGrid = function(){
 	Math.seed = this.seed + this.globalSeed;
 	var grid;
 	var height, width;
+	var numAreas;
 	var numEnemies = Math.seededRandom(1,3);//number of spawn sites	
 	var rndVal = Math.seededRandom(0,20);
 	//ensure at least one set of stairs available if I'm the destination of another landscape's stairs
@@ -92,7 +97,7 @@ Landscape.prototype.makeGrid = function(){
 		}
 		else if(prob < motorProb)
 			this.enemyGrid = designEnemyMotor();
-		else if(prob < springProb)
+		else if(prob < sprProb)
 			this.enemyGrid = designEnemy(false,true);
 		else if(prob < blinderProb)
 			this.enemyGrid = designEnemy(false,false,"blinder");
@@ -102,7 +107,6 @@ Landscape.prototype.makeGrid = function(){
 			this.enemyGrid = designEnemy(false,false,"crystal");
 
 	}
-
 	
 	//adjust grid sizes for enemy size TODO make adjustments global
 	enemySize = this.enemyGrid[0].length;
@@ -114,8 +118,7 @@ Landscape.prototype.makeGrid = function(){
 	maxTubeLength = maxTubeWidth * 3;
 	minSquat = enemySize + 2;
 	maxSquat = enemySize * 2.5;
-	//maxTotalSize = Math.pow(Math.max(maxSquat * 3.5, 100),2);
-		
+
 	//totalAreas
 	if(Math.seededRandom() == 0){ //compact
 		numAreas = 1;
@@ -139,9 +142,15 @@ Landscape.prototype.makeGrid = function(){
 		grid = new Array(gridWidth);
 		for(var x = 0; x < gridWidth; x += 1)
 			grid[x] = new Array(gridHeight);
+	
 		
 		var area = new Area(left, top, width, height);
+		
+		//record compact area for AI
 		this.areas.push(area);
+		//record for collision detection
+		this.areasAndNoise.push({minX:area.left, minY:area.top, maxX:(area.left + area.width), maxY:(area.top + area.height), hole:true});
+		
 		this.enemyAreas.push(area);
 		
 		drawInGrid(left,top,width,height, grid);
@@ -167,24 +176,22 @@ Landscape.prototype.makeGrid = function(){
 			var enemyX = Math.seededRandom(left, left + width - enemySize);
 			var enemyY = Math.seededRandom(top, top + height - enemySize);
 			
-
+			var e = 0;
 			while(
-					(this.initialLandscape() && 
+					((this.initialLandscape() && 
 					(Math.abs(enemyX - this.playerX) < playerStartSize && 
 					Math.abs(enemyY - this.playerY) < playerStartSize)
 					
 					)
-				|| this.overlapEnemies(enemyX, enemyY)){
+				|| this.overlapEnemies(enemyX, enemyY)) && e < enemyAttempts){
 				enemyX = Math.seededRandom(left, left + width - enemySize);
 				enemyY = Math.seededRandom(top, top + height - enemySize);
+				e ++;
 			}
 
 			this.enemyXs.push(enemyX);
 			this.enemyYs.push(enemyY);
-
-			
 		}
-			
 		this.setupStairs(this.numStairs);
 	}
 	else{
@@ -202,7 +209,7 @@ Landscape.prototype.makeGrid = function(){
 	this.grid = grid;
 	
 	this.addNoise(width, height);
-		
+	this.areasAndNoise.reverse(); //so noise squares are at the start
 	return grid;
 };
 
@@ -279,14 +286,15 @@ Landscape.prototype.addNoise = function(width, height){
 				this.wallTops.push(top);
 				this.wallWidths.push(squareWidth);
 				this.wallHeights.push(squareHeight);
-
+				//record noise area for collision
+				//this.areasAndNoise.push({minX:left, minY:top, maxX:(left + squareWidth), maxY:(top + squareHeight), hole:false});
 				
 			}
 			for(var x =left; x <= right; x+= 1){
 				for(var y = top ; y <= bottom; y+= 1){
 					this.grid[x][y] = newVal;
 				}
-			}
+			}				
 		}
 			
 	}
@@ -445,13 +453,14 @@ Landscape.prototype.makeTubular = function(totalWidth, totalHeight, numEnemies){
 	this.enemyYs = [];
 	this.enemyAreas = [];
 	this.areas = [];
+	this.areasAndNoise = [];
 	
 	var grid = new Array(totalWidth);
 	for(var x = 0; x < totalWidth; x += 1)
 		grid[x] = new Array(totalHeight);
 
 	
-	numAreas = Math.seededRandom(minNumTubes, maxNumTubes);
+	var numAreas = Math.seededRandom(minNumTubes, maxNumTubes);
 
 	var vertical = false;
 	var horizontal = false;
@@ -644,6 +653,7 @@ Landscape.prototype.makeTubular = function(totalWidth, totalHeight, numEnemies){
 		if(this.areas.length > 0)
 			area.addNeighbour(this.areas[this.areas.length - 1]);
 		this.areas.push(area);
+		this.areasAndNoise.push({minX:area.left, minY:area.top, maxX:(area.left + area.width), maxY:(area.top + area.height), hole:true});
 
 		drawInGrid(left,top,width,height, grid);
 		
@@ -652,11 +662,12 @@ Landscape.prototype.makeTubular = function(totalWidth, totalHeight, numEnemies){
 	
 	for(var i =0; i < numEnemies; i += 1){
 		var enemyX, enemyY, area;
+		var e = 0;
 		while(
 				enemyX == undefined ||
 				
 				(this.initialLandscape() &&
-				(Math.abs(enemyX - this.playerX) < enemySize && Math.abs(enemyY - this.playerY) < enemySize)
+				(Math.abs(enemyX - this.playerX) < enemySize && Math.abs(enemyY - this.playerY) < enemySize) && e < enemyAttempts
 				)
 				
 				|| this.overlapEnemies(enemyX, enemyY)){
@@ -668,6 +679,7 @@ Landscape.prototype.makeTubular = function(totalWidth, totalHeight, numEnemies){
 					
 					enemyX = Math.seededRandom(left, left + width - enemySize);
 					enemyY = Math.seededRandom(top, top + height - enemySize);
+					e++;
 		
 		}
 		this.enemyXs.push(enemyX);
@@ -690,6 +702,8 @@ Landscape.prototype.makeTubular = function(totalWidth, totalHeight, numEnemies){
 //might actually be grow if a wide margin is selected
 Landscape.prototype.shrink = function(grid, minX, maxX, minY, maxY){
 
+	
+	//////////////////////////GRID
 	var width = maxX - minX;
 	var height = maxY - minY;
 	
@@ -717,21 +731,34 @@ Landscape.prototype.shrink = function(grid, minX, maxX, minY, maxY){
 			newGrid[x - minX + left][y - minY + top] = grid[x][y];
 		}
 	}
-
+	
+	
+	///////////////////////////PLAYER
 	this.playerX -= (minX - left);
 	this.playerY -= (minY - top);
 		
+	
+	////////////////////////////AREAS
 	for(var i =0; i < this.areas.length; i+= 1){
 		this.areas[i].left -= (minX - left);
 		this.areas[i].top -= (minY - top);
 	}
 
+	for(var i =0; i < this.areasAndNoise.length; i+= 1){
+		this.areasAndNoise[i].minX -= (minX - left);
+		this.areasAndNoise[i].minY -= (minY - top);
+		this.areasAndNoise[i].maxX -= (minX - left);
+		this.areasAndNoise[i].maxY -= (minY - top);
+	}
 	
+	
+	/////////////////STAIRS
 	for(var i = 0; i < this.stairs.length; i+= 1){
 		this.stairs[i].x -= (minX - left);
 		this.stairs[i].y -= (minY - top);
 	}
 	
+	/////////////////////ENEMIES
 	for(var i = 0; i < this.enemyXs.length; i+= 1){
 		this.enemyXs[i] -= (minX - left);
 		this.enemyYs[i] -= (minY - top);
@@ -740,7 +767,7 @@ Landscape.prototype.shrink = function(grid, minX, maxX, minY, maxY){
 	return newGrid;
 }
 
-drawInGrid = function(left,top,width,height, grid){
+function drawInGrid(left,top,width,height, grid){
 	for(var x = left; x < left + width; x += 1){
 		for(var y = top; y < top + height; y += 1){
 			grid[x][y] = 1;

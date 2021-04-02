@@ -1,4 +1,4 @@
-
+"use strict";
 var rivalGrids = []; //the ID codes
 var rivalGridIDs = []; //codes used as indexes in rivalGrids
 var curRival = null;
@@ -268,7 +268,6 @@ function moveToRival(msg){
 //(attacker) move into rival's arena - part2: after animating into corner create landscape of rival
 function moveToRival2(msg){
 	clearLandscape();//get rid of enemy and collectables
-	canvas.clear();
 	land = null;
 	allLandscapes = [];
 	//save and load new "allLandscapes" because other rival's land occupies different universe/different complete set of landscapes
