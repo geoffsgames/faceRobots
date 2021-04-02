@@ -1,3 +1,4 @@
+"use strict";
 var numPlayers = 2;
 var completeCounter = 0;//counts how many players have completed their animation so game only increments when all animation finished
 var intermediate = false;
@@ -15,6 +16,59 @@ var Person = function (myX, myY, facing) {
 	if(myX != undefined)
 		this.setup(myX,myY, facing);
 };
+
+Person.prototype.findWeapons = function() {
+	//add strength of nearby weapons
+	for (let weap of this.weapons){
+		if(weap.finalStrength == undefined)
+			weap.finalStrength = weap.weaponStrength;
+		
+		for (let weap2 of this.weapons){
+			if(weap2 != weap){
+				var dis = Math.abs(weap2.myX - weap.myX) + Math.abs(weap2.myY - weap.myY);
+				if(weap.pointX == weap2.pointX && weap.pointY == weap2.pointY)
+					weap.finalStrength += weap2.weaponStrength / dis;
+				else
+					weap.finalStrength += weap2.weaponStrength / (dis * 5);
+			}
+			
+		}
+	}
+	
+	this.dangerZones = {}; //parts of this robot with a lot of/powerful weapons ranked
+	for (let weap of this.weapons){
+		var str = weap.finalStrength;
+		if(weap.pointX == 1){
+			if(this.dangerZones.right == undefined || str > this.dangerZones.right.strength)
+				this.dangerZones.right = {strength:str, along:weap.myY};
+		}
+		else if(weap.pointX == -1){
+			if(this.dangerZones.left == undefined || str > this.dangerZones.left.strength)
+				this.dangerZones.left = {strength:str, along:weap.myY};
+		}
+		else if(weap.pointY == 1){
+			if(this.dangerZones.bottom == undefined || str > this.dangerZones.bottom.strength)
+				this.dangerZones.bottom = {strength:str, along:weap.myX};
+		}
+		else if(weap.pointY == -1){
+			if(this.dangerZones.top == undefined || str > this.dangerZones.top.strength)
+				this.dangerZones.top = {strength:str, along:weap.myX};
+		}
+
+		weap.finalStrength = weap.weaponStrength;
+	}
+	
+	if(this.dangerZones.top == undefined)
+		this.dangerZones.top = {strength:0.01, along:(this.gridSize / 2)}
+	if(this.dangerZones.left == undefined)
+		this.dangerZones.left = {strength:0.01, along:(this.gridSize / 2)}
+	if(this.dangerZones.bottom == undefined)
+		this.dangerZones.bottom = {strength:0.01, along:(this.gridSize / 2)}
+	if(this.dangerZones.right == undefined)
+		this.dangerZones.right = {strength:0.01, along:(this.gridSize / 2)}
+
+};
+
 
 Person.prototype.setup = function(myX, myY, facing) {
 	this.readyToMove = true;
@@ -68,26 +122,30 @@ Person.prototype.setup = function(myX, myY, facing) {
 	this.recreateable = true;
 
 	this.motorJustStopped = false;
-	
+	this.curArea = null;
 	this.weapons = new Set();
+	this.fans = new Set();
 	
 	this.keyCodes = [];
 	this.isRivalIcon = false;
 	//scrambling key codes when hit with a scramble block
-	for (const [key, value] of Object.entries(origKeyCodes)) {
-		this.keyCodes[value] = key;
-	}
+	this.updateKeyCodes();
+
 	this.extractionRetries = 5;
+	this.closeEnDis = 0;
+	this.lastVis = true;
 };
 
-Person.prototype.setupWeapons = function(){
-	this.resetWeapons();
-	for(var i =0; i < this.motors.length; i+= 1){
-		this.motors[i].calculateMovement();
+
+Person.prototype.updateKeyCodes = function(){
+	this.keyCodes = [];
+	//scrambling key codes when hit with a scramble block
+	for (const [key, value] of Object.entries(selectedKeyCodes)) {
+		this.keyCodes[value] = key;
 	}
-	this.findWeapons(); //A.I. uses this to work out which of it's sides are strongest
-	//alert(JSON.stringify(player.dangerZones));
 }
+
+
 
 Person.prototype.resetWeapons = function(){
 	for (let weap of this.weapons){
@@ -179,9 +237,103 @@ Person.prototype.setupGrid = function(size, myX,myY) {
 Person.prototype.lostKnife = function(block){
 	
 };
+
+Person.prototype.resetNewXY = function(){
+	if(this.newX == undefined)
+		return
+		
+	if((!intermediate || this.faster  || this.movethistime) && !this.partsMoving && !(player.willResetInterval || enemy.willResetInterval)){
+		if(this.newX == this.myX && this.newY == this.myY)
+			this.newX = undefined;
+		else{
+			this.myX = this.newX;	
+			this.myY = this.newY;
+			this.newX = undefined;
+			this.shrink();
+		}
+		this.recreated = false;
+	}
+}
+
+Person.prototype.calcCloseToEnemy = function(){
+	var en = this.getOtherRobot();
+	var dis = 999;
+
+	if(this == player || this.closeEnDis == 999){
+		var meL = this.myX + this.minX;
+		var meR = this.myX + this.maxX;
+		var meT = this.myY + this.minY;
+		var meB = this.myY + this.maxY;
+		
+		var enL = en.myX + en.minX;
+		var enR = en.myX + en.maxX;
+		var enT = en.myY + en.minY;
+		var enB = en.myY + en.maxY;
+		
+		//if enemy has just rotated and extracted and not updated it's position yet use the potential position
+		if(en.newX != undefined){
+			enL += (en.newX - en.myX);
+			enR += (en.newX - en.myX);
+			enT += (en.newY - en.myY);
+			enB += (en.newY - en.myY);
+		}
+		
+		if ( (enT <= meB && enT >= meT) || (enB <= meB && enB >= meT) || (enT <= meT && enB >= meB)) //overlap on the left/right side
+			dis = Math.min(Math.abs(enL - meL),Math.abs(enL - meR),Math.abs(enR - meL),Math.abs(enR - meR), (Math.abs(meL - enL) / (enR - enL)) * 2, (Math.abs(enL - meL) / (meR - meL)) * 2) //last expression ensuring for robots totally in the middle dis < 2
+		else if ( (enL <= meR && enL >= meL) || (enR <= meR && enR >= meL) || (enL <= meL && enR >= meR)) //overlap on the top/bottom side
+			dis = Math.min(Math.abs(enT - meT),Math.abs(enT - meB),Math.abs(enB - meT),Math.abs(enB - meB), (Math.abs(meT - enT) / (enB - enT)) * 2, (Math.abs(enT - meT) / (meB - meT)) * 2)
+		if(isNaN(dis))
+			dis = 0;
+	}
+	else
+		dis = this.closeEnDis;
+			
+	if(en.partsMoving)
+		this.closeToEnemy = dis <= (maxSpeed / this.fastSpeed_fixed) + 1;
+	else if(this.faster)
+		this.closeToEnemy = dis <= 2;
+	else
+		this.closeToEnemy = dis <= en.fastSpeed_changing + 1;
 	
+	
+	if(this == player)
+		enemy.closeEnDis = dis;
+	
+}
+
+Person.prototype.adjustCloseToEnemy = function(){
+	this.closeEnDis = 999;
+	this.calcCloseToEnemy();
+	if(this.closeToEnemy && !this.gridUpdated())
+		this.updateGrid(false);
+	
+}
+
+Person.prototype.gridUpdated = function(){
+	if(this.heart.myX + this.myX >= numPiecesX || this.heart.myX + this.myX < 0 || this.heart.myY + this.myY >= numPiecesY || this.heart.myY + this.myY < 0)
+		return true; //when leaving land - for some reason I sometimes am drawn and better to be safe
+	var testSq = gameGrid[this.heart.myX + this.myX][this.heart.myY + this.myY]; //use the heart to find out if I did infact draw me last time
+	return (testSq != undefined && testSq != 1 && testSq != null && testSq.type == "heart");
+	
+}
+
+
+Person.prototype.ensureVisibility = function(){
+	var vis = this.group.left > 0 && this.group.top > 0 && this.group.left + this.actualWidth < canvas.width && this.group.top + this.actualHeight < canvas.height;
+	if(vis && !this.lastVis){
+		canvas.remove(this.group);
+		canvas.add(this.group);
+		canvas.requestRenderAll();
+	}
+	this.lastVis = vis;
+	if(!intermediate || this.faster){
+		this.group.left = (this.myX * gridWidth) + ((this.gridSize * gridWidth) / 2);
+		this.group.top = (this.myY * gridHeight) + ((this.gridSize * gridHeight) / 2);
+	}	
+}
 
 Person.prototype.update = function() {
+	this.ensureVisibility(); //if I'm moving very fast and just left screen will need to redraw when I've reentered
 	if(!intermediate)
 		this.maybeRotateHeart();
 	
@@ -251,8 +403,41 @@ Person.prototype.update = function() {
 	}
 	
 	//document.getElementById("test").innerHTML = this.myX + " " + this.myY;
+	
 
 };
+
+Person.prototype.updateGrid = function(clear){
+	if(this.partsMoving && !this.motorJustStopped)
+		return;
+	this.motorJustStopped = false;
+	if(clear){
+		this.calcCloseToEnemy();
+		if(this.gridUpdated()){ //if was drawn to grid last time
+			for(var x = 0; x <= this.gridSize; x += 1){
+				for(var y = 0; y <= this.gridSize; y += 1){ //TODO currently works because two objects can't overlap 
+															//If that changes then this will need of change!
+					if(this.grid[x] != undefined && x + this.myX >= 0 && x + this.myX < numPiecesX && y + this.myY >= 0 && y + this.myY < numPiecesY && this.grid[x][y] != undefined && this.grid[x][y] != null)
+						gameGrid[x + this.myX][y + this.myY] = 1; //origGrid[x + this.myX][y + this.myY]; //TODO - two loops could be combined to make more efficient
+				}
+			}
+		}
+	}
+	else{
+		if(this.closeToEnemy){
+			console.log("close to enemy");
+			for(var x = this.minX; x <= this.maxX; x += 1){
+				for(var y = this.minY; y <= this.maxY; y += 1){
+					if(this.grid[x][y] != null && this.grid[x][y] != 0)
+						if(this.grid[x] != undefined && x + this.myX >= 0 && x + this.myX < numPiecesX && y + this.myY >= 0 && y + this.myY < numPiecesY && this.grid[x][y] != undefined && this.grid[x][y] != null)
+							gameGrid[x + this.myX][y + this.myY] = this.grid[x][y]; //TODO - two loops could be combined to make more efficient
+				}
+			}
+		}
+	}
+}
+
+
 
 Person.prototype.moveParts = function() {
 	if(!this.partsMoving)
@@ -284,34 +469,9 @@ Person.prototype.stop = function() {
 };
 
 Person.prototype.isStopped = function() {
-	var stopped = ((this.movX == 0 && this.movY == 0) || this.stuck);
+	var stopped = ((this.movX == 0 && this.movY == 0) || this.jumpedBack);
 	return stopped;
 };
-
-Person.prototype.updateGrid = function(clear){
-	
-		if(this.partsMoving && !this.motorJustStopped)
-			return;
-		this.motorJustStopped = false;
-		if(clear){
-			for(var x = 0; x <= this.gridSize; x += 1){
-				for(var y = 0; y <= this.gridSize; y += 1){ //TODO currently works because two objects can't overlap 
-															//If that changes then this will need of change!
-					if(this.grid[x] != undefined && x + this.myX >= 0 && x + this.myX < numPiecesX && y + this.myY >= 0 && y + this.myY < numPiecesY && this.grid[x][y] != undefined && this.grid[x][y] != null)
-						gameGrid[x + this.myX][y + this.myY] = 1; //origGrid[x + this.myX][y + this.myY]; //TODO - two loops could be combined to make more efficient
-				}
-			}
-		}
-		else{
-			for(var x = this.minX; x <= this.maxX; x += 1){
-				for(var y = this.minY; y <= this.maxY; y += 1){
-					if(this.grid[x][y] != null && this.grid[x][y] != 0)
-						if(this.grid[x] != undefined && x + this.myX >= 0 && x + this.myX < numPiecesX && y + this.myY >= 0 && y + this.myY < numPiecesY && this.grid[x][y] != undefined && this.grid[x][y] != null)
-							gameGrid[x + this.myX][y + this.myY] = this.grid[x][y]; //TODO - two loops could be combined to make more efficient
-				}
-			}
-		}
-}
 
 
 Person.prototype.isMoving = function(){
@@ -339,8 +499,6 @@ function tinyAnimate(dis,group,movX,movY, obj){
 	else{
 		obj.tinyAnimateCount = obj.tinyAnimateCount + 1;
 	}
-	
-
 };
 
 Person.prototype.resetAngle = function() {
@@ -515,7 +673,7 @@ function allComplete2(){
 	}
 	
 	//if neither moved - wait as no delay for animation would otherwise make things too fast TODO - if add more than 1 enemy
-	actualIntv = new Date() - oldTime;
+	var actualIntv = new Date() - oldTime;
 	if(interval > actualIntv)
 		waitForTimeout(interval - actualIntv);
 	else{
@@ -528,10 +686,50 @@ function allComplete2(){
 
 //redraw after enter new landscape
 Person.prototype.restart = function(){
+	clearLandscape(); //clears collectables and enemy
+	if(willRestart == "right"){
+		curSeed += seedJumpX;
+		this.myY = newXYForNeighbour(rightGrid,this.myY + this.minY,this.maxY - this.minY + 1,gameGrid[0].length,rightGrid.grid[0].length, rightGrid.grid.length,true,"left") - this.minY ;			
+		start(); //sets up landscape and redraws everything
+		this.myX = - this.maxX - 1;
+		this.justArrived = true;
+		clearOldNeighbours(rightGrid);
+		
+	}
+	else if(willRestart == "left"){
+		//for memory = clear out grids which won't be next to me
+		curSeed -= seedJumpX;
+		this.myY = newXYForNeighbour(leftGrid,this.myY + this.minY,this.maxY - this.minY + 1,gameGrid[0].length,leftGrid.grid[0].length,leftGrid.grid.length, true, "right")- this.minY;			
+		start();//sets up landscape and redraws everything
+		this.myX = numPiecesX - this.minX;
+		this.justArrived = true;
+		clearOldNeighbours(leftGrid);
+	}
+	else if(willRestart == "bottom"){
+		curSeed += seedJumpY;
+		this.myX = newXYForNeighbour(bottomGrid,this.myX + this.minX,this.maxX - this.minX + 1,gameGrid.length,bottomGrid.grid.length, bottomGrid.grid[0].length,true,"top") - this.minX ;
+		start();//sets up landscape and redraws everything
+		this.myY = - this.maxY - 1;
+		this.justArrived = true;			
+		//for memory = clear out grids which won't be next to me			
+		clearOldNeighbours(bottomGrid);
+	}
+	else if(willRestart == "top"){
+		curSeed -= seedJumpY;
+		this.myX = newXYForNeighbour(topGrid,this.myX + this.minX,this.maxX - this.minX + 1,gameGrid.length,topGrid.grid.length,topGrid.grid[0].length, true, "bottom")- this.minX;
+		start();//sets up landscape and redraws everything
+		this.myY = numPiecesY - this.minY;
+		this.justArrived = true;
+		//for memory = clear out grids which won't be next to m
+		clearOldNeighbours(topGrid);
+	}	
+	
+	
 	this.group.left = (this.myX * gridWidth) + ((this.gridSize * gridWidth) / 2);
 	this.group.top = (this.myY * gridHeight) + ((this.gridSize * gridHeight) / 2);
 	canvas.add(this.group); //because new canvas will have removed
 	scrollToPlayer();
+	canvas.renderAll();
 };
 
 Person.prototype.scroll = function(){
@@ -627,7 +825,7 @@ Person.prototype.growGrid = function(newX, newY){
 };
 
 Person.prototype.addPiece = function(newX, newY, blocktype, fromTextGrid, recreatingGroup, pointX, pointY) {
-	newXY = this.growGrid(newX,newY);
+	var newXY = this.growGrid(newX,newY);
 	newX = newXY[0];
 	newY = newXY[1];
 	if(this.willRecreate)
@@ -676,7 +874,13 @@ Person.prototype.addPiece = function(newX, newY, blocktype, fromTextGrid, recrea
 	
 };
 
-
+Person.prototype.occupied = function(x, y){
+	if(x >= this.gridSize || x < 0 || y >= this.gridSize || y < 0)
+		return false;
+	if(this.grid[x] == undefined || this.grid[x][y] == undefined || this.grid[x][y] == null)
+		return false;
+	return true;
+};
 
 
 Person.prototype.recreateTextGrid = function(grid){
@@ -701,13 +905,16 @@ Person.prototype.extractFromOverlap = function(count_max, onlyScenery){
 		onlyScenery = false;
 	var isOverlap = true;
 	var count = 0;
+	var other = this.getOtherRobot();
 	while(isOverlap && count < count_max){
 		var overlaps = [];
 		isOverlap = false;
 		//for every square on me check if it overlaps landscape obstacles
 		for(var x = this.minX; x <= this.maxX; x += 1){
 			for(var y = this.minY; y <= this.maxY; y += 1){
-				if(this.grid[x][y] != null && this.grid[x][y] != undefined && (!onlyScenery || this.grid[x][y].owner == null)){ //if this square is a used square on me (note *on me*, not *on the landscape*)
+				//if I've already been there don't go there again
+				
+				if(this.grid[x][y] != null){ //if this square is a used square on me (note *on me*, not *on the landscape*)
 					if(this.myX + x < 0)//if a block is off grid to the left then record this so that moving right will be a possible correction
 						overlaps.push("left");
 					else if(this.myX + x >= numPiecesX)//if a block is off grid to the right then record left as possible correction
@@ -716,7 +923,7 @@ Person.prototype.extractFromOverlap = function(count_max, onlyScenery){
 						overlaps.push("bottom");
 					else if(this.myY + y < 0)
 						overlaps.push("top");
-					else if(gameGrid[this.myX + x][this.myY + y] != 1){
+					else if(gameGrid[this.myX + x][this.myY + y] != 1 || (!onlyScenery && other.onMe(this.myX + x - other.myX,this.myY + y - other.myY))){
 						isOverlap = true;
 						if(x == this.minX)//if a block on the left of me overlaps landscape obstacle 
 							overlaps.push("left");
@@ -776,8 +983,12 @@ Person.prototype.extractFromOverlap = function(count_max, onlyScenery){
 	return isOverlap;
 };
 
-Person.prototype.occupied = function(x, y){
-	if(x >= this.gridSize || x < 0 || y >= this.gridSize || y < 0)
+Person.prototype.onMe = function(x, y){
+	if(this.newX != undefined){
+		x -= (this.newX - this.myX);
+		y -= (this.newY - this.myY);
+	}
+	if(x < this.minX || x >= this.maxX || y < this.minY || y >= this.maxY)
 		return false;
 	if(this.grid[x] == undefined || this.grid[x][y] == undefined || this.grid[x][y] == null)
 		return false;
@@ -797,6 +1008,8 @@ Person.prototype.startMotorsMoving = function(which){
 		this.newX = undefined;
 	}
 	this.recreateGroup(0,0);
+	if(this == player && selectedKeyCodes == newKeyCodes) //deselect the motor
+		canvas.setActiveObject(delImg);
 
 	this.mot.startMoving()
 	this.partsMoving = true;
@@ -807,7 +1020,7 @@ Person.prototype.startMotorsMoving = function(which){
 	
 	this.movX = 0;
 	this.movY = 0;
-
+	this.getOtherRobot().adjustCloseToEnemy();
 };
 
 
@@ -941,9 +1154,10 @@ Person.prototype.checkCollision = function(dummyRun) {
 
 
 
-Person.prototype.handleCollision = function(myBlock, otherBlock, modified, destroyBlocks, mot){
+Person.prototype.handleCollision = function(myBlock, otherBlock,  modified, destroyed, mot){
 	var forwardStrength = myBlock.forwardStrength;
 	var sideStrength = myBlock.sideStrength;
+	
 	if(this.justArrived){//so automatically destroys first layer of new landscape
 		myBlock.forwardStrength = 9999;
 		myBlock.sideStrength = 9999;
@@ -966,9 +1180,9 @@ Person.prototype.handleCollision = function(myBlock, otherBlock, modified, destr
 	if(otherPointedAtMe && movX == -otherBlock.pointX && movY == -otherBlock.pointY && mot != undefined && mot.type == "spring") 
 		otherPointedAtMe = false;
 	
-	var otherDestroyed = otherBlock.destroyedBy(myBlock, modified, destroyBlocks, mePointedAtOther && !otherPointedAtMe,0,mot);
+	var otherDestroyed = otherBlock.destroyedBy(myBlock, modified, destroyed, mePointedAtOther && !otherPointedAtMe,0,mot);
 
-	var thisDestroyed = myBlock.destroyedBy(otherBlock, modified, destroyBlocks, otherPointedAtMe && !mePointedAtOther,0,mot);								
+	var thisDestroyed = myBlock.destroyedBy(otherBlock, modified, destroyed, otherPointedAtMe && !mePointedAtOther,0,mot);								
 	
 	var thisormot = this;
 	if(mot != undefined && mot != null)
@@ -982,9 +1196,9 @@ Person.prototype.handleCollision = function(myBlock, otherBlock, modified, destr
 		}
 	}
 		
-	if(!otherDestroyed && !thisDestroyed){ //blocked
+	if(!otherDestroyed && !thisDestroyed) //blocked
 		thisormot.jumpedBack = true;
-	}
+	
 	if(thisormot.jumpedBack && !otherBlock.isDamaged() && !myBlock.isDamaged()){//if I was blocked so any damage I may have done was in error so need to undo
 		thisormot.blocked = true;
 		if(otherBlock.owner == null) //is a landscape obstacle
@@ -1071,12 +1285,14 @@ Person.prototype.tryToSpeedUp = function() {
 };
 
 Person.prototype.getMass = function(){
-	var a = (Math.floor((this.totalNumBlocks - massMin) / massScaler));
-	return Math.min(massMax,Math.pow(2,a));
+	return Math.ceil(this.totalNumBlocks / 8) - 1;
 };
 
 
 Person.prototype.changeDir = function(restarting){
+	if(!this.readyToMove )
+		return;
+	
 	if(!this.changedDir)
 		return;
 	var dir = 0;
@@ -1109,9 +1325,15 @@ Person.prototype.changeDir = function(restarting){
 		otherRob.resetPos();
 	
 	var newFastSpeed = Math.pow(2,this.fasterSpeeds[dir]);
+	//newFastSpeed = 1 (no fans), 2, 4, 8, 16
+	
 	if(this.fasterSpeeds[dir] > 0){
 		var mass = this.getMass();
-		newFastSpeed = Math.max(newFastSpeed / mass,1);
+		mass = Math.pow(2,mass - 1) //mass = 0.5, 1, 2, 4, 8
+		newFastSpeed = Math.max(1,Math.min(maxSpeed,newFastSpeed / mass));
+		if(!newFastSpeed in [1,2,4,8,16]){
+			console.error("Invalid Fast Speed!")
+		}
 		if(this == player)
 			reportMass(mass,this.fasterSpeeds[dir],newFastSpeed);
 	}
@@ -1119,7 +1341,7 @@ Person.prototype.changeDir = function(restarting){
 		message.set("fill", "green");
 		message.set("text","World " + origSeed);
 	}
-	if(newFastSpeed != this.fastSpeed_fixed || restarting){
+	if(newFastSpeed != this.fastSpeed_fixed || restarting){ //changing speed
 		this.fastSpeed_fixed = newFastSpeed;
 		if(otherRob.readyToMove || restarting){
 				if(otherRob.partsMoving){
@@ -1146,6 +1368,8 @@ Person.prototype.changeDir = function(restarting){
 							interval = (initialInterval / this.fastSpeed_fixed);
 							otherRob.fastSpeed_changing = 1;
 							this.fastSpeed_changing = this.fastSpeed_fixed / otherRob.fastSpeed_fixed;
+							otherRob.adjustCloseToEnemy(); //close to enemy is based on assumption my enemy will continue to move at same speed they've been moving before. 
+															//Now need to adjust/ draw grid even though I thought I didn't need to
 						}
 						otherRob.movefastCounter = 0;
 						this.movefastCounter = 0;
@@ -1227,6 +1451,11 @@ Person.prototype.getOtherRobot = function() {
 	
 };
 
+Person.prototype.stairCollisions = function() {
+	
+};
+
+
 Person.prototype.rotateAndExtract = function(){
 	if(this.newX != undefined){//if I rotated on the previous but didn't call "move" so didn't update
 		if(this.newX == this.myX && this.newY == this.myY)
@@ -1258,12 +1487,14 @@ Person.prototype.rotateAndExtract = function(){
 		this.rotate();
 		this.rotation = -this.rotation; //back to forward rotation so the animation works
 	}
+
 	//save my new position = animation will move me into it
 	this.updateGrid(false); //note - this is after TEMPORARILY moving into correct position...
 	this.newX = this.myX; //... AND move back (i.e. without horiz/verti adjustments - probably half way into wall). This is so animation will start from correct point. 
 	this.newY = this.myY;
 	this.myX = oldX;
 	this.myY = oldY;
+	
 }
 
 Person.prototype.rotate = function() {
@@ -1291,6 +1522,7 @@ Person.prototype.rotate = function() {
 			newTextGrid[i].fill("0");
 		}
 	}
+	var newX, newY;
 	for(var x = 0; x < this.gridSize; x += 1){
 		
 		for(var y = 0; y < this.gridSize; y += 1){
@@ -1388,41 +1620,18 @@ Person.prototype.recreateGroup = function(offsetX, offsetY) {
 			canvas.remove(this.stoppedBlocks[i]);
 	}
 
+	var newXY, newX, newY;
 	for(var x = 0; x < this.gridSize; x += 1){
 		for(var y =0; y < this.gridSize; y += 1){
 			if(this.grid[x][y] != null && this.grid[x][y] != undefined){
-				/**
-				var resistance = this.grid[x][y].resistance;
-				if(this.myX + x < numPiecesX && this.myX + x > 0 && this.myY + y < numPiecesY && this.myY + y > 0 &&
-						gameGrid[this.myX + x][this.myY + y] != undefined && gameGrid[this.myX + x][this.myY + y] != null &&
-						gameGrid[this.myX + x][this.myY + y] != 1 && gameGrid[this.myX + x][this.myY + y].owner == this)
-					gameGrid[this.myX + x][this.myY + y] = 1;
-				var oldDamageAngle = this.grid[x][y].damageAngle;
-				var oldDamageLeft = this.grid[x][y].damageLeft;
-				var oldDamageUp = this.grid[x][y].damageUp;
-				var oldQuantity = this.grid[x][y].quantity;
-				var hasWeapon = this.grid[x][y].weapon != undefined && this.grid[x][y].weapon != null;
-				this.addPiece(x, y, this.grid[x][y].type, false, true,this.grid[x][y].pointX,this.grid[x][y].pointY);
-				this.grid[x][y].damageAngle = oldDamageAngle;
-				this.grid[x][y].damageLeft = oldDamageLeft;
-				this.grid[x][y].damageUp = oldDamageUp;
-				this.grid[x][y].weapon = hasWeapon;
-				this.grid[x][y].quantity = oldQuantity;
-				this.grid[x][y].resistance = resistance;
-				**/
+
 				
 				newXY = this.growGrid(x,y);
 				newX = newXY[0];
 				newY = newXY[1];
 				
 				this.grid[newX][newY].recreate(this.group, newX, newY, ((this.gridSize * gridWidth) / 2), ((this.gridSize * gridWidth) / 2));
-				/**
-				if(this.grid[x][y].usePoints && this.grid[x][y].type == "fan")
-					this.grid[x][y].updateFanSpeeds(1);
-				
-				if(this.grid[x][y].resistance < this.grid[x][y].startingStrength) //the "wobbling" effect when it't just been hit
-					this.grid[x][y].showDamage();
-				**/
+
 			}
 				
 		}
@@ -1688,6 +1897,11 @@ Person.prototype.areGapsDirection = function(stX, stY, num, xDir, yDir, dir){
 };
 
 Person.prototype.setMovement = function(x, y) {
+	if(x != 0 && (this.myY + this.minY < 0 || this.myY + this.maxY >= numPiecesY)) //moving sideways while hanging off top or bottom of grid not allowed as messes up into/out of patterns
+		return;
+	if(y != 0 && (this.myX + this.minX < 0 || this.myX + this.maxX >= numPiecesX)) //moving sideways while hanging off top or bottom of grid not allowed as messes up into/out of patterns
+		return;
+
 	this.movX = x;
 	this.movY = y;
 };
@@ -1763,15 +1977,15 @@ Person.prototype.redrawFromTextGrid = function(text){
 Person.prototype.scramble = function(scrambler){
 	var options = []
 	this.keyCodes = []
-	Object.entries(origKeyCodes).forEach(([key, value]) => (options[options.length] = value));
+	Object.entries(selectedKeyCodes).forEach(([key, value]) => (options[options.length] = value));
 	var ind;
-	for (const [key, value] of Object.entries(origKeyCodes)) {
-		if((key == "clockwise" || key == "anticlockwise") && dontScrambleRotations)
+	for (const [key, value] of Object.entries(selectedKeyCodes)) {
+		if((key == "clockwise" || key == "anticlockwise" || key == "downstairs") && dontScrambleRotations)
 			this.keyCodes[value] = key
 		else{
 			ind = Math.maybeSeededRandom(0,options.length - 1);
 			var option = options.splice(ind,1);
-			while(dontScrambleRotations && (origKeyCodes["clockwise"] ==  option || origKeyCodes["anticlockwise"] == option)){
+			while(dontScrambleRotations && (selectedKeyCodes["clockwise"] ==  option || selectedKeyCodes["anticlockwise"] == option || selectedKeyCodes["downstairs"] == option)){
 				ind = Math.maybeSeededRandom(0,options.length - 1);
 				option = options.splice(ind,1);
 			}
@@ -1789,14 +2003,9 @@ Person.prototype.unscramble = function(scrambler){
 	
 	this.keyCodes = [];
 	//scrambling key codes when hit with a scramble block
-	for (const [key, value] of Object.entries(origKeyCodes)) {
+	for (const [key, value] of Object.entries(selectedKeyCodes)) {
 		this.keyCodes[value] = key;
 	}		
 	this.scrambler = null;
 }
-
-
-
-
-
 

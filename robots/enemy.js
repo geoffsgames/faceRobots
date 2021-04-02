@@ -1,5 +1,6 @@
-var fadeDuration = 600; //fading in body
-var fadeDuration2 = 100; //fading in face after body faded in
+"use strict";
+var fadeDuration = 2000; //fading in body
+var fadeDuration2 = 200; //fading in face after body faded in
 var fadeFrames = (fadeDuration + fadeDuration2) / interval; //number of game frames takes to fade in
 //reset the difficulty
 var difficulty = 0;
@@ -57,6 +58,7 @@ Enemy.prototype.setup = function(myX, myY, facing) {
 	
 	this.pos = []
 	this.stuckScore = 0
+	this.rotationStuck = 0;
 	
 	//*************AI PARAMETERS = ROBOTS PERSONALITY***********//
 	this.stepSideProbabilityRun = Math.seededRandomDouble(0.2, 0.7); //higher = scared. More likely to run rather than sidestep
@@ -84,59 +86,6 @@ Enemy.prototype.setup = function(myX, myY, facing) {
 	this.contactX = null;
 
 	this.justReadyToMove = false;
-};
-
-
-Person.prototype.findWeapons = function() {
-	//add strength of nearby weapons
-	for (let weap of this.weapons){
-		if(weap.finalStrength == undefined)
-			weap.finalStrength = weap.weaponStrength;
-		
-		for (let weap2 of this.weapons){
-			if(weap2 != weap){
-				dis = Math.abs(weap2.myX - weap.myX) + Math.abs(weap2.myY - weap.myY);
-				if(weap.pointX == weap2.pointX && weap.pointY == weap2.pointY)
-					weap.finalStrength += weap2.weaponStrength / dis;
-				else
-					weap.finalStrength += weap2.weaponStrength / (dis * 5);
-			}
-			
-		}
-	}
-	
-	this.dangerZones = {}; //parts of this robot with a lot of/powerful weapons ranked
-	for (let weap of this.weapons){
-		var str = weap.finalStrength;
-		if(weap.pointX == 1){
-			if(this.dangerZones.right == undefined || str > this.dangerZones.right.strength)
-				this.dangerZones.right = {strength:str, along:weap.myY};
-		}
-		else if(weap.pointX == -1){
-			if(this.dangerZones.left == undefined || str > this.dangerZones.left.strength)
-				this.dangerZones.left = {strength:str, along:weap.myY};
-		}
-		else if(weap.pointY == 1){
-			if(this.dangerZones.bottom == undefined || str > this.dangerZones.bottom.strength)
-				this.dangerZones.bottom = {strength:str, along:weap.myX};
-		}
-		else if(weap.pointY == -1){
-			if(this.dangerZones.top == undefined || str > this.dangerZones.top.strength)
-				this.dangerZones.top = {strength:str, along:weap.myX};
-		}
-
-		weap.finalStrength = weap.weaponStrength;
-	}
-	
-	if(this.dangerZones.top == undefined)
-		this.dangerZones.top = {strength:0.01, along:(this.gridSize / 2)}
-	if(this.dangerZones.left == undefined)
-		this.dangerZones.left = {strength:0.01, along:(this.gridSize / 2)}
-	if(this.dangerZones.bottom == undefined)
-		this.dangerZones.bottom = {strength:0.01, along:(this.gridSize / 2)}
-	if(this.dangerZones.right == undefined)
-		this.dangerZones.right = {strength:0.01, along:(this.gridSize / 2)}
-
 };
 
 Enemy.prototype.isWeapon = function(block){
@@ -188,6 +137,7 @@ Enemy.prototype.animateFadeOut = function(){
 };
 
 Enemy.prototype.lostKnife = function(block){
+	this.weapons.delete(this);
 	//no knifes enemy will always run	
 	if(this.weapons.size == 0){
 		this.permanentlyRunning = true;
@@ -206,6 +156,8 @@ Enemy.prototype.update = function(){
 			this.die();
 		}
 	}
+	if(willRestart != null)
+		this.die();
 	if(this.readyToMove && (!debugMode || timeStamp >= (fadeFrames - arrivalTime))){ //last bit = enemy fade in too quick
 		if(!intermediate){
 			this.AIcountDown -= this.countdownDecr;
@@ -326,43 +278,77 @@ Enemy.prototype.respondToBlockedByLandscape = function(){
 	
 	//if blocked by obstacle will move to side 
 	if(this.movX != 0){//heaving left or right
-		var oldX = this.movX; 
-		this.movX = 0;
-		//choose a random sideways on direction to current direction
-		this.movY = (Math.round(Math.maybeSeededRandom(0,1)) * 2) - 1;
+		var overlapTop = false, yTop;
+		var overlapBottom = false, yBottom;
+		var xFront = this.myX + this.maxX;
+		if(this.movX == -1)
+			xFront = this.myX + this.minX;
 		
-		//check ahead - if that still leads to collision choose alternative sideways direction
-		this.myY += this.movY;
-		if(this.checkCollision(true)){
-			this.movY = -this.movY;
-			this.myY += this.movY;
-			if(this.checkCollision(true)){//if both sideways directions lead to collision move backwards
-				this.movY = 0;
-				this.movX = -oldX;
-			}else
-				this.myY -= this.movY;
+		for(let area of land.areasAndNoise){
 
-		}else
-			this.myY -= this.movY;	
-		
-	}else{
-	
-		var oldY = this.movY;
-		this.movY = 0;
-		this.movX = (Math.round(Math.maybeSeededRandom(0,1)) * 2) - 1;
-		this.myX += this.movX;
-		if(this.checkCollision(true)){
-			this.movX = -this.movX;
-			this.myX += this.movX;
-			if(this.checkCollision(true)){
-				this.movX = 0;
-				this.movY = -oldY;
+			//check ahead - if that still leads to collision choose alternative sideways direction
+			yTop = this.minY + this.myY - 1;
+			yBottom = this.maxY + this.myY + 1;
+			
+			if(xFront >= area.minX && xFront < area.maxX){
+				if(yTop >= area.minY && yTop < area.maxY)
+					overlapTop = true;
+				else if(yBottom >= area.minY && yBottom < area.maxY)
+					overlapBottom = true;
 			}
-			else
-				this.myX -= this.movX;
-		}	
-		else
-			this.myX -= this.movX;
+
+		}
+		if(overlapTop && overlapBottom)
+			this.movX = -this.movX;
+		else if(overlapTop){
+			this.movY = 1;
+			this.movX = 0;
+		}
+		else if(overlapBottom){
+			this.movY = -1;
+			this.movX = 0;
+		}
+		else{
+			this.movX = 0;
+			this.movY = (Math.round(Math.maybeSeededRandom(0,1)) * 2) - 1;
+		}
+			
+
+	}else{
+		var overlapLeft = false, xLeft;
+		var overlapRight = false, xRight;
+		var yFront = this.myY + this.maxY;
+		if(this.movY == -1)
+			yFront = this.myY + this.minY;
+		
+		for(let area of land.areasAndNoise){
+
+			//check ahead - if that still leads to collision choose alternative sideways direction
+			xLeft = this.minX + this.myX - 1;
+			xRight = this.maxX + this.myX + 1;
+			
+			if(yFront >= area.minY && yFront < area.maxY){
+				if(xLeft >= area.minX && xLeft < area.maxX)
+					overlapLeft = true;
+				else if(xRight >= area.minX && xRight < area.maxX)
+					overlapRight = true;
+			}
+
+		}
+		if(overlapLeft && overlapRight)
+			this.movY = -this.movY;
+		else if(overlapLeft){
+			this.movX = 1;
+			this.movY = 0;
+		}
+		else if(overlapRight){
+			this.movX = -1;
+			this.movY = 0;
+		}
+		else{
+			this.movY = 0;
+			this.movX = (Math.round(Math.maybeSeededRandom(0,1)) * 2) - 1;
+		}
 
 	}
 	this.retreatingProb = this.retreatingProb * 2;
@@ -381,7 +367,7 @@ Enemy.prototype.amIStuck = function(){
 	
 	this.pos[0] = [this.myX,this.myY,this.facing];
 	
-	
+	//if I've been in the same place multiple times before
 	for(var i =1; i < 5; i+= 1){
 		if(this.pos[0][0] == this.pos[i][0] && this.pos[0][1] == this.pos[i][1] && this.pos[0][2] == this.pos[i][2] )
 			this.stuckScore += (limit - i);
@@ -455,8 +441,8 @@ Enemy.prototype.intelligence = function(){
 		if(this.stuckScore > 0)
 			this.stuckScore -= 1;
 		
-		oldMovX = this.movX;
-		oldMovY = this.movY;
+		var oldMovX = this.movX;
+		var oldMovY = this.movY;
 		
 		var readyToPickDirection = true; //only false if sliding along to get away from obstacle, 
 										//otherwise can potentially turn to head towards a target
@@ -466,7 +452,7 @@ Enemy.prototype.intelligence = function(){
 		}
 		if(readyToPickDirection){		
 				if(this.AIcountDown < 0){
-						dis = this.pickDirection();
+						var dis = this.pickDirection();
 						if(dis != -1){ //dis is from player. dis == -1 is code for not currently chasing player. 
 							if(dis <= 1)
 								this.AIcountDown = 0;
@@ -770,50 +756,40 @@ Enemy.prototype.predictCollision = function(other){
 			do{
 				
 				//get position other will be on collision
-				var offsetX = other.myX + (timeToCollide * other.movX);
-				var offsetY = other.myY + (timeToCollide * other.movY);
-			
-				var changedSquares = [];
-				
-				//put other down so can detect collisions with it
-				for(var x = other.minX; x < othermaxX; x += 1){
-					for(var y = other.minY; y < othermaxY; y += 1){
-							if(gameGrid[x + offsetX] != undefined && gameGrid[x + offsetX][y + offsetY] != undefined && gameGrid[x + offsetX][y + offsetY] == 1 && other.grid[x] != undefined && other.grid[x][y] != undefined){
-								gameGrid[offsetX + x][offsetY + y] = other.grid[x][y];
-								changedSquares.push([offsetX + x, offsetY + y]);
-							}
-					}
-				}
+				var othOffX = other.myX + (timeToCollide * other.movX);
+				var othOffY = other.myY + (timeToCollide * other.movY);
 
 				//get position I will on collision
-				offsetX = this.myX + (timeToCollide * this.movX);
-				offsetY = this.myY + (timeToCollide * this.movY);
-	
-				for(var x = this.minX; x < thismaxX; x += 1){
-					for(var y = this.minY; y < thismaxY; y += 1){
-						if(gameGrid[x + offsetX] != undefined && gameGrid[x + offsetX][y + offsetY] != undefined && gameGrid[x + offsetX][y + offsetY] != 1 && gameGrid[x + offsetX][y + offsetY].owner == other){
-							
-							collided = true;
-							if(this.grid[x][y] != null){
-								if(this.grid[x][y].sideStrength > gameGrid[x + offsetX][y + offsetY].sideStrength){
-									willHurtThem = true;
-									this.chaseX = x;
-									this.chaseY = y;
-								}
-								else if(this.grid[x][y].sideStrength < gameGrid[x + offsetX][y + offsetY].sideStrength)
-									willHurtMe = true;
-								else
-									blocked = true;
-							}
-	
-						}
-					}
-				}
+				var meOffX = this.myX + (timeToCollide * this.movX);
+				var meOffY = this.myY + (timeToCollide * this.movY);
 				
+				var minX = Math.max(meOffX + this.minX,othOffX + other.minX);
+				var minY = Math.max(meOffY + this.minY,othOffY + other.minY);
+				var maxX = Math.min(meOffX + this.maxX,othOffX + other.maxX);
+				var maxY = Math.min(meOffY + this.maxY,othOffY + other.maxY);
 
-				//reset grid
-				for(var i =0; i < changedSquares.length; i += 1){
-					gameGrid[changedSquares[i][0]][changedSquares[i][1]] = 1;
+				
+				for(var x = minX; x < maxX; x += 1){
+							for(var y = minY; y < maxY; y += 1){
+
+									var mySq = this.grid[x - meOffX][y - meOffY];
+									var otherSq = other.grid[x - othOffX][y - othOffY];
+									if(otherSq != null){
+										collided = true;
+										if(mySq != null){
+											if(mySq.sideStrength > otherSq.sideStrength){
+												willHurtThem = true;
+												this.chaseX = x;
+												this.chaseY = y;
+											}
+											else if(mySq.sideStrength < otherSq.sideStrength)
+												willHurtMe = true;
+											else
+												blocked = true;
+										}
+				
+									}
+							}
 				}
 				
 				if(collided && !blocked && !willHurtMe && !willHurtThem && count < 5){
@@ -969,19 +945,11 @@ Enemy.prototype.changeDirTrial = function(){
 	return newFastSpeed;
 };
 
-Person.prototype.rotationOverlap = function() {
-	for(var x = 0; x < this.gridSize; x += 1){
-		for(var y = 0; y < this.gridSize; y += 1){
-				if(this.myX + x >= 0 && this.myX + x < numPiecesX && this.myY + y >= 0 && this.myY + y < numPiecesY){//not off edge					
-					var otherBlock = gameGrid[this.myX + x][this.myY + y];
-					if(otherBlock != 1 && otherBlock != null && otherBlock != undefined && otherBlock.owner != null && otherBlock.owner == player){//is player
-						return true;
-					}
-				}
-		}
-	}
-	return false;
-};
+Enemy.prototype.rotateAndExtract = function(){
+	Person.prototype.rotateAndExtract.call(this);
+	if(!this.extracted)
+		this.stuckScore += 10;
+}
 
 //rotate face back to upright if needed and not in the middle of rotation
 Enemy.prototype.maybeRotateHeart = function(){
@@ -999,18 +967,15 @@ Enemy.prototype.setToFacing = function(targetCenterX, targetCenterY, preChoseX, 
 	//TODO combine then? (would make it more efficient and mean this doesn't happen)
 	//on the other hand the contrast between the two methods could create more unpredictable behaviour
 	//TODO YES COMBINE because otherwise .contactX/contactY screws up
-	
-	
+	if(Math.maybeSeededRandom(0,1) <   (Math.pow(Math.log(this.stuckScore),2) / 100) ){
+		this.stuckScore = this.stuckScore / 2;
+		return;
+	}	
 	if(preChoseX == undefined){
 	
 		if(this.target == undefined)
 			return;
-		if(this.rotationOverlap()){ //don't rotate when too close to player
-			this.stuckScore += 10;
-			return;
-		}
-	
-			
+
 		
 		if(targetCenterX == undefined){
 			//0 = left, 1 = top, 2 = right, 3 = down TODO not standardized across game
@@ -1055,7 +1020,7 @@ Enemy.prototype.setToFacing = function(targetCenterX, targetCenterY, preChoseX, 
 		else{
 			probs[0] = {turns:-1, val:getProb(this.dangerZones.right.strength,targetCenterX - centerX,this.dangerZones.bottom.strength,targetCenterY - centerY,1)};
 			probs[1] = {turns:1, val:getProb(this.dangerZones.right.strength,targetCenterX - centerX,this.dangerZones.top.strength,centerY - targetCenterY,1)};
-			probs[2] = {turns:2, val:prob2 = getProb(this.dangerZones.right.strength,targetCenterX - centerX,this.dangerZones.left.strength,centerX - targetCenterX,2)};
+			probs[2] = {turns:2, val:getProb(this.dangerZones.right.strength,targetCenterX - centerX,this.dangerZones.left.strength,centerX - targetCenterX,2)};
 			side = "right";
 		}
 	}
@@ -1161,7 +1126,7 @@ Enemy.prototype.fadeIn = function(){
 	for(var x = 0; x < this.gridSize; x += 1){
 		for(var y = 0; y < this.gridSize; y += 1){
 			if(this.grid[x][y] != undefined && this.grid[x][y] != null){
-					this.grid[x][y].image.opacity = 0;
+					this.grid[x][y].image.opacity = 0.3;
 					if(this.grid[x][y].type != "heart"){
 						this.grid[x][y].image.animate('opacity', 1, {
 							owner: this,
@@ -1175,6 +1140,23 @@ Enemy.prototype.fadeIn = function(){
 			}
 		}
 	}
+	this.group.animate('scaleX', 1, {
+        duration: fadeDuration * 0.75,
+        easing: fabric.util.ease.easeInBounce
+	});
+	this.group.animate('scaleY', 1, {
+        duration: fadeDuration * 0.75,
+        easing: fabric.util.ease.easeInBounce
+	});
+	this.group.animate('left', makeAnimateString(((this.myX * gridWidth) + (enemy.actualWidth / 2)) - this.group.left), {
+        duration: fadeDuration * 0.75,
+        easing: fabric.util.ease.easeInBounce
+	});
+	this.group.animate('top', makeAnimateString(((this.myY * gridHeight) + (enemy.actualHeight / 2)) - this.group.top), {
+        duration: fadeDuration * 0.75,
+        easing: fabric.util.ease.easeInBounce
+	});
+	
 };
 
 Enemy.prototype.resetFace = function(url, override){
@@ -1211,6 +1193,7 @@ Enemy.prototype.completeFade = function(){
             		}
             	}
             	this.owner.readyToMove = true;
+            	selectedSpawn.opacity = 0.2;
             },
 
             duration: fadeDuration2
@@ -1233,11 +1216,12 @@ Enemy.prototype.respondToDamage = function(){
 
 Enemy.prototype.scramble = function(scrambler){
 	this.resetFace("badfaceConfused");
-	var options = []
-	this.keyCodes = []
-	Object.entries(origKeyCodes).forEach(([key, value]) => options.push(value));
+	var options = [];
+	this.keyCodes = [];
+	this.keyCodesCount = [];
+	Object.entries(selectedKeyCodes).forEach(([key, value]) => options.push(value));
 	var ind;
-	for (const [key, value] of Object.entries(origKeyCodes)) {
+	for (const [key, value] of Object.entries(selectedKeyCodes)) {
 		ind = Math.maybeSeededRandom(0,options.length - 1);
 		this.keyCodes[options.splice(ind,1)] = key;
 	}
@@ -1246,44 +1230,44 @@ Enemy.prototype.scramble = function(scrambler){
 }
 
 Enemy.prototype.unscramble = function(scrambler){
-	alert("unscrambling yo");
 	this.resetFace("badface");
 	this.keyCodes = [];
 	//scrambling key codes when hit with a scramble block
-	for (const [key, value] of Object.entries(origKeyCodes)) {
+	for (const [key, value] of Object.entries(selectedKeyCodes)) {
 		this.keyCodes[value] = key;
 	}		
 	this.scrambler = null;
 }
 
 Enemy.prototype.blind = function(blinder){
-	alert("enemy blinded");
+	message.set("text", "enemy blinded");
 	this.blinder = blinder;
 	this.permanentlyRunning = true;
 	this.countDownDecr = Math.maybeSeededRandom(0,0.5);
-	this.resetFace("badfaceBlind");
+	this.resetFace("badfaceBlind", true);
+	this.recreateGroup();
 }
 
 Enemy.prototype.guessScrambledCode = function(){
 	var code;
 	if(this.rotation == 1)
-		code = origKeyCodes.clockwise;
+		code = selectedKeyCodes.clockwise;
 	else if(this.rotation == -1)
-		code = origKeyCodes.anticlockwise;
+		code = selectedKeyCodes.anticlockwise;
 	else if(this.movX == 1)
-		code = origKeyCodes.right;
+		code = selectedKeyCodes.right;
 	else if(this.movX == -1)
-		code = origKeyCodes.left;
+		code = selectedKeyCodes.left;
 	else if(this.movY == 1)
-		code = origKeyCodes.down;
+		code = selectedKeyCodes.down;
 	else if(this.movY == -1)
-		code = origKeyCodes.up;
+		code = selectedKeyCodes.up;
 	
 	
 	var oldCode = code;
-	if(this.keyCodes[code].count == undefined)
-		this.keyCodes[code].count = 0;
-	this.keyCodes[code].count++;
+	if(this.keyCodesCount[code] == undefined)
+		this.keyCodesCount[code] = 0;
+	this.keyCodesCount[code]++;
 	
 	if(this.wrongCodes == undefined)
 		this.wrongCodes = [code];
@@ -1291,7 +1275,7 @@ Enemy.prototype.guessScrambledCode = function(){
 	if(Math.maybeSeededRandom() < (1 - (1 / this.keyCodes[code].count)) ){
 		code = this.keyCodes[code];
 		if(this.wrongCodes.length == 1){
-			for (const [key, value] of Object.entries(origKeyCodes)) {
+			for (const [key, value] of Object.entries(selectedKeyCodes)) {
 				if(value != oldCode && value != code)
 					wrongCodes[wrongCodes.length - 1] = value; 
 			}	
@@ -1316,17 +1300,17 @@ Enemy.prototype.guessScrambledCode = function(){
 	this.movX = 0;
 	this.movY = 0;
 	this.rotation = 0;
-	if(code == origKeyCodes.clockwise)
+	if(code == selectedKeyCodes.clockwise)
 		this.rotation = 1;
-	else if(code == origKeyCodes.anticlockwise)
+	else if(code == selectedKeyCodes.anticlockwise)
 		this.rotation = -1;
-	else if(code == origKeyCodes.right)
+	else if(code == selectedKeyCodes.right)
 		this.movX = 1;
-	else if(code == origKeyCodes.left)
+	else if(code == selectedKeyCodes.left)
 		this.movX = -1;
-	else if(code == origKeyCodes.up)
+	else if(code == selectedKeyCodes.up)
 		this.movY = -1;
-	else if(code == origKeyCodes.down)
+	else if(code == selectedKeyCodes.down)
 		this.movY = 1;
 	
 	return(code)

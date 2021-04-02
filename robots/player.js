@@ -1,3 +1,4 @@
+"use strict";
 Player.prototype = new Person();   
 Player.prototype.constructor=Player;
 
@@ -23,8 +24,18 @@ function Player(myX, myY, facing) {
 	this.enlarged = false;
 	this.willRotate = 0;
 	
+	//spring/motor to fire
+	this.selectedMotor = null;
+	this.selectedMotorInd = 0;
+
 
 };
+
+Player.prototype.recreateGroup = function(offsetX, offsetY){
+	Person.prototype.recreateGroup.call(this, offsetX, offsetY);
+	if(this.selectedMotor != null && selectedKeyCodes == newKeyCodes)
+		canvas.setActiveObject(this.selectedMotor.image);
+}
 
 Player.prototype.stop = function(){
 	this.movX = 0;
@@ -180,6 +191,10 @@ Player.prototype.deleteBlock = function(block, mustDelete, isRival, invSelected)
 	if(!mustDelete && tempBlock.usePoints && canEditRotations){//will rotate - selected by selecting the same type in inventory when there is a suitable adjacent wall TODO - make special icon
 		//make all the others unselectable
 		selectedBlock = block;
+		if(this.pointings == undefined)
+			this.pointings = [];
+		this.pointings[(x - this.myX) + "-" + (y - this.myY)] = this.grid[x - this.myX][y - this.myY].reversePoint + 1;
+
 		for(var i = 0, len = this.editBlocks.length; i < len; i+= 1){
 			if(this.editBlocks[i] != selectedBlock)
 				this.editBlocks[i].selectable = false;
@@ -193,7 +208,7 @@ Player.prototype.deleteBlock = function(block, mustDelete, isRival, invSelected)
 		block.bringToFront();
 		selectedBlock.initialAngle = selectedBlock.angle;
 	}
-	else if(tempBlock.canAddMore){ //for items like springs where more than one block can be added to a single position
+	if(tempBlock.canAddMore){ //for items like springs where more than one block can be added to a single position
 		var quantDeleted = 0;
 		if(!mustDelete){
 			if(invSelected == tempBlock.type){
@@ -264,23 +279,20 @@ Player.prototype.deleteBlock2 = function(tempBlock, block, x, y, isRival, mustDe
 		this.rects[i].selectable = false;
 
 	selectedBlock = null;
-	var savedblock = this.grid[x - this.myX][y - this.myY];
+
+	var savedBlock = this.grid[x - this.myX][y - this.myY];
 	this.grid[x - this.myX][y - this.myY] = null;
 	if(debugMode)
 		this.textGrid[x - this.myX][y - this.myY] = 0;
 	this.totalNumBlocks -= 1;
 	var foundGaps = false;
 	if(playingBack || !mustDelete || !this.areGaps(x - this.myX,y - this.myY)){
-		if(tempBlock.type == "fan"){
-			savedblock.updateFanSpeeds(1);
-			savedblock.calculatePoints();
-			savedblock.updateFanSpeeds(-2);
-		}
+
 		this.weapons.delete(this.grid[x - this.myX][y - this.myY]);
 
 		if(tempBlock.type == "motor"){ //deleting a motor
 		
-			newMots = this.motors;
+			var newMots = this.motors;
 			var deletedMot = false
 			for(var i = 0; i < newMots.length && !deletedMot; i+= 1){
 				var mot = newMots[i];
@@ -295,7 +307,8 @@ Player.prototype.deleteBlock2 = function(tempBlock, block, x, y, isRival, mustDe
 			}
 			this.motors = newMots
 		}
-		
+		else if(tempBlock.type == "fan")
+			this.fans.delete(savedBlock)
 		
 		
 		clearMarkers(this.rects);
@@ -317,7 +330,8 @@ Player.prototype.deleteBlock2 = function(tempBlock, block, x, y, isRival, mustDe
 				this.grid[ix][iy].checkedForGaps = false;
 		}
 	}
-		
+
+
 
 };
 
@@ -473,6 +487,31 @@ Player.prototype.updateGrid = function(clear){
 		Person.prototype.updateGrid.call(this,clear);
 };
 
+Player.prototype.setupWeapons = function(){
+	Person.prototype.setupWeapons.call(this);
+	if(this.selectedMotor == null){
+		this.changeSelectedMotor(0);
+	}
+		
+
+}
+
+Player.prototype.changeSelectedMotor = function(incr){
+	this.selectedMotor = null;
+	var i = 0;
+	while((this.selectedMotor == null || !this.selectedMotor.isWorking()) && i < this.motors.length){
+		this.selectedMotorInd += incr;
+		if(this.selectedMotorInd == -1)
+			this.selectedMotorInd = this.motors.length -1;
+		else if(this.selectedMotorInd == this.motors.length)
+			this.selectedMotorInd = 0;
+		this.selectedMotor = this.motors[this.selectedMotorInd];
+		i++;
+	}
+	if(this.selectedMotor != null)
+		canvas.setActiveObject(this.selectedMotor.image);
+}
+
 //will attempt to reselect inventory item I had selected before but, if it's not available will just select last item in inventory
 //if none available will select delImg
 Player.prototype.tryToSelectWhatIHadSelectedBefore = function(lastSelectedInd){
@@ -503,6 +542,7 @@ Player.prototype.activateEditMode = function(){
 			this.inventoryImages[i].selectable = true;
 		}
 	}
+	
 	canvas.remove(this.group);
 	this.stoppedBlocks = new Array();
 	var heart = null;
@@ -524,36 +564,6 @@ Player.prototype.activateEditMode = function(){
 					gameGrid[x + this.myX][y + this.myY].getPoints();
 					gameGrid[x + this.myX][y + this.myY].redraw(true);
 				}
-				/**
-				if(this.grid[x][y].resistance < this.grid[x][y].startingStrength){ //if block is damaged
-					gameGrid[x + this.myX][y + this.myY].damageAngle = this.grid[x][y].damageAngle;
-					gameGrid[x + this.myX][y + this.myY].damageLeft = this.grid[x][y].damageLeft;
-					gameGrid[x + this.myX][y + this.myY].damageUp = this.grid[x][y].damageUp;
-					gameGrid[x + this.myX][y + this.myY].showDamage();
-					
-					//put grey square over to indicate can't modify
-					var rect = new fabric.Rect({
-					  left: (this.myX + x) * gridWidth,
-					  top: (this.myY + y) * gridHeight,
-					  fill: 'black',
-					  width: gridWidth,
-					  height: gridHeight,
-					  opacity: 0.2,
-					  gridX: x,
-					  gridY: y,
-					  isAddPlace: true
-					});	
-					rect.lockScalingX = true;
-					rect.lockScalingY = true;
-					rect.lockMovementX = true;
-					rect.lockMovementY = true;
-					rect.hasControls = false;
-					rect.isDamagedBlock = true;
-					this.damagedBlocks.push(rect);
-					gameGrid[x + this.myX][y + this.myY].selectable = false;
-					canvas.add(rect);
-				}
-				*/
 				//end of resettings
 				gameGrid[x + this.myX][y + this.myY].isDeletePlace = true;
 				gameGrid[x + this.myX][y + this.myY].origOwner = this;
@@ -733,7 +743,9 @@ Player.prototype.isEditing = function(){
 }
 
 Player.prototype.leaveEditing = function(){
+	canvas.setActiveObject(delImg); //deselect currently selected (until I figure out how to do it properly)
 	this.recreateable = true;
+	this.pointings = undefined;
 	this.shrink();
 	clearMarkers(this.rects);
 	for(var i =0; i < this.damagedBlocks.length; i+=1)
@@ -745,13 +757,30 @@ Player.prototype.leaveEditing = function(){
 	for(var i =0, len = this.inventoryImages.length; i < len; i+= 1){
 		this.inventoryImages[i].selectable = false;
 	}
-	canvas.setActiveObject(delImg); //deselect currently selected (until I figure out how to do it properly)
 	canvas.remove(delImg);
 	this.setupWeapons();
 	this.updateRivals();
 }
 
+Person.prototype.setupWeapons = function(){
+	this.resetWeapons();
+	for(var i =0; i < this.motors.length; i+= 1){
+		this.motors[i].calculateMovement();
+	}
+	this.findWeapons(); //A.I. uses this to work out which of it's sides are strongest
+	//alert(JSON.stringify(player.dangerZones));
+	
+	this.fasterSpeeds = [0,0,0,0];
+	for(let fan of this.fans){
+		fan.updateFanSpeeds(1);
+	}
+}
+
 Player.prototype.setMovement = function(x, y) {
+	if(x != 0 && (this.myY + this.minY < 0 || this.myY + this.maxY >= numPiecesY)) //moving sideways while hanging off top or bottom of grid not allowed as messes up into/out of patterns
+		return;
+	if(y != 0 && (this.myX + this.minX < 0 || this.myX + this.maxX >= numPiecesX)) //moving sideways while hanging off top or bottom of grid not allowed as messes up into/out of patterns
+		return;
 	if(this.isEditing()){//I'm just resuming movement after being in edit mode
 		this.leaveEditing();
 	}
@@ -767,8 +796,8 @@ Player.prototype.setMovement = function(x, y) {
 		}
 	}
 	if(this.willMoveX != undefined){
-		this.movX = this.willMoveX;
-		this.movY = this.willMoveY;
+		this.movX = x;
+		this.movY = y;
 	}
 	this.changedDir = true;
 };
@@ -799,18 +828,23 @@ Player.prototype.willSetMovement = function(movX, movY,creep){
 };
 
 Player.prototype.update = function(){
-	//if(recording && !(inPVP && this.isRival) && !intermediate) //if player has taken a decision
-		//recordStep();
-	
 	if(this != enemy){ //if it's the rival in PVP (i.e. not directly controlled by this player) don't scroll to it and do the stuff related to it leaving the grid
+		this.possiblyUpdateBlind();	
 		this.adjustScroll();
-		this.possiblyLeaveGrid();//check entered next landscape or close enough to at least generate next landscape
-		this.possiblyUpdateBlind();
-		if(willRestart){//possiblyLeaveGrid sets this if have just moved to next landscape
-			this.restart();
-			willRestart = false;
+		if(willRestart != null){ 
+			this.restart(); //if I left last turn and enemy killed itself, resetting timers
+			willRestart = null;
+		}
+		else{
+			this.possiblyLeaveGrid();//check entered next landscape or close enough to at least generate next landscape
+			if(willRestart != null){
+				allComplete() //wait for enemy to kill itself next turn, there is nothing I can do now
+				return;
+			}
 		}
 	}
+
+		
 	if(enemy.justReadyToMove){
 		if(this.overEnemy()){
 			this.extractionRetries = 1000;
@@ -840,7 +874,7 @@ Player.prototype.overEnemy = function(){
 
 Player.prototype.tryToChangeDir = function(){
 	if((this.willMoveX != undefined || this.willRotate != 0)&& !intermediate && !this.partsMoving){
-		this.setMovement();
+		this.setMovement(this.willMoveX, this.willMoveY);
 		this.willMoveX = undefined;
 	}
 };
@@ -855,7 +889,8 @@ Player.prototype.possiblyLeaveGrid = function(){
 		leftGrid = generateNextGrid(leftGrid, -seedJumpX);
 
 	}
-	else if(this.myY + this.maxY >= numPiecesY - edgeDetectDis){//getting close to bottom
+	
+	if(this.myY + this.maxY >= numPiecesY - edgeDetectDis){//getting close to bottom
 		bottomGrid = generateNextGrid(bottomGrid, seedJumpY);
 	}
 	else if(this.myY + this.minY < edgeDetectDis){//getting close to top
@@ -863,53 +898,15 @@ Player.prototype.possiblyLeaveGrid = function(){
 	}	
 	
 	//leaving
-	if(this.myX + this.minX == numPiecesX && this.movX == 1){ //heading out right
-			clearLandscape();
-			curSeed += seedJumpX;
-			canvas.clear();
-			this.myY = newXYForNeighbour(rightGrid,this.myY + this.minY,this.maxY - this.minY + 1,gameGrid[0].length,rightGrid.grid[0].length, rightGrid.grid.length,true,"left") - this.minY ;			
-			start();
-			this.myX = - this.maxX - 1;
-			willRestart = true;
-			this.justArrived = true;
-			clearOldNeighbours(rightGrid);
-	}
-	else if(this.myX + this.maxX == -1 && this.movX == -1){ //left 
-			//for memory = clear out grids which won't be next to me
-			clearLandscape();
-			curSeed -= seedJumpX;
-			canvas.clear();
-			this.myY = newXYForNeighbour(leftGrid,this.myY + this.minY,this.maxY - this.minY + 1,gameGrid[0].length,leftGrid.grid[0].length,leftGrid.grid.length, true, "right")- this.minY;			
-			start();
-			this.myX = numPiecesX - this.minX;
-			willRestart = true;
-			this.justArrived = true;
-			clearOldNeighbours(leftGrid);
-	}
-	else if(this.myY + this.minY == numPiecesY && this.movY == 1){ //heading out bottom
-			clearLandscape();
-			curSeed += seedJumpY;
-			canvas.clear();
-			this.myX = newXYForNeighbour(bottomGrid,this.myX + this.minX,this.maxX - this.minX + 1,gameGrid.length,bottomGrid.grid.length, bottomGrid.grid[0].length,true,"top") - this.minX ;
-			start();
-			this.myY = - this.maxY - 1;
-			willRestart = true;
-			this.justArrived = true;			
-			//for memory = clear out grids which won't be next to me			
-			clearOldNeighbours(bottomGrid);
-	}
-	else if(this.myY + this.maxY == -1 && this.movY == -1){ //top 
-			clearLandscape();
-			curSeed -= seedJumpY;
-			canvas.clear();
-			this.myX = newXYForNeighbour(topGrid,this.myX + this.minX,this.maxX - this.minX + 1,gameGrid.length,topGrid.grid.length,topGrid.grid[0].length, true, "bottom")- this.minX;
-			start();
-			this.myY = numPiecesY - this.minY;
-			willRestart = true;
-			this.justArrived = true;
-			//for memory = clear out grids which won't be next to m
-			clearOldNeighbours(topGrid);
-	}
+	if(this.myX + this.minX == numPiecesX && this.movX == 1) //heading out right
+		willRestart = "right";
+	else if(this.myX + this.maxX == -1 && this.movX == -1) //left
+		willRestart = "left";
+	else if(this.myY + this.minY == numPiecesY && this.movY == 1) //heading out bottom
+		willRestart = "bottom";
+	else if(this.myY + this.maxY == -1 && this.movY == -1) //top 
+		willRestart = "top";
+
 };
 
 //if just moved from one landscape to another how far down side do I appear?
@@ -1174,15 +1171,18 @@ Player.prototype.adjustScroll = function() {
 
 Player.prototype.scramble = function(scrambler){
 	this.resetFace("goodfaceConfused", true);
+	this.recreateGroup();
 	message.set("fill","purple");
-	message.set("text","You've been scrambled!");
+	message.set("text","Steal his scrambler to unscramble yourself!");
 	Person.prototype.scramble.call(this, scrambler);
 
 }
 
 Player.prototype.unscramble = function(scrambler){
 	Person.prototype.unscramble.call(this, scrambler);
+	message.set("text","Unscrambling complete");
 	this.resetFace("goodface");
+	this.recreateGroup();
 }
 
 Player.prototype.convertCode = function(code){
@@ -1216,6 +1216,15 @@ Player.prototype.blind = function(blinder){
 	message.bringToFront();
 	this.blindedCounter = Math.maybeSeededRandom(blindedCounterMin, blindedCounterMax);
 	this.resetFace("goodfaceBlind",true);
+	this.recreateGroup();
+
 }
 
+Player.prototype.stairCollisions = function(minX, minY, maxX, maxY){
+	for(let stairs in land.stairs){
+		if(minX < stairs.x  + 2 && maxX >= stairs.x &&
+				minY < stairs.y  + 2 && maxY >= stairs.y)
+			this.stairsCollide = stairs;
+	}
 
+}

@@ -1,3 +1,4 @@
+"use strict";
 HandyThief.prototype = new Enemy();        
 HandyThief.prototype.constructor=HandyThief;
 

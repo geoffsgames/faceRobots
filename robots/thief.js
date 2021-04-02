@@ -1,3 +1,4 @@
+"use strict";
 var smallThiefProb = 0; //0.5;
 var noFanProb = 0.1;
 var threeFanProb = 0.1;
@@ -173,7 +174,37 @@ Thief.prototype.pickDirection = function(){
 	if(this.target == null){
 		var minDis = 100;
 		var minCollect = null;
-		if(collectables.length == 0){//go home
+		
+		if(collectables.length > 0){
+			for(var i =0; i < collectables.length; i += 1){
+				var colX = collectables[i][0];
+				var colY = collectables[i][1];
+				var col = gameGrid[colX][colY];
+				if(col == 1){ //if collectable has disappeared from grid - this isn't supposed to happen but not a big prob - check later
+					console.log("collectable mysteriously vanished"); 
+					collectables.splice(i,1);
+				}
+				else{
+					var dis = Math.abs(colX - centerX) + Math.abs(colY - centerY);
+					if(col.special)
+						dis = dis / this.preferenceForSpecials;
+					else if(col.type == "knife")
+						dis = dis / this.preferenceForKnives;
+	
+					if(dis < minDis){
+						minDis = dis;
+						minCollect = col;
+					}
+				}
+			}
+			if(minCollect != null){
+				this.collectMinDis = minDis;
+				this.target = minCollect;
+				this.target.centerX = minCollect.myX;
+				this.target.centerY = minCollect.myY;
+			}
+		}
+		if(this.target == null){//go home - not an else as may have changed if all collectables found to have disappeared
 
 			
 			//find the nearest side and head there
@@ -196,30 +227,7 @@ Thief.prototype.pickDirection = function(){
 			
 			this.goingHome = true;
 		}
-		else{
-				for(var i =0; i < collectables.length; i += 1){
-					var colX = collectables[i][0];
-					var colY = collectables[i][1];
-					var col = gameGrid[colX][colY];
-					//if(Math.seededRandomDouble() > (1/this.missProb)){
-						var dis = Math.abs(colX - centerX) + Math.abs(colY - centerY);
-						if(col.special)
-							dis = dis / this.preferenceForSpecials;
-						else if(col.type == "knife")
-							dis = dis / this.preferenceForKnives;
-		
-						if(dis < minDis){
-							minDis = dis;
-							minCollect = col;
-						}
-					//}
-				}
-				
-				this.collectMinDis = minDis;
-				this.target = minCollect;
-				this.target.centerX = minCollect.myX;
-				this.target.centerY = minCollect.myY;
-		}
+
 	}
 	//probGoingHome increases after each block
 	//	a few have fans on side to correct this
@@ -267,26 +275,25 @@ Thief.prototype.makeGrid = function(){
 			numFans = 2;
 		
 		if(numFans == 3)
-			width = Math.seededRandom(3, 4);
+			this.width = Math.seededRandom(3, 4);
 		else
-			width = Math.seededRandom(2, 4);
+			this.width = Math.seededRandom(2, 4);
 		
-		for(var x =0; x < width; x+= 1)
+		for(var x =0; x < this.width; x+= 1)
 			this.addPiece(x,0,"knife");
-		for(var x =0; x < width; x+= 1)
+		for(var x =0; x < this.width; x+= 1)
 			this.addPiece(x,1,"wall");
-		for(var x = 0; x < width; x+= 1){
+		for(var x = 0; x < this.width; x+= 1){
 			if(x == 1)
 				this.addPiece(x,2,"heart");
 			else
 				this.addPiece(x,2,"wall");
 		}
-		for(var x =0; x < width; x+= 1)
+		for(var x =0; x < this.width; x+= 1)
 			this.addPiece(x,3,"wall");
 		for(var x =0; x < numFans; x+= 1)
 			this.addPiece(x,4,"fan");
-		this.totalNumBlocks = width * 4 + numFans;
-		this.width = width;
+		this.totalNumBlocks = this.width * 4 + numFans;
 	}
 	this.findWeapons();
 };
