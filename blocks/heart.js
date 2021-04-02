@@ -1,3 +1,4 @@
+"use strict";
 //Heart//////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -10,9 +11,6 @@ function Heart(type, ownerGrid, ownerImage,  owner, myX, myY, offsetX, offsetY, 
 	this.currentlyRotating = false;
 	if(this.owner != null)
 		this.owner.heart = this;
-	this.resistance = 5;
-	this.startingStrength = 5;
-	this.origStrength = 5;
 }
 
 Heart.prototype.destroy = function(other) {

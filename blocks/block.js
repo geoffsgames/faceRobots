@@ -1,10 +1,10 @@
-var flyawaySpeed = 500;
+"use strict";
 
 var flyAwayMin = 5;
 var flyAwayOptimal = 10;
 var flyAwayMax = 20;
+var flyawaySpeed = 500;
 
-var reversePoint = 0;
 
 //doesn't do anything - just holds place and type for adding a real block later
 //used when designing enemies
@@ -21,7 +21,10 @@ var Block = function (type, ownerGrid, ownerImage, owner, myX, myY, offsetX, off
 
 Block.prototype.getWall = function(){
 	var element;
-	if(this.owner != null && this.owner.isEnemy)
+	
+	if(this.collectable)
+		element = document.getElementById("wallMid");
+	else if(this.owner != null && this.owner.isEnemy)
 		element = document.getElementById("wallDark");
 	else
 		element = document.getElementById("wall");
@@ -92,7 +95,7 @@ Block.prototype.setup = function(type, ownerGrid, ownerImage, owner, myX, myY, o
 	this.getPoints();
 	this.weaponStrength = 0;
 	this.draw(type,offsetX,offsetY,this.pointAngle,this.pointOffsetX,this.pointOffsetY);
-	this.spring = null
+	this.spring = null;
 };
 
 Block.prototype.calculatePoints = function(){
@@ -100,8 +103,10 @@ Block.prototype.calculatePoints = function(){
 		return;
 	
 	if(this.reversePoint == undefined){
-		this.reversePoint = reversePoint;
-		reversePoint += 1;
+		if(this.owner.pointings != undefined && this.owner.pointings[this.myX + "-" + this.myY] != undefined)
+			this.reversePoint = this.owner.pointings[this.myX + "-" + this.myY];
+		else
+			this.reversePoint = 0;
 	}
 	
 	this.pointX = 0;
@@ -239,7 +244,8 @@ Block.prototype.makeImage = function(type,offsetX,offsetY,pointAngle,pointOffset
 	var wallType = "wall";
 	if(this.owner != null && this.owner.isEnemy)
 		wallType = "wallDark"
-	
+	else if(this.collectable)
+		wallType = "wallMid";
 	if(type == "wall")
 		type = wallType;
 	
@@ -353,7 +359,7 @@ Block.prototype.destroyedBy = function(other, modified, destroyed, forwards,alre
 		
 		
 		
-		
+		modified.push(this);
 		this.resistance -= impact;
 		if(debugMode && this.owner != null){
 			this.owner.textGrid[this.myX][this.myY] = this.type + "." + this.resistance;
@@ -362,7 +368,7 @@ Block.prototype.destroyedBy = function(other, modified, destroyed, forwards,alre
 	}
 	
 	
-	modified.push(this);
+	
 	
 	if(this.resistance < 0){
 		if(other.motor != undefined && other.motor != null && other.motor.moving){
@@ -373,7 +379,7 @@ Block.prototype.destroyedBy = function(other, modified, destroyed, forwards,alre
 				newY = newY + this.owner.myY;
 			}
 			if(newY < numPiecesX && newY >= 0 && newX < numPiecesX && newX >= 0){
-				neighbour = gameGrid[newX][newY];
+				var neighbour = gameGrid[newX][newY];
 				if(neighbour == undefined){ //is an obstacle block that has not yet been added
 					addRandomDirScenery(newX,newY,"obstacle");//draw obstacle wonky indicating damage
 					neighbour = gameGrid[newX][newY];
@@ -415,8 +421,6 @@ Block.prototype.showDamage = function(){
 	if(this.type == "spring")
 		this.damageAngle -= this.pointAngle;
 	this.image.angle = this.damageAngle;
-	this.owner.group.remove(this.image);
-	this.owner.group.add(this.image);
 	this.image.left = this.origLeft + this.damageLeft;
 	this.image.top = this.origTop + this.damageUp;
 
@@ -523,8 +527,25 @@ Block.prototype.getFlyAwayImage = function(){
 	return this.image;
 }
 
+function outFromUnderRobot(newX,newY){
+	//potentially remove from under player/enemy
+	var extrX = -((Math.round(newX/numPiecesX) * 2) - 1); //extracts from player/enemy towards centre
+	var extrY = -((Math.round(newY/numPiecesY) * 2) - 1);
+	while(			
+			(newX >= player.myX && newX < player.myX + player.width && newX >= player.myY && newX < player.myY + player.height)
+			
+			|| (newX >= enemy.myX && newX < enemy.myX + enemy.width && newX >= enemy.myY && newX < enemy.myY + enemy.height)
+		){
+		newX += extrX;
+		newY += extrY; 
+	}
+	if(gameGrid[newX] != undefined && gameGrid[newX][newY] != undefined && gameGrid[newX][newY] == 1)
+		return {newX,newY}
+	else
+		return null;
+}
+
 Block.prototype.flyAway = function() {
-	
 	var curX = this.myX + this.owner.myX;
 	var curY = this.myY + this.owner.myY;
 	
@@ -557,7 +578,7 @@ Block.prototype.flyAway = function() {
 			|| (gameGrid[newX][newY + 1] != 1)
 			
 			|| (gameGrid[newX][newY - 1] != 1)
-			
+						
 			|| nextToAlreadyCollect(newX, newY)))
 			
 	
@@ -576,6 +597,16 @@ Block.prototype.flyAway = function() {
 					inside = newX < numPiecesX - 1 && newY < numPiecesY - 1 && newX > 0 && newY > 0;
 					retries += 1;
 	}
+	
+	var landed = false;
+	if(inside) //succeeded in fitting it in
+		var newPos = outFromUnderRobot(newX,newY);
+		if(newPos != null){
+			landed = true;
+			newX = newPos.newX;
+			newY = newPos.newY;
+		}
+
 	
 	this.flyAwayCounter = 0;
 	
@@ -596,18 +627,19 @@ Block.prototype.flyAway = function() {
 		  endX: newX,
 		  endY: newY,
 		  onChange: canvas.requestRenderAll.bind(canvas),
+		  landed: landed,
 		  myGameGrid: gameGrid, //to ensure doesn't add if I've just restarted the game
           onComplete: function() {
-        	  	if(gameGrid == this.myGameGrid){
-        	  		this.myImg.opacity = 0;
-        	  		canvas.remove(this.myImg);
-        	  		if(this.endX < numPiecesX && this.endX >= 0 && 
-        	  				this.endY < numPiecesY && this.endY >= 0){        	  			
-        	  			//because adding directly into collectables here doesn't work for reasons unknown
-        	  			//will add at the start of an update
-        	  			newCollectables.push([this.endX, this.endY, this.myType]);     	  			
-           	  		}
-        	  	}
+      	  	if(gameGrid == this.myGameGrid){
+
+    	  		this.myImg.opacity = 0;
+    	  		canvas.remove(this.myImg);
+    	  		if(this.landed){        	  			
+    	  			//because adding directly into collectables here doesn't work for reasons unknown
+    	  			//will add at the start of an update
+    	  			newCollectables.push([this.endX, this.endY, this.myType]);     	  			
+       	  		}
+      	  	}
           }
           ,
        duration: flyawaySpeed,
@@ -617,10 +649,6 @@ Block.prototype.flyAway = function() {
 	
 	img.animate('top', (newY * gridHeight), {
 		  myImg: img,
-		  myGameGrid: gameGrid, //to ensure doesn't add if I've just restarted the game
-//	      onChange: function() {
-//	    	  canvas.renderAll();
-//	      },
           onComplete: function() {
   	  			this.myImg.opacity = 0;
       	  		canvas.remove(this.myImg);

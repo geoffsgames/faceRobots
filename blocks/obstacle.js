@@ -1,3 +1,4 @@
+"use strict";
 //Obstacle/////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -6,42 +7,14 @@ Obstacle.prototype.constructor=Obstacle;       // Otherwise instances of Cat wou
 function Obstacle(type, ownerGrid, ownerImage,  owner, myX, myY, offsetX, offsetY, pointX, pointY){
 	this.usePoints = true;
 	Block.prototype.setup.call(this, type, ownerGrid, ownerImage,  owner, myX, myY, offsetX, offsetY, pointX, pointY);
-	this.resistance = 5;
-	this.startingStrength = 5;
-	this.origStrength = 5;
+	this.resistance = 10;
+	this.startingStrength = 10;
 }
 
 Obstacle.prototype.drawBackground = function() {
-	if(this.backAdded == undefined){		
-		drawBackground(this.imgLeft, this.imgTop, this.imgWidth, this.imgHeight);
-		this.backAdded = true;
-	}
+	context.clearRect(this.image.left,this.image.top,gridWidth,gridHeight);
 };
 
-drawBackground = function(x,y,width,height){
-		
-		var background = new fabric.Image(document.getElementById("grass"),{
-			  originX: "left",
-			  originY: "top",
-			  left: 0,
-			  top: 0
-			});
-		
-		
-		var clipPath = new fabric.Rect({
-			height: height,
-			width: width,
-		    left: x - (background.width / 2) - (width/ 2), 
-		    top: y - (background.height / 2) - (height / 2)
-		  });
-
-		background.clipPath = clipPath;
-		
-		canvas.add(background);
-		background.moveTo(blackWallZindex + 1);
-		background.selectable = false;
-
-};
 
 Obstacle.prototype.saveDamage = function(){
 	var found = false;
@@ -130,4 +103,8 @@ Obstacle.prototype.showDamage = function(){
 	this.image.left = this.imgLeft + (Math.maybeSeededRandom(-1, 1)) * damageExtent;
 	this.image.top = this.imgTop + (Math.maybeSeededRandom(-1, 1)) * damageExtent;
 
+};
+
+Obstacle.prototype.directionMatches = function(movX, movY) {
+	return false;
 };
