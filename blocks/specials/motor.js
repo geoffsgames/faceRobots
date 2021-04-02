@@ -1,13 +1,29 @@
-
+"use strict";
 
 
 Motor.prototype = new Block();        // Here's where the inheritance occurs 
-Motor.prototype.constructor=Motor;      
+Motor.prototype.constructor=Motor;
+
+
 
 function Motor(type, ownerGrid, ownerImage,  owner, myX, myY, offsetX, offsetY, pointX, pointY){
 	this.setup(type, ownerGrid, ownerImage,  owner, myX, myY, offsetX, offsetY, pointX, pointY);
 	
 }
+
+Motor.prototype.redraw = function(remove){
+	Block.prototype.redraw.call(this, remove);
+	if(this.owner != null && selectedKeyCodes == newKeyCodes){
+		if(this == this.owner.selectedMotor)
+			canvas.setActiveObject(this.owner.selectedMotor.image);
+		this.image.hasControls = false;
+		this.image.borderColor = 'yellow';
+		this.image.strokeWidth = 5;
+	}
+
+};
+
+
 
 Motor.prototype.setup = function(type, ownerGrid, ownerImage,  owner, myX, myY, offsetX, offsetY, pointX, pointY){
 	
@@ -26,9 +42,7 @@ Motor.prototype.setup = function(type, ownerGrid, ownerImage,  owner, myX, myY, 
 	this.oldMovX = 0;
 	this.moving = false;
 	this.willDestroy = false;
-	this.resistance = 5;
-	this.origStrength = 5;
-	this.startingStrength = 5;
+	this.resistance = 2;
 	this.needsCalc = false;
 
 	
@@ -173,7 +187,7 @@ Motor.prototype.destroy = function(other){
 		this.collided = true;
 	}
 	else{
-		newMots = this.owner.motors;
+		var newMots = this.owner.motors;
 		var deletedMot = false
 		for(var i = 0; i < newMots.length && !deletedMot; i+= 1){
 			var mot = newMots[i];
@@ -336,6 +350,7 @@ Motor.prototype.calculateMovement = function(){
 	if(!this.working)
 		return;
 	
+	/**
 	if(this.chainedMotors == undefined || this.chainedMotors == null){
 			this.chainedMotors = this.owner.linkChain(this.myX,this.myY);
 			for(var i =0; i < this.chainedMotors.length; i+= 1){
@@ -344,7 +359,7 @@ Motor.prototype.calculateMovement = function(){
 				this.chainedMotors[i].chainedMotors = this.chainedMotors;
 				this.chainedMotors[i].chainVisited = false;
 			}
-	}
+	}*/
 	
 }
 
@@ -370,6 +385,8 @@ Motor.prototype.startMoving = function(){
 	this.reversing = false;
 
 	this.moving = true;
+	//to guarantee owner will load it's position into the grid
+	this.owner.closeToEnemy = true;
 	this.owner.updateGrid(false);
 	this.drawGroup();
 
@@ -662,6 +679,11 @@ Motor.prototype.getDis = function(){
 Motor.prototype.draw = function(type,offsetX,offsetY,pointAngle,pointOffsetX,pointOffsetY){
 	Block.prototype.draw.call(this, type,offsetX,offsetY,pointAngle,pointOffsetX,pointOffsetY);
 	this.orientateImage();
+	if(this.owner != null && selectedKeyCodes == newKeyCodes){
+		this.image.hasControls = false;
+		this.image.borderColor = 'yellow';
+		this.image.strokeWidth = 5;
+	}
 };
 
 Motor.prototype.orientateImage = function(){
@@ -705,8 +727,10 @@ function addStrength(strength,knifeSet){
 Motor.prototype.makeImage = function(type, offsetX, offsetY, pointAngle, pointOffsetX, pointOffsetY){
 	Block.prototype.makeImage.call(this, type, offsetX, offsetY, pointAngle, pointOffsetX, pointOffsetY);
 	var caption = ""
-	if(this.owner == player)
+	if(this.owner == player && selectedKeyCodes == oldKeyCodes){
 		caption = (this.motNum + 1) +  ""
+		message.set('text', 'press ' + caption + " to run your new motor")
+	}
 	var text = new fabric.Text(caption, {
 		left: 0,
 		top: 0,
@@ -718,9 +742,8 @@ Motor.prototype.makeImage = function(type, offsetX, offsetY, pointAngle, pointOf
 		fill: "red"
 	});
 	
-	message.set('text', 'press ' + caption + " to run your new motor")
-
 	
+
 	var l = this.image.left;
 	var t = this.image.top;
 	
@@ -845,7 +868,7 @@ Person.prototype.stopMotors = function(){
 	this.movX = this.oldMovX;
 	this.movY = this.oldMovY;
 	this.dontStartMotors = true;
-	otherRob = this.getOtherRobot();
+	var otherRob = this.getOtherRobot();
 	if(!otherRob.partsMoving){
 			//other robot is moving fast due to reason other than motor/spring (i.e. fans) and we would come out currently in an intermediate time because of this
 			if(enemy.readyToMove && otherRob.movefastCounter > 0 && (otherRob.movefastCounter != otherRob.fastSpeed_changing) && (otherRob.movX != 0 || otherRob.movY != 0) && !otherRob.collided && !otherRob.recreated){

@@ -1,3 +1,4 @@
+"use strict";
 //MagicBlock - this is the superblock for blocks which have an effect every time you collide with them
 //unless you damage them (i.e. separate from regular resistance like knife)
 
@@ -19,9 +20,7 @@ MagicBlock.prototype.setup = function(type, ownerGrid, ownerImage,  owner, myX, 
 	this.flyAwayRetries = 5;
 	this.maxFlyDistance = 15;
 	this.victim = null;
-	this.resistance = 5;
-	this.origStrength = 5;
-	this.startingStrength = 5;
+	this.resistance = 2;
 	this.weaponStrength = 10;
 	this.origWeaponStrength = 10;
 	this.isMagic = true;
@@ -30,13 +29,17 @@ MagicBlock.prototype.setup = function(type, ownerGrid, ownerImage,  owner, myX, 
 
 
 MagicBlock.prototype.magicEffect = function(other) {
-	if(other.owner == undefined || other.owner == null)
+	if(this.owner == undefined || this.owner == null || other.owner == undefined || other.owner == null)
 		return;
 	if(other.owner.alreadyMagiced)
 		return;
 	this.victim = other.owner;
-	this.weaponStrength = 0;
+	
+	//for the purpose of AI - so that, after blinding/scrambling opponent I move on to trying to stab them with another weapon
+	this.weaponStrength = 0; 
 	this.owner.findWeapons();
+	
+	//can't magic again this shot, can go back and return to magic again though
 	this.victim.alreadyMagiced = true;
 	this.activateMagicEffect();
 }

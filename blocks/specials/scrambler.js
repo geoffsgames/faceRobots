@@ -1,6 +1,6 @@
+"use strict";
 //Blinder/////////////////////////////////////
 var dontScrambleRotations = true;
-var origKeyCodes = {up:38, left:37, right:39, down:40, clockwise:16, anticlockwise:13}
 
 
 Scrambler.prototype = Object.create( MagicBlock.prototype );
@@ -13,3 +13,11 @@ function Scrambler(type, ownerGrid, ownerImage,  owner, myX, myY, offsetX, offse
 Scrambler.prototype.activateMagicEffect = function(){
 	this.victim.scramble(this);
 }
+
+Scrambler.prototype.clearAway = function() {
+	if(this.victim != null)
+		this.victim.unscramble();
+	this.victim = null;
+	Block.prototype.clearAway.call(this);
+		
+};

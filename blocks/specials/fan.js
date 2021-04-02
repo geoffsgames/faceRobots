@@ -1,3 +1,4 @@
+"use strict";
 //Fan////////////////////////////////
 
 Fan.prototype = new Block();        // Here's where the inheritance occurs 
@@ -11,18 +12,11 @@ function Fan(type, ownerGrid, ownerImage,  owner, myX, myY, offsetX, offsetY, po
 	this.isBase = false;
 	this.flyAwayRetries = 5;
 	this.maxFlyDistance = 15;
-	
+	if(this.owner != null)
+		this.owner.fans.add(this);
 
 }
 
-Fan.prototype.calculatePoints = function(){
-	//in case of recalculation clear old fan speed
-	if(this.calculatedPoints)
-		this.updateFanSpeeds(-1);
-	Block.prototype.calculatePoints.call(this);
-	this.updateFanSpeeds(1);
-	this.calculatedPoints = true;
-};
 
 Fan.prototype.updateFanSpeeds = function(incr){
 	if(this.owner == null)
@@ -35,7 +29,8 @@ Fan.prototype.updateFanSpeeds = function(incr){
 };
 
 Fan.prototype.clearAway = function(){
+	if(this.owner != null)
+		this.owner.fans.delete(this);
 	Block.prototype.clearAway.call(this);
-	this.updateFanSpeeds(-1);
 }
 

@@ -1,3 +1,4 @@
+"use strict";
 //Hand - steals my inventory. Found on some Thiefbots/////////////////////////////////////
 
 //cumulative probabilities (i.e. applied sequentially)

@@ -1,3 +1,4 @@
+"use strict";
 //Spring/////////////////////////////////////
 
 Spring.prototype = Object.create( Motor.prototype );
@@ -18,9 +19,7 @@ Spring.prototype.setup = function(type, ownerGrid, ownerImage,  owner, myX, myY,
 	this.quantity = 1;
 	Motor.prototype.setup.call(this, type, ownerGrid, ownerImage,  owner, myX, myY, offsetX, offsetY, pointX, pointY);
 	this.special = true;
-	this.resistance = 5;
-	this.origStrength = 5;
-	this.startingStrength = 5;
+	this.resistance = 2;	
 	this.canAddMore = true;
 	this.isBase = true;
 	this.weapon = null;
@@ -94,7 +93,7 @@ Spring.prototype.orientateImage = function(){
 
 Spring.prototype.makeImage = function(type, offsetX, offsetY, pointAngle, pointOffsetX, pointOffsetY){
 	
-	var group = this.getImageGroup(this.owner == player);
+	var group = this.getImageGroup(this.owner == player && selectedKeyCodes == oldKeyCodes);
 	
 	this.image = new fabric.Group(group, {
 		left: (this.myX * gridWidth) - offsetX + (gridWidth / 2),
@@ -150,7 +149,7 @@ Spring.prototype.getSingleImage = function(){
 
 Spring.prototype.getImageGroup = function(addNumber){
 	//pointOffset and offset- see above
-	chains = new Array();
+	var chains = new Array();
 	
 	for(var i =0; i  < this.quantity; i += 1)
 			chains.push(this.getSingleImage());
@@ -264,18 +263,18 @@ Spring.prototype.getImageGroup = function(addNumber){
 	wall.originY = "center";
 	
 	if(addNumber){
-			var text = new fabric.Text((this.motNum + 1) +  "", {
-				left: (gridWidth / 2),
-				top: (gridHeight / 2),
-				fontSize: 20,
-				fontFamily: 'Arial',
-				originX: 'center',
-				originY: 'center',
-				fontWeight: 'bold',
-				fill: 'red'
-			});
-			
-			message.set('text', 'press ' + (this.motNum + 1) + ' to run your new motor');
+		var text = new fabric.Text((this.motNum + 1) +  "", {
+			left: (gridWidth / 2),
+			top: (gridHeight / 2),
+			fontSize: 20,
+			fontFamily: 'Arial',
+			originX: 'center',
+			originY: 'center',
+			fontWeight: 'bold',
+			fill: 'red'
+		});
+		
+		message.set('text', 'press ' + (this.motNum + 1) + ' to run your new motor');
 
 			//wall not rotated so don't want the same rotation offset as spring
 	
@@ -452,6 +451,8 @@ Spring.prototype.startMoving = function(){
 	//canvas.renderAll(); //TODO
 	this.neighbours = [this.weapon];
 	this.weapon.motor = this;
+	//to guarantee owner will load it's position into the grid
+	this.owner.closeToEnemy = true;
 	this.owner.updateGrid(false);
 	
 	if(this.chainedMotors == undefined || this.chainedMotors == null){
