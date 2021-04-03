@@ -488,7 +488,6 @@ function makeAnimateString(anim){
 }
 
 function tinyAnimate(dis,group,movX,movY, obj){
-	//alert("why?");
 	if(dis <= gridWidth || obj.tinyAnimateCount == (dis / gridWidth) - 1){
 		obj.tinyAnimateCount = 0;
 		if(movX != 0)
@@ -1113,11 +1112,14 @@ Person.prototype.checkCollision = function(dummyRun) {
 			damagedOther = true;
 		}
 		for(var i =0; i < destroyBlocks.length; i += 1){//record all enemies/landscape that possibly will be damaged
+			
 			//collision in editing mode
 			var editingVictim = null;
 			if(destroyBlocks[i].origOwner != undefined && destroyBlocks[i].origOwner != null && destroyBlocks[i].origOwner.isEditing()){
 				editingVictim = destroyBlocks[i].origOwner
 				editingVictim.leaveEditing();
+				destroyBlocks[i] = editingVictim.grid[destroyBlocks[i].myX - editingVictim.myX][destroyBlocks[i].myY - editingVictim.myY]
+				owners.push(editingVictim);
 			}
 			
 			//damage me or collect block in here
@@ -1235,7 +1237,6 @@ Person.prototype.jumpBack = function() {
 };
 
 Person.prototype.resetPos = function(){
-	//alert("resetting");
 	//TODO - later on could make it go slow for a few turns
 	if(this.fastSpeed_changing == 1 && this.getOtherRobot().fastSpeed_changing > 1){
 		this.group.left = (this.myX * gridWidth) + ((this.gridSize * gridWidth) / 2);
