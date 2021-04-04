@@ -431,20 +431,20 @@ Block.prototype.isDamaged = function() {
 	return this.resistance < this.oldStrength;
 };
 
-Block.prototype.destroy = function(other) {
+Block.prototype.destroy = function(other, explode) {
 	if(this.ownerGrid[this.myX][this.myY] == this){ //hasn't already been removed
-		this.clearAway();
+		this.clearAway(explode);
 
 		//the motor that I support
 		if(this.baseOfMotor != null)
-			this.baseOfMotor.clearAway();
+			this.baseOfMotor.clearAway(explode);
 		if(this.collectable){
 			other.collect(this);
 		}
 		
 		if(this.owner != null && this.type != "heart"){
 			//remove all attached pieces on side away from heart
-			this.owner.destroyNeighbourBlocks(this.myX,this.myY);
+			this.owner.destroyNeighbourBlocks(this.myX,this.myY, explode);
 		}
 	}
 };
@@ -457,7 +457,7 @@ Block.prototype.destroy = function(other) {
 //	}
 //	return false;
 //}
-Block.prototype.clearAway = function(){
+Block.prototype.clearAway = function(explode){
 	if(this.owner != undefined && this.owner != null)
 		this.owner.weapons.delete(this);
 
@@ -494,8 +494,8 @@ Block.prototype.clearAway = function(){
 			gameGrid[this.myX + this.owner.myX - this.owner.movX][this.myY + this.owner.myY - this.owner.movY] = 1;
 		else if(gameGrid[this.myX + this.owner.myX + this.owner.movX][this.myY + this.owner.myY + this.owner.movY] == this)
 			gameGrid[this.myX + this.owner.myX + this.owner.movX][this.myY + this.owner.myY + this.owner.movY] = 1;
-		
-		this.flyAway();
+		if(explode) //if owner dies "properly" not due to leaving the arena then make fly away
+			this.flyAway();
 		//var index = this.owner.myBlocks.indexOf(this);
 		//this.owner.myBlocks.splice(index, 1);
 		this.owner.totalNumBlocks -= 1;

@@ -24,8 +24,8 @@ Knife.prototype.setup = function(type, ownerGrid, ownerImage,  owner, myX, myY, 
 	this.origWeaponStrength = 1;
 }
 
-Knife.prototype.clearAway = function() {
-	Block.prototype.clearAway.call(this);
+Knife.prototype.clearAway = function(explode) {
+	Block.prototype.clearAway.call(this, explode);
 	if(this.owner != null){
 		this.owner.lostKnife(this);
 	}

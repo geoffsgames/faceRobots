@@ -13,11 +13,11 @@ function Heart(type, ownerGrid, ownerImage,  owner, myX, myY, offsetX, offsetY, 
 		this.owner.heart = this;
 }
 
-Heart.prototype.destroy = function(other) {
+Heart.prototype.destroy = function(other,explode) {
 	
-	Block.prototype.destroy.call(this, other);
+	Block.prototype.destroy.call(this, other,explode);
 	if(this.owner != null){
-		this.owner.die();
+		this.owner.die(true);
 	}
 		
 };

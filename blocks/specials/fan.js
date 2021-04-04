@@ -28,9 +28,9 @@ Fan.prototype.updateFanSpeeds = function(incr){
 	this.owner.fasterSpeeds[side] += incr;
 };
 
-Fan.prototype.clearAway = function(){
+Fan.prototype.clearAway = function(explode){
 	if(this.owner != null)
 		this.owner.fans.delete(this);
-	Block.prototype.clearAway.call(this);
+	Block.prototype.clearAway.call(this, explode);
 }
 

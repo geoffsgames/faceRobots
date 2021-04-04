@@ -100,7 +100,7 @@ Motor.prototype.jumpBack = function(){
 
 Motor.prototype.update = function(){
 		if(this.willDestroy){
-			this.destroy(this.owner.getOtherRobot());
+			this.destroy(this.owner.getOtherRobot(),true);
 			this.willDestroy = false;
 		}	
 		if(this.movX == 0 && this.movY == 0){
@@ -176,9 +176,9 @@ Motor.prototype.checkIntermediate = function(){
 
 
 
-Motor.prototype.destroy = function(other){
+Motor.prototype.destroy = function(other,explode){
 	if(this.collectable){
-		Block.prototype.destroy.call(this, other);
+		Block.prototype.destroy.call(this, other, false);
 		return;
 	}
 	
@@ -201,7 +201,7 @@ Motor.prototype.destroy = function(other){
 			alert("motor to be deleted not found");
 		}
 		this.owner.motors = newMots;
-		Block.prototype.destroy.call(this, other);
+		Block.prototype.destroy.call(this, other,explode);
 	}
 }
 
@@ -257,7 +257,7 @@ Motor.prototype.checkCollision = function(){
 		var owners = new Array();
 		for(var i =0; i < destroyBlocks.length; i += 1){//record all enemies/landscape that possibly will be damaged
 			//damage me or collect block in here
-			destroyBlocks[i].destroy(this.owner);
+			destroyBlocks[i].destroy(this.owner,true);
 			if(destroyBlocks[i].owner != undefined && destroyBlocks[i].owner != null && owners.indexOf(destroyBlocks[i].owner) === -1) //TODO owners.indexOf not implemented IE 8 and lower
 				owners.push(destroyBlocks[i].owner);
 		}
@@ -773,13 +773,13 @@ Motor.prototype.isASquare = function(x,y, careAboutBases){
 		return true;
 };
 
-Motor.prototype.clearAway = function() {
+Motor.prototype.clearAway = function(explode) {
 	
-	Block.prototype.clearAway.call(this);
+	Block.prototype.clearAway.call(this, explode);
 	if(this.movX != 0 || this.movY != 0){
 		for(var i = 0, len = this.neighbours.length; i < len; i += 1){
 			if(this.neighbours[i] != this)
-				this.neighbours[i].clearAway();
+				this.neighbours[i].clearAway(explode);
 		}
 		this.stop();
 	}

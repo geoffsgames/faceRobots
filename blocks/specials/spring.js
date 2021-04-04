@@ -65,8 +65,8 @@ Spring.prototype.saveDamage = function(other) {
 
 };
 
-Spring.prototype.clearAway = function(){
-	Block.prototype.clearAway.call(this);
+Spring.prototype.clearAway = function(explode){
+	Block.prototype.clearAway.call(this,explode);
 	if(this.weapon != null)
 		this.weapon.spring = null;
 }

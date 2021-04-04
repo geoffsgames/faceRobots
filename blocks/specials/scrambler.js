@@ -14,10 +14,10 @@ Scrambler.prototype.activateMagicEffect = function(){
 	this.victim.scramble(this);
 }
 
-Scrambler.prototype.clearAway = function() {
+Scrambler.prototype.clearAway = function(explode) {
 	if(this.victim != null)
 		this.victim.unscramble();
 	this.victim = null;
-	Block.prototype.clearAway.call(this);
+	Block.prototype.clearAway.call(this,explode);
 		
 };
