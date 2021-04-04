@@ -495,6 +495,43 @@ async function waitForTimeout(intv){
 	updateGame()
 };
 
+
+function scrollLoop(){
+	if(scrollingX != 0){
+		player.scrollInventory();
+		window.scrollBy(scrollingX, 0);
+		var pos = (window.pageXOffset || document.documentElement.scrollLeft);
+		if(pos + scrollingX >= canvas._offset.left && pos + scrollingX <= maxScrollX)
+			callScrollLoop();
+		else if(pos <= canvas._offset.left || pos >= maxScrollX)
+			endScroll();
+		else{
+			if(scrollingX < 0)
+				scrollingX = pos - canvas._offset.left;
+			else
+				scrollingX = maxScrollX - pos;
+		};
+	}
+	else if(scrollingY != 0){
+		player.scrollInventory();
+		window.scrollBy(0, scrollingY);
+		var pos = (window.pageYOffset || document.documentElement.scrollTop);
+		if(pos + scrollingY >= canvas._offset.top && pos + scrollingY <= maxScrollY)
+			callScrollLoop();
+		else if(pos <= canvas._offset.top || pos >= maxScrollY)
+			endScroll();
+		else{
+			if(scrollingY < 0)
+				scrollingY = pos - canvas._offset.top;
+			else
+				scrollingY = maxScrollY - pos;
+		};
+
+	}else
+		endScroll();
+	
+}
+
 //function errorLoop(){
 //	if(oldUpdateIndex == updateIndex && !willGoDownStairs){ //hasn't been any updates in 5 * interval = CRASHED
 //		alert("CRASHED!");

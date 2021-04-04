@@ -183,7 +183,8 @@ function start(){
 	invBackground.bringToFront();
 	willAddEnemy = true;
 	
-	
+	message.set("fill","blue");
+	message.set("text", "World " + origSeed);
 	//willAddThief = true;
 	//handyThief = true;
 }
@@ -366,7 +367,7 @@ function drawBlocks(){
 		gameGrid[x][y].showDamage();
 		if(gameGrid[x][y].resistance <= 0){//remove blocks completely destroyed last time
 			gameGrid[x][y].drawBackground();
-			gameGrid[x][y].clearAway();
+			gameGrid[x][y].clearAway(false);
 		};
 	};
 }
@@ -650,7 +651,7 @@ function updateGame2(){
 			enemy.justResumed = false;
 			if(inPVP && player.isInvader){ //switch order of player and enemy in PVP to ensure it's the same on both machines
 				enemy.tryToChangeDir();
-				player.tryToChangeDir();
+				player.tryToChangeDir(); //includes leave edit mode
 			}
 			else{
 				player.tryToChangeDir();
@@ -947,44 +948,10 @@ function endScroll(){
 	player.scrollInventory(true);
 }
 
-function scrollLoop(){
-	if(scrollingX != 0){
-		player.scrollInventory();
-		window.scrollBy(scrollingX, 0);
-		var pos = (window.pageXOffset || document.documentElement.scrollLeft);
-		if(pos + scrollingX >= canvas._offset.left && pos + scrollingX <= maxScrollX)
-			callScrollLoop();
-		else if(pos <= canvas._offset.left || pos >= maxScrollX)
-			endScroll();
-		else{
-			if(scrollingX < 0)
-				scrollingX = pos - canvas._offset.left;
-			else
-				scrollingX = maxScrollX - pos;
-		};
-	}
-	else if(scrollingY != 0){
-		player.scrollInventory();
-		window.scrollBy(0, scrollingY);
-		var pos = (window.pageYOffset || document.documentElement.scrollTop);
-		if(pos + scrollingY >= canvas._offset.top && pos + scrollingY <= maxScrollY)
-			callScrollLoop();
-		else if(pos <= canvas._offset.top || pos >= maxScrollY)
-			endScroll();
-		else{
-			if(scrollingY < 0)
-				scrollingY = pos - canvas._offset.top;
-			else
-				scrollingY = maxScrollY - pos;
-		};
-
-	}else
-		endScroll();
-	
-}
 
 function randomFromRange(min, max){
-	alert("ERROR: game.js line 406 should not happen!");
+	console.error("randomFromRange should not happen!")
+	alert("ERROR: randomFromRange should not happen!");
 }
 
 function clearOldNeighbours(exclude){
