@@ -357,7 +357,7 @@ Person.prototype.update = function() {
 	}
 	var moved = false;
 	if(this.willStop){
-		this.stop();
+		this.stop(); //including activateEditing in player
 		this.willStop = false;
 	}
 	else{
@@ -1023,7 +1023,7 @@ Person.prototype.startMotorsMoving = function(which){
 };
 
 
-Person.prototype.checkCollision = function(dummyRun) {
+Person.prototype.checkCollision = function() {
 	this.jumpedBack = false; //met any sort of resistance (even if I managed to damage the block)
 	this.blocked = false; //met resistance where I didn't even damage the block (for resetting?) 
 	var destroyBlocks = new Array();
@@ -1032,17 +1032,18 @@ Person.prototype.checkCollision = function(dummyRun) {
 	var stillStairs = false;
 	this.blockedByLandscape = false;
 	var damagedOther = false;
-	
-	if(!dummyRun){
-		var stairsOver = [];
-		for(var i =0; i < land.numStairs; i+= 1){
-			var stairs = land.stairs[i];
-			if(this.minX + this.myX < stairs.x  + 2 && this.maxX + this.myX >= stairs.x &&
-					this.minY + this.myY < stairs.y  + 2 && this.maxY + this.myY >= stairs.y)
-			stairsOver.push(land.stairs[i]);
-		}
-		var numStairsOver = stairsOver.length;
+
+	//collision with stairs
+	var stairsOver = [];
+	for(var i =0; i < land.numStairs; i+= 1){
+		var stairs = land.stairs[i];
+		if(this.minX + this.myX < stairs.x  + 2 && this.maxX + this.myX >= stairs.x &&
+				this.minY + this.myY < stairs.y  + 2 && this.maxY + this.myY >= stairs.y)
+		stairsOver.push(land.stairs[i]);
 	}
+	var numStairsOver = stairsOver.length;
+
+	//collision with mainstream blocks
 	for(var x = this.minX; x <= this.maxX; x += 1){
 		for(var y = this.minY; y <= this.maxY; y += 1){
 			var myBlock = this.grid[x][y];
@@ -1083,7 +1084,7 @@ Person.prototype.checkCollision = function(dummyRun) {
 			}
 		}
 	}
-	if(this.jumpedBack || dummyRun){
+	if(this.jumpedBack){
 		
 		if(this.jumpedBack){
 			this.jumpBack(false);
@@ -1111,24 +1112,26 @@ Person.prototype.checkCollision = function(dummyRun) {
 			modified[i].confirmDamage();
 			damagedOther = true;
 		}
-		for(var i =0; i < destroyBlocks.length; i += 1){//record all enemies/landscape that possibly will be damaged
-			
+		var editingVictim = null;
+		for(var i =0; i < destroyBlocks.length; i += 1){//record all enemies/landscape that possibly will be damaged	
 			//collision in editing mode
-			var editingVictim = null;
 			if(destroyBlocks[i].origOwner != undefined && destroyBlocks[i].origOwner != null && destroyBlocks[i].origOwner.isEditing()){
 				editingVictim = destroyBlocks[i].origOwner
-				editingVictim.leaveEditing();
+				editingVictim.leaveEditing(); //player has to be out of editing mode to respond to damage properly - will be put right back into editing mode after
+				editingVictim.updateGrid(true);
+				editingVictim.closeToEnemy = true;
+				editingVictim.updateGrid(false);
+			}
+			if(editingVictim != null)
 				destroyBlocks[i] = editingVictim.grid[destroyBlocks[i].myX - editingVictim.myX][destroyBlocks[i].myY - editingVictim.myY]
-				owners.push(editingVictim);
+			if(destroyBlocks[i] != null){
+				if(destroyBlocks[i].owner != undefined && destroyBlocks[i].owner != null && owners.indexOf(destroyBlocks[i].owner) === -1) //TODO owners.indexOf not implemented IE 8 and lower
+					owners.push(destroyBlocks[i].owner);
+				//damage me or collect block in here
+				destroyBlocks[i].destroy(this,true);
 			}
 			
-			//damage me or collect block in here
-			destroyBlocks[i].destroy(this);
-			if(destroyBlocks[i].owner != undefined && destroyBlocks[i].owner != null && owners.indexOf(destroyBlocks[i].owner) === -1) //TODO owners.indexOf not implemented IE 8 and lower
-				owners.push(destroyBlocks[i].owner);
-			
-			if(editingVictim != null)
-				editingVictim.activateEditMode();
+
 			
 		}
 		for(var i =0; i < owners.length; i += 1){//damage enemy/landscape
@@ -1146,6 +1149,9 @@ Person.prototype.checkCollision = function(dummyRun) {
 	if(this.damagedOther){
 		this.respondToDamagedOther();
 	}
+	
+	if(editingVictim != null && !editingVictim.dead)
+		editingVictim.activateEditMode();
 	
 	this.heart.image.bringToFront();
 	//canvas.renderAll();
@@ -1786,7 +1792,7 @@ Person.prototype.shrink = function(){
 };
 
 //if destroying a block leaves a gap then remove all the blocks on the opposite (non heart) side of the gap
-Person.prototype.destroyNeighbourBlocks = function(x,y){
+Person.prototype.destroyNeighbourBlocks = function(x,y, explode){
 
 	if(this.areGaps(x,y)){
 		var heartChecked = this.heart.checkedForGaps;
@@ -1794,7 +1800,7 @@ Person.prototype.destroyNeighbourBlocks = function(x,y){
 			for(var y = 0; y < this.gridSize; y += 1){
 				if(this.grid[x] != undefined && this.grid[x][y] != undefined && this.grid[x][y] != null){
 					if(this.grid[x][y].checkedForGaps != heartChecked) //on the other side of the gap to the heart
-						this.grid[x][y].clearAway();
+						this.grid[x][y].clearAway(explode);
 				}
 			}
 		}
@@ -1831,7 +1837,10 @@ Person.prototype.getNeighbourBlocks = function(neighbourBlocks,x,y){
 	return neighbourBlocks;
 };
 
-Person.prototype.die = function(){
+//happens not just when robot killed but also to enemies when player leaves the arena (or they wonder out the arena)
+	//hence the "explode" parameter. When false this stops the usual death animation (blocks flying everywhere) happening 
+	//as this should only happen when I die properly (i.e. not because player left the arena)
+Person.prototype.die = function(explode){
 	var otherRob = this.getOtherRobot();
 	if(otherRob.scrambler != undefined && otherRob.scrambler != null && otherRob.scrambler.owner == this)
 		otherRob.unscramble();
@@ -1840,7 +1849,7 @@ Person.prototype.die = function(){
 	for(var x = 0; x < this.gridSize; x += 1){
 		for(var y = 0; y < this.gridSize; y += 1){
 			if(this.grid[x] != undefined && this.grid[x][y] != undefined && this.grid[x][y] != null)
-				this.grid[x][y].clearAway();
+				this.grid[x][y].clearAway(explode); //get rid of each piece, will fly away if explode is true
 		}
 	}
 

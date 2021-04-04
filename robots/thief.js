@@ -52,11 +52,11 @@ Thief.prototype.setup = function(myX, myY, facing){
 	this.passageCleared = false;
 };
 
-Thief.prototype.die = function(){
+Thief.prototype.die = function(explode){
 	console.log("thief died");
 	enemy = oldEnemy;
 	this.isHurt = false;
-	Person.prototype.die.call(this);
+	Person.prototype.die.call(this,explode);
 	this.readyToMove = false;
 	intervalToNextEnemy = getEnemyInterval();
 	console.log(intervalToNextEnemy);

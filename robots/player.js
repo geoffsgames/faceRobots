@@ -827,8 +827,13 @@ Player.prototype.willSetMovement = function(movX, movY,creep){
 	this.creep = creep;
 };
 
+
 Player.prototype.update = function(){
 	if(this != enemy){ //if it's the rival in PVP (i.e. not directly controlled by this player) don't scroll to it and do the stuff related to it leaving the grid
+		if((this.myX + this.minX < -1 || this.myX + this.maxX > numPiecesX ||  this.myY + this.minY < -1 || this.myY + this.maxY  > numPiecesY) && this.blockedByLandscape){
+			message.set("fill", "red")
+			message.set("text", "Route blocked by stone! Back up!");
+		}
 		this.possiblyUpdateBlind();	
 		this.adjustScroll();
 		if(willRestart != null){ 

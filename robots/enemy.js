@@ -93,7 +93,7 @@ Enemy.prototype.isWeapon = function(block){
 }
 
 
-Enemy.prototype.die = function(){
+Enemy.prototype.die = function(explode){
 	for(var i =0, len = this.motors.length; i < len; i+= 1){
 		if(this.motors[i] != null && (this.motors[i].movX != 0 || this.motors[i].movY != 0))
 			this.motors[i].stop();
@@ -104,7 +104,7 @@ Enemy.prototype.die = function(){
 	
 	this.isHurt = false;
 	this.running = false;	
-	Person.prototype.die.call(this);
+	Person.prototype.die.call(this, explode);
 	this.readyToMove = false;
 	//land.enemiesLeft -= 1;
 	//if(land.enemiesLeft > 0)
@@ -153,11 +153,11 @@ Enemy.prototype.update = function(){
 			this.willLeaveGrid = true;
 		else{
 			this.hasLeftGrid = true;
-			this.die();
+			this.die(false);
 		}
 	}
 	if(willRestart != null)
-		this.die();
+		this.die(false);
 	if(this.readyToMove && (!debugMode || timeStamp >= (fadeFrames - arrivalTime))){ //last bit = enemy fade in too quick
 		if(!intermediate){
 			this.AIcountDown -= this.countdownDecr;
