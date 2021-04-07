@@ -87,7 +87,7 @@ Landscape.prototype.makeGrid = function(){
 
 	//Creating enemies TODO move to enemyFactory
 	if(init)
-		this.enemyGrid = designEnemyMotor(false,false);
+		this.enemyGrid = designEnemy(false,false);
 	else{
 		var prob = Math.seededRandomDouble();
 		if(prob < plainProb){
