@@ -1,6 +1,6 @@
 {
   "name": "face-robots",
-  "description": "my first socket.io app",
+  "description": "Face-Robots game and teaching myself socket.io",
   "repository": "https://github.com/geoffsgames/facerobots",
   "website": "https://github.com/geoffsgames/facerobots",
   "logo": "https://node-js-sample.herokuapp.com/node.svg",
