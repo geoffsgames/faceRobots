@@ -1,6 +1,6 @@
 "use strict";
 //MagicBlock - this is the superblock for blocks which have an effect every time you collide with them
-//unless you damage them (i.e. separate from regular resistance like knife)
+//except in the process of damaging them
 
 MagicBlock.prototype = Object.create( Block.prototype );
 
@@ -20,7 +20,9 @@ MagicBlock.prototype.setup = function(type, ownerGrid, ownerImage,  owner, myX, 
 	this.flyAwayRetries = 5;
 	this.maxFlyDistance = 15;
 	this.victim = null;
-	this.resistance = 2;
+	this.resistance = 5;
+	this.origStrength = 5;
+	this.startingStrength = 5;
 	this.weaponStrength = 10;
 	this.origWeaponStrength = 10;
 	this.isMagic = true;

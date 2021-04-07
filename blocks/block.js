@@ -6,49 +6,9 @@ var flyAwayMax = 20;
 var flyawaySpeed = 500;
 
 
-//doesn't do anything - just holds place and type for adding a real block later
-//used when designing enemies
-var TempBlock = function (type, myX, myY){ 
-	this.type = type;
-	this.myX = myX;
-	this.myY = myY;
-};
-
 //ownerImage = group (if part of character) or canvas (if part of landscape or collectable block)
 var Block = function (type, ownerGrid, ownerImage, owner, myX, myY, offsetX, offsetY, pointX, pointY) { 
 	this.setup(type, ownerGrid, ownerImage, owner, myX, myY, offsetX, offsetY, pointX, pointY);
-};
-
-Block.prototype.getWall = function(){
-	var element;
-	
-	if(this.collectable)
-		element = document.getElementById("wallMid");
-	else if(this.owner != null && this.owner.isEnemy)
-		element = document.getElementById("wallDark");
-	else
-		element = document.getElementById("wall");
-	
-	return(new fabric.Image(element, {
-		left: 0,
-		top: 0,
-		width: gridWidth,
-		height: gridHeight
-	}));
-};
-
-Block.prototype.recreate = function(ownerImage, myX, myY, offsetX, offsetY){
-	this.ownerImage = ownerImage;
-	this.ownerGrid = this.owner.grid;
-	this.myX = myX;
-	this.myY = myY;
-	this.offsetX = offsetX;
-	this.offsetY = offsetY;
-	//use originally calculated points but adjust in case angle has changed
-	this.getPoints();
-	this.calculatePoints();
-	
-	this.draw(this.type,offsetX,offsetY,this.pointAngle,this.pointOffsetX,this.pointOffsetY);
 };
 
 Block.prototype.setup = function(type, ownerGrid, ownerImage, owner, myX, myY, offsetX, offsetY, pointX, pointY){
@@ -98,10 +58,61 @@ Block.prototype.setup = function(type, ownerGrid, ownerImage, owner, myX, myY, o
 	this.spring = null;
 };
 
+
+//doesn't do anything - just holds place and type for adding a real block later
+//used when designing enemies
+var TempBlock = function (type, myX, myY){ 
+	this.type = type;
+	this.myX = myX;
+	this.myY = myY;
+};
+
+
+//visual background for blocks like springs/blinders/scramblers. Different depending player, enemy or collectable
+Block.prototype.getWall = function(){
+	var element;
+	
+	if(this.collectable)
+		element = document.getElementById("wallMid");
+	else if(this.owner != null && this.owner.isEnemy)
+		element = document.getElementById("wallDark");
+	else
+		element = document.getElementById("wall");
+	
+	return(new fabric.Image(element, {
+		left: 0,
+		top: 0,
+		width: gridWidth,
+		height: gridHeight
+	}));
+};
+
+//when called recreateGroup(...)
+Block.prototype.recreate = function(ownerImage, myX, myY, offsetX, offsetY){
+	this.ownerImage = ownerImage;
+	this.ownerGrid = this.owner.grid;
+	this.myX = myX;
+	this.myY = myY;
+	this.offsetX = offsetX;
+	this.offsetY = offsetY;
+	
+	//use originally calculated points but adjust in case angle has changed
+	this.getPoints();
+	this.calculatePoints();
+	
+	this.draw(this.type,offsetX,offsetY,this.pointAngle,this.pointOffsetX,this.pointOffsetY);
+};
+
+//for knives, fans etc. work out which way they point based on blocks they're attached to
 Block.prototype.calculatePoints = function(){
+	//TODO - take into account owner.facing to keep consistent after rotating
+	//pointing is done in strict order/heirarchy not randomly so doesn't keep changing when I edit
+
+	
 	if(!this.usePoints || this.owner == null)
 		return;
 	
+	//for modifying point direction in the editing interface - check if user has saved a specific direction
 	if(this.reversePoint == undefined){
 		if(this.owner.pointings != undefined && this.owner.pointings[this.myX + "-" + this.myY] != undefined)
 			this.reversePoint = this.owner.pointings[this.myX + "-" + this.myY];
@@ -115,12 +126,14 @@ Block.prototype.calculatePoints = function(){
 	var pointDir = -1;
 	var springSquare = null;
 	
-	//which way points for things like knives
-	var basesX = []; //left, top, right, down
+
+	/////////////////find out which blocks around me exist and are "bases" (blocks like regular wall blocks I can point out of)
+	var basesX = [];
 	var basesY = [];
+	///////horizontal
 	if(this.owner.occupied(this.myX + 1, this.myY) && this.owner.grid[this.myX + 1][this.myY].isBase){
 		basesX.push(0);
-		if(this.owner.grid[this.myX + 1][this.myY].type == "spring" && this.isWeapon){
+		if(this.owner.grid[this.myX + 1][this.myY].type == "spring" && this.isWeapon){ //find spring next to me
 			pointDir = 0;
 			springSquare = this.owner.grid[this.myX + 1][this.myY];
 		}
@@ -132,7 +145,7 @@ Block.prototype.calculatePoints = function(){
 			springSquare = this.owner.grid[this.myX - 1][this.myY];
 		}
 	}
-	if(pointDir == -1){
+	if(pointDir == -1){ //vertical if horizontal not found
 			if(this.owner.occupied(this.myX, this.myY + 1) && this.owner.grid[this.myX][this.myY + 1].isBase){
 				basesY.push(0);
 				if(this.owner.grid[this.myX][this.myY + 1].type == "spring" && this.isWeapon){
@@ -151,7 +164,7 @@ Block.prototype.calculatePoints = function(){
 			}
 	}
 
-
+	
 	if(springSquare == null){
 			//if surrounded on both (opposite) sides by blocks will be point directly at other block
 			if(basesX.length > 1)
@@ -172,6 +185,8 @@ Block.prototype.calculatePoints = function(){
 		springSquare.pointToKnife(pointDir,this);
 	}
 
+	
+	//save direction chosen
 	if(pointDir == 0){
 		this.pointX = -1;
 
@@ -183,10 +198,12 @@ Block.prototype.calculatePoints = function(){
 		this.pointY = -1;
 	else if(pointDir == 3)
 		this.pointY = 1;
-	this.getPoints();
+	this.getPoints(); //visually set angle
 
 };
 
+//draw again after minor adjustment
+//remove = false if already cleared
 Block.prototype.redraw = function(remove){
 	if(remove){
 		if(this.owner != undefined && this.owner != null && this.owner.isRivalIcon)
@@ -197,11 +214,10 @@ Block.prototype.redraw = function(remove){
 	this.draw(this.type,this.offsetX,this.offsetY,this.pointAngle,this.pointOffsetX,this.pointOffsetY);
 };
 
-
+//point is for objects like knives where it effects impact etc and other objects when it effects how it is drawn
+//pointOffset is for drawing the rotated pieces (normal rotation adjustment)
+//offset is because group is center, not left or top aligned
 Block.prototype.getPoints = function(){
-	//point is for objects like knives where it effects impact etc and other objects when it effects how it is drawn
-	//pointOffset is for drawing the rotated pieces (normal rotation adjustment)
-	//offset is because group is center, not left or top aligned
 	var pointAngle = 0;//assume pointing left
 	var pointOffsetX = 0;
 	var pointOffsetY = 0;
@@ -252,10 +268,6 @@ Block.prototype.makeImage = function(type,offsetX,offsetY,pointAngle,pointOffset
 	if(type == "chain" && this.owner != null && this.owner.isEnemy)
 		type = "chainDark";
 
-	
-	
-	
-	
 	//pointOffset and offset- see above
 	this.image = new fabric.Image(document.getElementById(type), {
 		originX: "center",
@@ -291,15 +303,13 @@ Block.prototype.makeImage = function(type,offsetX,offsetY,pointAngle,pointOffset
 
 };
 
+//if attacked by other block "catching me up"
 Block.prototype.directionMatches = function(movX, movY) {
 	return (movX == this.pointX && movY == this.pointY);
 };
 
+//return regular strength as a weapon increased if I'm on a motor that is moving
 Block.prototype.adjustForMotor = function(block,strength){
-
-	
-	
-	
 	if(block.motor == null || block.motor == undefined || !block.motor.moving)
 		return strength;
 	else{
@@ -352,13 +362,6 @@ Block.prototype.destroyedBy = function(other, modified, destroyed, forwards,alre
 	
 	if(impact > this.sideStrength){
 		this.oldStrength = this.resistance;
-		
-		
-		
-		
-		
-		
-		
 		modified.push(this);
 		this.resistance -= impact;
 		if(debugMode && this.owner != null){
@@ -368,10 +371,9 @@ Block.prototype.destroyedBy = function(other, modified, destroyed, forwards,alre
 	}
 	
 	
-	
-	
+	//if impact was more than strong enough to destroy me then destroy blocks behind me too
 	if(this.resistance < 0){
-		if(other.motor != undefined && other.motor != null && other.motor.moving){
+		if(other.motor != undefined && other.motor != null && other.motor.moving){ //if my attacker is attached to motor destroy blocks behind me from point of view of direction of motor
 			var newX = this.myX + other.motor.movX;
 			var newY = this.myY + other.motor.movY;
 			if(this.owner != undefined && this.owner != null){
@@ -393,10 +395,14 @@ Block.prototype.destroyedBy = function(other, modified, destroyed, forwards,alre
 	return this.resistance < 0 && impact > this.sideStrength;
 };
 
+//if potentially damaged damaging robot may be blocked so damage will have to be undone
+//otherwise call this method
 Block.prototype.confirmDamage = function(){
 	if(this.resistance < this.oldStrength){ //the "wobbling" effect when it't just been hit
+		//visuals
 		this.damageAngle = 0;//because otherwise refuses to show damage (that restricting implemented to stop it showing damage every time player redraws)
 		this.showDamage();
+		//
 		this.saveDamage();
 	}
 
@@ -406,11 +412,12 @@ Block.prototype.saveDamage = function(){
 	
 };
 
+//relevent for springs etc. where multiple blocks of same type can be added to same place
 Block.prototype.increment = function(){
 	
 }
 
-
+//rotate a little (go wonky) when damaged
 Block.prototype.showDamage = function(){
 	if(this.damageAngle == 0){
 		var damageExtent = this.origStrength / Math.max(this.resistance,1); 
@@ -431,6 +438,11 @@ Block.prototype.isDamaged = function() {
 	return this.resistance < this.oldStrength;
 };
 
+
+//////////////////////////////////////////////////////////Connected to removing blocks from robot. Destroy => ClearAway => FlyAway
+														//explode = animate block flying away when actually destroyed (i.e. not collected or the fact "die" => "destroy" has to be called on enemy when I leave the arena) 
+
+//wrapper of destroy - just checks what type of destruction (collection/regular) and handles situation where heart is destroyed and all the blocks need destroying
 Block.prototype.destroy = function(other, explode) {
 	if(this.ownerGrid[this.myX][this.myY] == this){ //hasn't already been removed
 		this.clearAway(explode);
@@ -449,14 +461,7 @@ Block.prototype.destroy = function(other, explode) {
 	}
 };
 
-//function isOnCanvas(block){
-//	var objs = canvas._objects;
-//	for(var i =0; i < objs.length; i += 1){
-//		if(objs[i] === block.image)
-//			return true;
-//	}
-//	return false;
-//}
+//does most of actual removing of block
 Block.prototype.clearAway = function(explode){
 	if(this.owner != undefined && this.owner != null)
 		this.owner.weapons.delete(this);
@@ -509,26 +514,12 @@ Block.prototype.clearAway = function(explode){
 	
 };
 
-Block.prototype.checkForSprings = function(){
-	if(this.myX > 0 && this.owner.grid[this.myX - 1] != undefined && this.owner.grid[this.myX - 1][this.myY] != undefined && this.owner.grid[this.myX - 1][this.myY] != null && this.owner.grid[this.myX - 1][this.myY].type == "spring" )
-		this.spring = this.owner.grid[this.myX - 1][this.myY];
-	if(this.myY > 0 && this.owner.grid[this.myX][this.myY - 1] != undefined && this.owner.grid[this.myX][this.myY - 1] != null && this.owner.grid[this.myX][this.myY - 1].type == "spring" )
-		this.spring = this.owner.grid[this.myX][this.myY - 1];
-	if(this.myX < this.owner.gridSize - 1 && this.owner.grid[this.myX + 1] != undefined && this.owner.grid[this.myX + 1][this.myY] != undefined && this.owner.grid[this.myX + 1][this.myY] != null && this.owner.grid[this.myX + 1][this.myY].type == "spring" )
-		this.spring = this.owner.grid[this.myX + 1][this.myY];
-	if(this.myY <  this.owner.gridSize - 1  && this.owner.grid[this.myX][this.myY + 1] != undefined && this.owner.grid[this.myX][this.myY + 1] != null && this.owner.grid[this.myX][this.myY + 1].type == "spring" )
-		this.spring = this.owner.grid[this.myX][this.myY + 1];
-	
-	if(this.spring != null)
-		this.spring.weapon = this;
-}
-
 Block.prototype.getFlyAwayImage = function(){
 	return this.image;
 }
 
+//after flyaway if random positioning places it under a robot edge it out
 function outFromUnderRobot(newX,newY){
-	//potentially remove from under player/enemy
 	var extrX = -((Math.round(newX/numPiecesX) * 2) - 1); //extracts from player/enemy towards centre
 	var extrY = -((Math.round(newY/numPiecesY) * 2) - 1);
 	while(			
@@ -545,6 +536,7 @@ function outFromUnderRobot(newX,newY){
 		return null;
 }
 
+//animate block flying after being knocked off enemy
 Block.prototype.flyAway = function() {
 	var curX = this.myX + this.owner.myX;
 	var curY = this.myY + this.owner.myY;
@@ -672,6 +664,8 @@ function nextToAlreadyCollect(x, y){
 	return false;
 }
 
+////////////////////////////////////////////////////////////
+
 Block.prototype.reset = function() {
 	if(this.oldStrength == undefined)
 		this.resistance = this.origStrength;
@@ -688,6 +682,7 @@ Block.prototype.resetGrid = function(grid,x,y) {
 	this.myY = y;
 };
 
+//when rotating whole owner rotate so that will move right way
 Block.prototype.rotatePoint = function(clockwise) {
 	if(this.pointX != 0){
 		this.pointY =  this.pointX * clockwise;
@@ -700,3 +695,17 @@ Block.prototype.rotatePoint = function(clockwise) {
 
 };
 
+//record if this is the block a spring will move (only relevent for weapons)
+Block.prototype.checkForSprings = function(){
+	if(this.myX > 0 && this.owner.grid[this.myX - 1] != undefined && this.owner.grid[this.myX - 1][this.myY] != undefined && this.owner.grid[this.myX - 1][this.myY] != null && this.owner.grid[this.myX - 1][this.myY].type == "spring" )
+		this.spring = this.owner.grid[this.myX - 1][this.myY];
+	if(this.myY > 0 && this.owner.grid[this.myX][this.myY - 1] != undefined && this.owner.grid[this.myX][this.myY - 1] != null && this.owner.grid[this.myX][this.myY - 1].type == "spring" )
+		this.spring = this.owner.grid[this.myX][this.myY - 1];
+	if(this.myX < this.owner.gridSize - 1 && this.owner.grid[this.myX + 1] != undefined && this.owner.grid[this.myX + 1][this.myY] != undefined && this.owner.grid[this.myX + 1][this.myY] != null && this.owner.grid[this.myX + 1][this.myY].type == "spring" )
+		this.spring = this.owner.grid[this.myX + 1][this.myY];
+	if(this.myY <  this.owner.gridSize - 1  && this.owner.grid[this.myX][this.myY + 1] != undefined && this.owner.grid[this.myX][this.myY + 1] != null && this.owner.grid[this.myX][this.myY + 1].type == "spring" )
+		this.spring = this.owner.grid[this.myX][this.myY + 1];
+	
+	if(this.spring != null)
+		this.spring.weapon = this;
+}

@@ -1,5 +1,6 @@
 "use strict";
 //Blinder/////////////////////////////////////
+//fills the landscape with black circles obscuring everything from view which then slowly fade
 
 Blinder.prototype = Object.create( MagicBlock.prototype );
 

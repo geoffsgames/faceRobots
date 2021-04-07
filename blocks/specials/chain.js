@@ -1,5 +1,6 @@
 "use strict";
 //Chain//////////////////////////////////////////////////////////////////////////////////////////////
+//Only partially integrated - chains to move motors at the same time
 
 Chain.prototype = new Block();
 Chain.prototype.constructor=Chain;

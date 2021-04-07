@@ -15,7 +15,7 @@ Scrambler.prototype.activateMagicEffect = function(){
 }
 
 Scrambler.prototype.clearAway = function(explode) {
-	if(this.victim != null)
+	if(this.victim != null)//when scrambler removed victim will go back to normal
 		this.victim.unscramble();
 	this.victim = null;
 	Block.prototype.clearAway.call(this,explode);

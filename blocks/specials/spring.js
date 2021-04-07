@@ -5,6 +5,7 @@ Spring.prototype = Object.create( Motor.prototype );
 var generalScaleX = 1;
 var generalScaleY = 1;
 
+//image and dimensions that show when spring is actually moving (i.e. not icon on block)
 var springExtendedImg = document.getElementById("spring");
 var springExtendedX = springExtendedImg.width;
 var springExtendedY = springExtendedImg.height;
@@ -15,15 +16,14 @@ function Spring(type, ownerGrid, ownerImage,  owner, myX, myY, offsetX, offsetY,
 }
 
 Spring.prototype.setup = function(type, ownerGrid, ownerImage,  owner, myX, myY, offsetX, offsetY, pointX, pointY){
-	this.usePoints = true; //after because I don't want the image to rotate
+	this.usePoints = true; 
 	this.quantity = 1;
 	Motor.prototype.setup.call(this, type, ownerGrid, ownerImage,  owner, myX, myY, offsetX, offsetY, pointX, pointY);
-	this.special = true;
-	this.resistance = 2;	
 	this.canAddMore = true;
 	this.isBase = true;
 	this.weapon = null;
 }
+
 
 Spring.prototype.getFlyAwayImage = function(){
 	var sprImg = this.getSingleImage();
@@ -43,11 +43,11 @@ Spring.prototype.getFlyAwayImage = function(){
 		originY:"center"});
 }
 
-
+//add more springs to same block when editing
 Spring.prototype.increment = function(val){
 	if(this.quantity < 6 || val == -1){
 		this.quantity = this.quantity + val;
-		this.resistance += (val * 2);
+		this.resistance += (val * this.origStrength);
 	}
 	else{
 		message.set("text","Can't use more than 6 springs one block!");
@@ -57,7 +57,7 @@ Spring.prototype.increment = function(val){
 };
 
 Spring.prototype.saveDamage = function(other) {
-	if(this.resistance % 2 == 0){
+	if(this.resistance % this.origStrength == 0){ //if damaged as much as a single but contains multiple springs then throw one of the springs away
 		this.quantity -= 1;
 		this.flyAway();
 		this.redraw(true);
@@ -147,6 +147,7 @@ Spring.prototype.getSingleImage = function(){
 	})
 }
 
+//icon for spring composed of spring image (getSingleImage() ) arranged on background block in formation for 1, 2, 3, 4, etc.
 Spring.prototype.getImageGroup = function(addNumber){
 	//pointOffset and offset- see above
 	var chains = new Array();
@@ -314,7 +315,6 @@ Spring.prototype.calculatePoints = function(){
 };
 
 
-
 Spring.prototype.makeSpringImage = function(){
 	var springWidth = 0;
 	var springHeight = 0;
@@ -355,36 +355,7 @@ Spring.prototype.makeSpringImage = function(){
 
 };
 
-/**
-function SpringTempBlock (owner, myX, myY, oldPiece, spring){ 
-	this.owner = owner;
-	this.myX = myX;
-	this.myY = myY;
-	this.oldPiece = oldPiece;
-	this.spring = spring;
-	this.resistance = 4;
-};
-
-SpringTempBlock.prototype.clearAway = function(){
-	this.spring.increment(-1)
-	this.spring.weapon
-}
-
-Spring.prototype.moveAll = function(){
-	var oldX = this.weapon.myX;
-	var oldY = this.weapon.myY;
-	var moving = Motor.prototype.moveAll.call(this);
-
-	if(this.reversing){
-		this.tempBlocks.pop();
-	}
-	else{
-		this.owner.grid[oldX][oldY] = new SpringTempBlock(this.owner,oldX,oldY,this.gameGrid[this.owner.myX + oldX][this.owner.myY + oldY], this);
-		this.tempBlocks.push(this.owner.grid[oldX][oldY])
-	}
-};
-*/
-
+//expand size of springExtendedImg to create impression of spring moving out while firing
 Spring.prototype.animateSpin = function(){//too fast to actually animate
 	var adj = 1;
 	
@@ -448,9 +419,9 @@ Spring.prototype.startMoving = function(){
 
 
 	this.moving = true;
-	//canvas.renderAll(); //TODO
 	this.neighbours = [this.weapon];
 	this.weapon.motor = this;
+	
 	//to guarantee owner will load it's position into the grid
 	this.owner.closeToEnemy = true;
 	this.owner.updateGrid(false);

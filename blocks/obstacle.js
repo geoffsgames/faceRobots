@@ -7,8 +7,9 @@ Obstacle.prototype.constructor=Obstacle;       // Otherwise instances of Cat wou
 function Obstacle(type, ownerGrid, ownerImage,  owner, myX, myY, offsetX, offsetY, pointX, pointY){
 	this.usePoints = true;
 	Block.prototype.setup.call(this, type, ownerGrid, ownerImage,  owner, myX, myY, offsetX, offsetY, pointX, pointY);
-	this.resistance = 10;
-	this.startingStrength = 10;
+	this.resistance = 5;
+	this.startingStrength = 5;
+	this.origStrength = 5;
 }
 
 Obstacle.prototype.drawBackground = function() {
@@ -32,14 +33,6 @@ Obstacle.prototype.saveDamage = function(){
 Obstacle.prototype.reset = function() {
 	var found = false;
 	Block.prototype.reset.call(this);
-//	for(var i = land.changedBlocks.length - 1; i >= 0 && !found; i-= 1){
-//		if(land.changedBlocks[i][0] == this.myX && land.changedBlocks[i][1] == this.myY){
-//			land.changedBlocks[i][2] = this.oldStrength;
-//			if(this.oldStrength == this.origStrength)
-//				land.changedBlocks.splice(i,1);
-//			found = true;
-//		}
-//	}
 };
 
 
@@ -49,6 +42,8 @@ Obstacle.prototype.draw = function(type,offsetX,offsetY,pointAngle,pointOffsetX,
 };
 
 Obstacle.prototype.drawImage = function(){
+	//for efficiency draw on back canvas until sustains damage
+
 	if(this.ownerImage == canvas){//moved to foreground
 		this.image = new fabric.Image(document.getElementById("obstacle"), {
 			originX: "center",
@@ -105,6 +100,7 @@ Obstacle.prototype.showDamage = function(){
 
 };
 
+//not attached to moving object so has no direction
 Obstacle.prototype.directionMatches = function(movX, movY) {
 	return false;
 };

@@ -13,10 +13,11 @@ Knife.prototype.setup = function(type, ownerGrid, ownerImage,  owner, myX, myY, 
 	this.isWeapon = true;
 	//TODO - weaponStrength supersedes isWeapon as for non weapons will = 0, but keep for now to avoid recoding
 	Block.prototype.setup.call(this, type, ownerGrid, ownerImage,  owner, myX, myY, offsetX, offsetY, pointX, pointY);
-	this.startingStrength = 2;
 	this.forwardStrength = 2;
 	this.sideStrength = 1;
-	this.resistance = 2;
+	this.startingStrength = 5;
+	this.resistance = 5;
+	this.origStrength = 5;
 	this.isBase = false;
 	this.flyAwayRetries = 5;
 	this.maxFlyDistance = 15;

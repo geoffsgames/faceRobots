@@ -2,19 +2,23 @@
 //Heart//////////////////////////////////////////////////////////////////////////////////////////////
 
 
-Heart.prototype = new Block();        // Here's where the inheritance occurs 
-Heart.prototype.constructor=Heart;       // Otherwise instances of Cat would have a constructor of Mammal 
+Heart.prototype = new Block();       
+Heart.prototype.constructor=Heart;       
 
 function Heart(type, ownerGrid, ownerImage,  owner, myX, myY, offsetX, offsetY, pointX, pointY){
 	Block.prototype.setup.call(this, type, ownerGrid, ownerImage,  owner, myX, myY, offsetX, offsetY, pointX, pointY);
 	this.heart = true;
-	this.currentlyRotating = false;
+	this.currentlyRotating = false; //currently animating round when robot finished rotating
 	if(this.owner != null)
 		this.owner.heart = this;
+	this.resistance = 5;
+	this.startingStrength = 5;
+	this.origStrength = 5;
+
 }
 
-Heart.prototype.destroy = function(other,explode) {
-	
+//robot dies when heart destroyed
+Heart.prototype.destroy = function(other,explode) {	
 	Block.prototype.destroy.call(this, other,explode);
 	if(this.owner != null){
 		this.owner.die(true);
@@ -74,21 +78,7 @@ Heart.prototype.makeImage = function(type,offsetX,offsetY,pointAngle,pointOffset
 	img.angle = myAngle;
 	
 	this.image.setCoords();
-	
-//	this.image = new fabric.Ellipse({
-//		
-//		
-//		left: (this.myX * gridWidth) - offsetX + (gridWidth / 2), //+ pointOffsetX,
-//		top: (this.myY * gridHeight) - offsetY - tallImgOffset + (gridHeight / 2),//
-//		originX: "center",
-//		orignY: "center",
-//		rx: gridWidth/2,
-//		fill: 'yellow',
-//		line: 'black',
-//		ry: gridHeight * 0.75, //because image is tall and should overlap
-//		angle: pointAngle
-//	});
-	
+
 	if(this.owner != undefined && this.owner != null && this.owner.heartCurrentlyRotating){
 		this.owner.heartCurrentlyRotating = false;
 		//console.log("rotating in make heart" + new Date().getTime());

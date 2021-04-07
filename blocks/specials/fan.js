@@ -1,8 +1,8 @@
 "use strict";
 //Fan////////////////////////////////
 
-Fan.prototype = new Block();        // Here's where the inheritance occurs 
-Fan.prototype.constructor=Fan;       // Otherwise instances of Cat would have a constructor of Mammal 
+Fan.prototype = new Block();     
+Fan.prototype.constructor=Fan; 
 
 
 function Fan(type, ownerGrid, ownerImage,  owner, myX, myY, offsetX, offsetY, pointX, pointY){
@@ -22,6 +22,7 @@ Fan.prototype.updateFanSpeeds = function(incr){
 	if(this.owner == null)
 		return;
 	var side = this.pointAngle / 90;//what WOULD my side be if I was facing 0
+	//adjust for way actually facing
 	side = side - this.owner.facing;
 	if(side < 0)
 		side = side + 4;
@@ -29,6 +30,7 @@ Fan.prototype.updateFanSpeeds = function(incr){
 };
 
 Fan.prototype.clearAway = function(explode){
+	//so owner updates speed
 	if(this.owner != null)
 		this.owner.fans.delete(this);
 	Block.prototype.clearAway.call(this, explode);

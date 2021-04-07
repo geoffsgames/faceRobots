@@ -1,5 +1,5 @@
 "use strict";
-
+//moves forward and then backward along a flat surface as far as possible
 
 Motor.prototype = new Block();        // Here's where the inheritance occurs 
 Motor.prototype.constructor=Motor;
@@ -11,20 +11,6 @@ function Motor(type, ownerGrid, ownerImage,  owner, myX, myY, offsetX, offsetY, 
 	
 }
 
-Motor.prototype.redraw = function(remove){
-	Block.prototype.redraw.call(this, remove);
-	if(this.owner != null && selectedKeyCodes == newKeyCodes){
-		if(this == this.owner.selectedMotor)
-			canvas.setActiveObject(this.owner.selectedMotor.image);
-		this.image.hasControls = false;
-		this.image.borderColor = 'yellow';
-		this.image.strokeWidth = 5;
-	}
-
-};
-
-
-
 Motor.prototype.setup = function(type, ownerGrid, ownerImage,  owner, myX, myY, offsetX, offsetY, pointX, pointY){
 	
 	
@@ -35,20 +21,22 @@ Motor.prototype.setup = function(type, ownerGrid, ownerImage,  owner, myX, myY, 
 	this.maxFlyDistance = 15;
 	this.movX = 0;
 	this.movY = 0;
-	var found = false;
-	this.neighbours = null;
+	this.neighbours = null; //the blocks I move
 	this.atEnd = false;
 	this.tinyAnimateCount = 0;
 	this.oldMovX = 0;
 	this.moving = false;
 	this.willDestroy = false;
-	this.resistance = 2;
+	this.resistance = 5;
+	this.origStrength = 5;
+	this.startingStrength = 5;
 	this.needsCalc = false;
 
-	
-	//TODO if hasn't flown away. todo because might need to check it more specifically
+	var found = false;
+
+	//get my index number
 	if(this.owner != null){
-		for(var i =0, len = this.owner.motors.length; i < len; i+= 1){
+		for(var i =0, len = this.owner.motors.length; i < len; i++){
 			if(this.owner.motors[i].myX == myX && this.owner.motors[i].myY == myY){
 				this.owner.motors[i] = this;
 				this.motNum = i;
@@ -56,7 +44,7 @@ Motor.prototype.setup = function(type, ownerGrid, ownerImage,  owner, myX, myY, 
 			}
 		}
 		if(!found){
-			for(var i =0, len = this.owner.motors.length; i < len; i+= 1){
+			for(var i =0, len = this.owner.motors.length; i < len; i++){
 				if(this.owner.motors[i] == null){
 					this.owner.motors[i] = this;
 					this.motNum = i;
@@ -77,6 +65,23 @@ Motor.prototype.setup = function(type, ownerGrid, ownerImage,  owner, myX, myY, 
 	}
 };
 
+
+
+Motor.prototype.redraw = function(remove){
+	Block.prototype.redraw.call(this, remove);
+	if(this.owner != null && selectedKeyCodes == newKeyCodes){
+		if(this == this.owner.selectedMotor)
+			canvas.setActiveObject(this.owner.selectedMotor.image);
+		
+		//selected motor is the motor which will move when shift pressed - this sets visual 
+		this.image.hasControls = false;
+		this.image.borderColor = 'yellow';
+		this.image.strokeWidth = 5;
+	}
+
+};
+
+//visually reallign
 Motor.prototype.adjust = function(){
 	for(var i = 0; i < this.neighbours.length; i+= 1){
 		this.neighbours[i].left = this.neighbours[i].myX * gridWidth;
@@ -86,11 +91,15 @@ Motor.prototype.adjust = function(){
 
 };
 
+//after colliding
 Motor.prototype.jumpBack = function(){
+	//change direction
 	this.movX = -this.movX;
 	this.movY = -this.movY;
+	//move everything back
 	if(this.moveAll())
 		this.disMoved += this.movX + this.movY;
+	//change direction back
 	this.movX = -this.movX;
 	this.movY = -this.movY;
 };
@@ -107,7 +116,7 @@ Motor.prototype.update = function(){
 			return false;
 		}
 		this.updateGrid(true);
-		if(this.movefastCounter == 0 || this.movepartsSpeed_changing == 1){
+		if(this.movefastCounter == 0 || this.movepartsSpeed_changing == 1){ //reached the end of it's track - fore or back
 			this.movefastCounter = this.movefastCounter + 1;
 			this.movepartsCounter = this.movepartsCounter + 1;
 			this.owner.recreated = false;
@@ -116,7 +125,6 @@ Motor.prototype.update = function(){
 				this.collided = this.checkCollision();
 				if(this.neighbours == null || !this.moving)
 					return false;
-				//for testing the strength of knives
 				if(this.collided)
 					this.disMovedCut = 1;
 				else
@@ -189,7 +197,7 @@ Motor.prototype.destroy = function(other,explode){
 	else{
 		var newMots = this.owner.motors;
 		var deletedMot = false
-		for(var i = 0; i < newMots.length && !deletedMot; i+= 1){
+		for(var i = 0; i < newMots.length && !deletedMot; i++){
 			var mot = newMots[i];
 			if(mot == this){//found the motor that we want to delete
 				newMots.splice(i,1);
@@ -197,7 +205,7 @@ Motor.prototype.destroy = function(other,explode){
 			}
 		}
 		if(!deletedMot){
-			//TODO figure out how to handle properly
+			console.error("motor to be deleted not found");
 			alert("motor to be deleted not found");
 		}
 		this.owner.motors = newMots;
@@ -214,7 +222,7 @@ Motor.prototype.checkCollision = function(){
 	this.jumpedBack = false; 
 	this.blocked = false;
 
-	
+	//check every block moved by motor
 	for(var i = 0; i < movers.length; i += 1){
 		var myBlock = movers[i];
 		var blockX = this.owner.myX + myBlock.myX;
@@ -229,6 +237,10 @@ Motor.prototype.checkCollision = function(){
 				if(otherBlock.ownerImage != this.group){//there is a collision
 					this.owner.handleCollision(myBlock,otherBlock,modified,destroyBlocks,this);
 				}
+				
+				
+				
+				
 			}
 		}
 		else{ //so can't punch off edge
@@ -251,16 +263,35 @@ Motor.prototype.checkCollision = function(){
 		}
 	}	
 	else{
+		var owners = new Array();
+
 		for(var i =0; i < modified.length; i += 1){
 			modified[i].confirmDamage();
 		}
-		var owners = new Array();
-		for(var i =0; i < destroyBlocks.length; i += 1){//record all enemies/landscape that possibly will be damaged
-			//damage me or collect block in here
-			destroyBlocks[i].destroy(this.owner,true);
-			if(destroyBlocks[i].owner != undefined && destroyBlocks[i].owner != null && owners.indexOf(destroyBlocks[i].owner) === -1) //TODO owners.indexOf not implemented IE 8 and lower
-				owners.push(destroyBlocks[i].owner);
+		var editingVictim = null;
+		for(var i =0; i < destroyBlocks.length; i ++){//record all enemies/landscape that possibly will be damaged	
+			//collision in editing mode
+			if(destroyBlocks[i].origOwner != undefined && destroyBlocks[i].origOwner != null && destroyBlocks[i].origOwner.isEditing()){
+				editingVictim = destroyBlocks[i].origOwner
+				editingVictim.leaveEditing(); //player has to be out of editing mode to respond to damage properly - will be put right back into editing mode after
+				editingVictim.updateGrid(true);
+				editingVictim.closeToEnemy = true;
+				editingVictim.updateGrid(false);
+			}
+			if(editingVictim != null)
+				destroyBlocks[i] = editingVictim.grid[destroyBlocks[i].myX - editingVictim.myX][destroyBlocks[i].myY - editingVictim.myY]
+			if(destroyBlocks[i] != null){
+				if(destroyBlocks[i].owner != undefined && destroyBlocks[i].owner != null && owners.indexOf(destroyBlocks[i].owner) === -1) //TODO owners.indexOf not implemented IE 8 and lower
+					owners.push(destroyBlocks[i].owner);
+				//damage me or collect block in here
+				destroyBlocks[i].destroy(this.owner,true);
+			}
+			
+
+			
 		}
+		
+		
 		for(var i =0; i < owners.length; i += 1){//damage enemy/landscape
 			//don't call shrink now because when colliding 
 			//I'm one step further forward than I think I am
@@ -378,18 +409,21 @@ Motor.prototype.canMove = function(){
 
 Motor.prototype.startMoving = function(){
 
-	
+	//this.base is block that always lies under motor, moves as motor moves, this.origBase is always starting point
 	this.base = this.origBase;
 	if(this.base != null)
 		this.base.baseOfMotor = this;
 	this.reversing = false;
 
 	this.moving = true;
-	//to guarantee owner will load it's position into the grid
-	this.owner.closeToEnemy = true;
+	
+	//load into grid for collision detection
+	this.owner.closeToEnemy = true;//to pass checks in updateGrid(..)
 	this.owner.updateGrid(false);
+	//visuals
 	this.drawGroup();
 
+	//timing
 	this.movepartsCounter = 0;
 	this.movefastCounter = 0;
 	this.owner.getOtherRobot().movefastCounter = 0;
@@ -398,8 +432,11 @@ Motor.prototype.startMoving = function(){
 	this.movX = this.oldMovX;
 	this.movY = this.oldMovY;
 	this.disMoved = 0;
-	this.disMovedCut = 1;
+	this.disMovedCut = 1; //for moving backward early if blocked or blocks broken
+	
 	this.collided = false;
+	
+	//grow owner grid otherwise motor will stick out beyond limits
 	var grow = 0;
 	if(this.movX == 1)
 		grow = this.rightNeigh + this.dis + 1;
@@ -415,12 +452,14 @@ Motor.prototype.startMoving = function(){
 	this.owner.actualHeight = gridHeight * this.owner.gridSize;
 	
 	interval = minInt;
-										//16,
+
+	//timing
 	this.movepartsSpeed_fixed = Math.min(maxSpeed,Math.pow(2,this.dis));
 	this.movepartsSpeed_changing = Math.round(maxSpeed / this.movepartsSpeed_fixed);
 	this.owner.getOtherRobot().fastSpeed_changing = maxSpeed / this.owner.getOtherRobot().fastSpeed_fixed;
 	this.owner.getOtherRobot().faster = true;
 
+	//owner bounding box for collisions
 	this.step = 0;
 	this.owner.minX = 0;
 	this.owner.minY = 0;
@@ -686,6 +725,7 @@ Motor.prototype.draw = function(type,offsetX,offsetY,pointAngle,pointOffsetX,poi
 	}
 };
 
+//which way assymetric spokes are pointing based on direction of travel
 Motor.prototype.orientateImage = function(){
 	this.image._objects[0].setElement(document.getElementById("motor"));
 	if(this.oldMovX == 1){
@@ -709,18 +749,17 @@ Motor.prototype.orientateImage = function(){
 		
 }
 
-
-
+//for comparing sides in AI get strength score for knives attached to this motor based on fact they attached to this motor
 function addStrength(strength,knifeSet){
 	for(var  i = 0; i < knifeSet.length; i+= 1){
-		if(knifeSet[i].weaponStrength > 1){
-			//if(knifeSet[i].spring == null || knifeSet[i].weaponStrength != Math.min(maxSpeed, Math.pow(2,knifeSet[i].spring.quantity)))
-			//	alert("error setting knife strength from motor")
+		if(knifeSet[i].weaponStrength > 1){ //already found a spring attached - attached to spring and motor
+			if(knifeSet[i].spring == null || knifeSet[i].weaponStrength != Math.min(maxSpeed, Math.pow(2,knifeSet[i].spring.quantity)))
+				console.error("error setting knife strength from motor")
 			var springStrength = knifeSet[i].weaponStrength;
-			knifeSet[i].weaponStrength = Math.max(strength, springStrength);
+			knifeSet[i].weaponStrength = Math.max(strength, springStrength); //strength is maximum from spring or motor
 		}
 		else
-			knifeSet[i].weaponStrength = strength;
+			knifeSet[i].weaponStrength = strength;//motor strength
 	}
 }
 
@@ -758,12 +797,9 @@ Motor.prototype.makeImage = function(type, offsetX, offsetY, pointAngle, pointOf
 	//for animating it
 	this.image.originX = "center";
 	this.image.originY = "center";
-	//this.image.left = this.image.left + (gridWidth/2);
-	//this.image.top = this.image.top + (gridHeight/2);
-
 };
 
-
+//careAboutBases = if true then only return true if is base
 Motor.prototype.isASquare = function(x,y, careAboutBases){
 	if(x >= this.owner.grid.length || x < 0 || y >= this.owner.grid.length || y < 0)
 		return false;
@@ -896,6 +932,7 @@ Person.prototype.stopMotors = function(){
 	
 };
 
+//time interval speeds up when running - reset
 Person.prototype.resetInterval = function(){
 	this.willResetInterval = false;
 	var dir = 0;
@@ -961,6 +998,7 @@ Person.prototype.resetInterval = function(){
 		this.resetPos();
 };
 
+//move neighbours
 Motor.prototype.moveAll = function(){
 	if(Math.abs(this.disMoved + this.movX + this.movY) <= this.dis){
 		this.atEnd = false;
@@ -975,6 +1013,7 @@ Motor.prototype.moveAll = function(){
 	}
 };
 
+//when rotating whole robot rotate the direction motor expected to move in
 Motor.prototype.rotate = function(angle){
 	if(angle == 1){
 		if(this.oldMovX != 0){
@@ -1006,7 +1045,7 @@ Motor.prototype.animateSpin = function(){
 
 };
 
-
+//move block attached to motor
 Block.prototype.move = function(movX, movY, reversing){
 	if(this.owner.grid[this.myX][this.myY] == this)
 		this.owner.grid[this.myX][this.myY] = null;
@@ -1016,6 +1055,7 @@ Block.prototype.move = function(movX, movY, reversing){
 	return true;
 };
 
+//move motor
 Motor.prototype.move = function(movX, movY, reversing){
 	if(this.movX != 0 || this.movY != 0){
 		
