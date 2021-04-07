@@ -1,8 +1,10 @@
 "use strict";
+//fade in on arrival
 var fadeDuration = 2000; //fading in body
 var fadeDuration2 = 200; //fading in face after body faded in
 var fadeFrames = (fadeDuration + fadeDuration2) / interval; //number of game frames takes to fade in
-//reset the difficulty
+
+//difficulty is probably will ignore A.I. signals. 0 is most difficult
 var difficulty = 0;
 slider.value = difficulty;
 
@@ -31,16 +33,24 @@ Enemy.prototype.setup = function(myX, myY, facing) {
 	this.startFace = "badfaceIgnore";
 	this.directionFaces = ["badfaceRight", "badfaceDown", "badfaceLeft", "badfaceUp"];
 	this.hurtFace = "badfaceHurt";
-	//AI/////////////////////////////////////////////
-	this.AIcountDown =  0;
-	this.countdownDecr = 1;
-	this.willLeaveGrid = false;
-	this.stopRunningProb = 0.1;
-	this.noLuckCounter = 0;
+	
+	this.willLeaveGrid = false; //about to leave grid but in intermediate timing so will wait
 	this.willRotateNext = 0;
 
+	//JUST FOR TESTING
 	this.tempCount = 0;
 	
+	
+	
+	//AI/////////////////////////////////////////////
+	this.AIcountDown =  0; //makes a decision when reaches 0
+	this.countdownDecr = 1; //amount this.AIcountDown decrements by so makes decision more frequently when close to player
+	this.stopRunningProb = 0.1; //if rand < this will resume chasing after running
+	//keeps a record if stuck in one place too long - pos[] is previous positions
+	this.pos = []
+	this.stuckScore = 0
+	
+	//*************AI PARAMETERS = ROBOTS PERSONALITY***********//
 	//TODO - currently hard coded but will ultimately depend on different robots having different personalities (bravery and stupidity). 
 	//Genetic Algorithms/Fuzzy logic may also play a part in finding the best balance
 	
@@ -49,28 +59,21 @@ Enemy.prototype.setup = function(myX, myY, facing) {
 	//alternative response = back step
 	//these variables help us choose between the two
 	//also the closer I am the more likely I am to back step
-	
-	//run = if I keep going way I'm going I'll INJURE MYSELF on player
-	//probably of stepping side (as opposed to back) obviously lower
-	
-	
-	//amIStuck
-	
-	this.pos = []
-	this.stuckScore = 0
-	this.rotationStuck = 0;
-	
-	//*************AI PARAMETERS = ROBOTS PERSONALITY***********//
 	this.stepSideProbabilityRun = Math.seededRandomDouble(0.2, 0.7); //higher = scared. More likely to run rather than sidestep
-	this.motorProb = 0.75;
 	this.stepSideProbabilityBlockedDecr = Math.seededRandomDouble(0.1, 0.2);//every time I'm blocked increase probability of back stepping next time
 	this.stepSideProbabilityBlockedOrig = Math.seededRandomDouble(0.5, 1);//lower = more likely to back step
-	this.chaseProb = Math.seededRandomDouble(0.9, 1);
+	
+	this.chaseProb = Math.seededRandomDouble(0.9, 1); //probability I will chase player
+	
 	this.awarenessDis = Math.seededRandom(10, 20); //how close I have to be to enemy for him to know about me
-	//FOR LANDSCAPE
-	this.retreatingProb = 0.1;
-	this.origRetreatingProb = 0.1;
+	
+	this.motorProb = 1;
+
 	this.alertness = Math.seededRandomDouble(1, 3);//determines how big intervals between making a decision are
+	
+	//FOR LANDSCAPE
+	this.retreatingProb = 0.1; //goes down if retreated a lot lately
+	this.origRetreatingProb = 0.1; //goes down if retreated a lot lately
 
 	
 	//***************End of AI Parameters********************//
@@ -376,7 +379,7 @@ Enemy.prototype.amIStuck = function(){
 }
 
 Enemy.prototype.intelligence = function(){
-	
+	//just for testing - for when want to test thief's appearance after regular enemy (and other purposes) so make reg enemy inert
 	//if(!this.isThief) 
 		//return;
 	

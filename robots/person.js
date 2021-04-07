@@ -1113,7 +1113,7 @@ Person.prototype.checkCollision = function() {
 			damagedOther = true;
 		}
 		var editingVictim = null;
-		for(var i =0; i < destroyBlocks.length; i += 1){//record all enemies/landscape that possibly will be damaged	
+		for(var i =0; i < destroyBlocks.length; i ++){//record all enemies/landscape that possibly will be damaged	
 			//collision in editing mode
 			if(destroyBlocks[i].origOwner != undefined && destroyBlocks[i].origOwner != null && destroyBlocks[i].origOwner.isEditing()){
 				editingVictim = destroyBlocks[i].origOwner
@@ -1601,11 +1601,11 @@ Person.prototype.rotateDangerZones = function(rotation){
 		this.dangerZones.bottom.along = this.gridSize - this.dangerZones.bottom.along - 1;
 		this.dangerZones.top.along = this.gridSize - this.dangerZones.top.along - 1;
 	}
-	//else
-		//alert("ERROR: unknown rotation value");
-	//alert(JSON.stringify(this.dangerZones));
+	else
+		console.error("unknown rotation value");
 }
 
+//when damaged or finished editing redraw and re-gridout whole group
 Person.prototype.recreateGroup = function(offsetX, offsetY) {
 	if(!this.recreateable)
 		return;
