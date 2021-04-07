@@ -1,0 +1,16 @@
+PLANNED 
+
+Strategy
+0) Choose side based on where I'll fit - or front if I'm not facing me
+1) Side that's closest
+2) Target far corner
+3) Swipe towards near corner
+4) back up
+5) stab 
+6) Inside or outside obstacle
+
+Events
+If he moves towards me with the knife then back up or side step until we don't overlap
+
+###
+knife always pointing long direction

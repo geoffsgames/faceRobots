@@ -1,6 +1,6 @@
 "use strict";
 var debugMode = false;
-var randsSeeded = false; //debugMode; //2143 and right //6040 //1573
+var randsSeeded = true; //debugMode; //2143 and right //6040 //1573 //69 for stupid enemy
 var scrollingX = 0;
 var scrollingY = 0;
 var gameGrid = null;
@@ -254,7 +254,6 @@ function addPlayer(){
 		player.motorWillStart = 0;
 	}
 	
-	/**
 	for(var i =0 ; i < 40; i += 1){
 		player.addBlockToInventory("wall");
 		
@@ -264,7 +263,7 @@ function addPlayer(){
 		player.addBlockToInventory("fan");
 
 
-	}*/
+	}
 	
 	player.group.bringToFront();
 }

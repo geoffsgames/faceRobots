@@ -84,12 +84,10 @@ Landscape.prototype.makeGrid = function(){
 	this.wallHeights = new Array();
 
 	var init = this.initialLandscape()
-	//this.enemyGrid = designEnemy(false,false,"blinder");
-	
-	//this.enemyGrid = designEnemy(false,false);
 
+	//Creating enemies TODO move to enemyFactory
 	if(init)
-		this.enemyGrid = designEnemy(false,false);
+		this.enemyGrid = designEnemyMotor(false,false);
 	else{
 		var prob = Math.seededRandomDouble();
 		if(prob < plainProb){
