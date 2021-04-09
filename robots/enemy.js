@@ -970,7 +970,7 @@ Enemy.prototype.setToFacing = function(targetCenterX, targetCenterY, preChoseX, 
 	//TODO combine then? (would make it more efficient and mean this doesn't happen)
 	//on the other hand the contrast between the two methods could create more unpredictable behaviour
 	//TODO YES COMBINE because otherwise .contactX/contactY screws up
-	if(Math.maybeSeededRandom(0,1) <   (Math.pow(Math.log(this.stuckScore),2) / 100) ){
+	if(this.stuckScore > 0 && Math.maybeSeededRandom(0,1) <   (Math.pow(Math.log(this.stuckScore),2) / 100) ){
 		this.stuckScore = this.stuckScore / 2;
 		return;
 	}	
