@@ -1,6 +1,6 @@
 "use strict";
 var debugMode = false;
-var randsSeeded = true; //debugMode; //2143 and right //6040 //1573 //69 for stupid enemy
+var randsSeeded = false; //random values for events not normally seeded (i.e. not landscape created). Seeding them only used for debugging.
 var scrollingX = 0;
 var scrollingY = 0;
 var gameGrid = null;
