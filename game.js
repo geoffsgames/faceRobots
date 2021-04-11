@@ -1,10 +1,10 @@
 "use strict";
 var debugMode = false;
-var randsSeeded = false; //random values for events not normally seeded (i.e. not landscape created). Seeding them only used for debugging.
+var randsSeeded = false; //normally random numbers for building landscape are seeded but not AI or random events - this makes them also seeded for debugging
 var scrollingX = 0;
 var scrollingY = 0;
 var gameGrid = null;
-var numPiecesX, numPiecesY;
+var numPiecesX, numPiecesY; //total blocks in the landscape
 var willAddEnemy = false;
 var selectedSpawn = null;
 
