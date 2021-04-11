@@ -13,10 +13,6 @@ Enemy.prototype = new Person();
 Enemy.prototype.constructor=Enemy;
 
 var testingMovement = false;
-    
-Enemy.prototype.getOtherRobot = function() {
-	return player;
-};
 
 function Enemy(myX, myY, facing) {
 	this.setup(myX,myY,facing);
@@ -100,6 +96,11 @@ Enemy.prototype.setupAI = function(){
 	this.mainMovX = -1;
 	this.mainMovY = 0;
 }
+
+Enemy.prototype.getOtherRobot = function() {
+	return player;
+};
+
 Enemy.prototype.isWeapon = function(block){
 	return block.isWeapon;
 }
@@ -784,9 +785,9 @@ Enemy.prototype.predictCollision = function(other){
 	
 };
 
-function playerIn(area){
-	return (player.myX + player.maxX > area.left && player.myX + player.minX < area.left + area.width
-			&& player.myY + player.maxY > area.top && player.myY + player.minY < area.top + area.height);
+function inArea(robot,area){
+	return (robot.myX + robot.maxX > area.left && robot.myX + robot.minX < area.left + area.width
+			&& robot.myY + robot.maxY > area.top && robot.myY + robot.minY < area.top + area.height);
 
 }
 
@@ -1181,35 +1182,45 @@ Enemy.prototype.pickDirection = function(){
 			this.target = new Target(this.targetArea.left, this.targetArea.top, this.targetArea.width, this.targetArea.height);
 			this.follow();//aim at target
 		}
-		else if((this.target != player) //not chasing player
-			&&			//and we've moved to next area (target area) then choose new area to target
-		(this.myX + this.maxX > this.targetArea.left && this.myX + this.minX < this.targetArea.left + this.targetArea.width
-				&& this.myY + this.maxY > this.targetArea.top && this.myY + this.minY < this.targetArea.top + this.targetArea.height)
-			||
-		(this.targetArea == this.area && Math.abs(this.myX + (this.gridSize / 2)) - this.target.centerX < 5&&
-		Math.abs(this.myY + (this.gridSize / 2)) - this.target.centerY < 5)//also re-target if I've just reached center of dead end area
-		){
+		else if(!inArea(this,this.area)){ //left current area move onto new one
+			var newArea = this.targetArea; // assume reached the targetarea(most like)
 			
-			var neighbours = this.targetArea.neighbours;
-			if(this.area == this.targetArea)
-				this.area = null;
-			var otherNeighbours = [];
-			for(var i =0; i < neighbours.length; i += 1){
-				if(neighbours[i] != this.area)
-					otherNeighbours.push(neighbours[i]);
+			i = 0;
+			while(!inArea(this,newArea) && i < this.area.neighbours.length){
+				newArea = this.area.neighbours[i];
+				i++;
+				if(this.area.neighbours[i] == this.targetArea) //already checked targetArea before loop
+					i++;
 			}
-			this.area = this.targetArea;
-			if(otherNeighbours.length > 0){ //if not entering dead end then choose new area to target
-				this.targetArea = otherNeighbours[Math.floor(Math.maybeSeededRandom(0,otherNeighbours.length))];
-				this.target = new Target(this.targetArea.left, this.targetArea.top, this.targetArea.width, this.targetArea.height);
+			if(i == this.area.neighbours.length && !inArea(this,newArea)){
+				console.error("Enemy doesn't seem to be in any area!")
 			}
-			//if I AM entering a dead end then I'll end up just heading to the center
-			this.follow();
-		};
+			else{
+				//choose the next target area
+				var neighbours = newArea.neighbours;
+				var otherNeighbours = [];
+				for(var i =0; i < neighbours.length; i += 1){
+					if(neighbours[i] != this.area)
+						otherNeighbours.push(neighbours[i]);
+				}
+				if(otherNeighbours.length > 0){ //if not entering dead end then choose new area to target
+					this.targetArea = otherNeighbours[Math.floor(Math.maybeSeededRandom(0,otherNeighbours.length))];
+					//make my target somewhere in middle of new area
+					this.target = new Target(this.targetArea.left, this.targetArea.top, this.targetArea.width, this.targetArea.height);
+				}
+				
+				this.area = newArea;
+				
+				//if I am entering a dead end then I'll end up just heading to the center
+				this.follow();
+
+			}
+			
+		}
 		
 		//if we're still in the same area do nothing - just keep current target
 	}
-	if(land.areas.length == 1 || playerIn(this.area)){//chasing player
+	if(this.target == player || land.areas.length == 1 || inArea(player,this.area)){//chasing player
 		
 		//turn towards player with strongest weapons
 		this.setToFacing();
