@@ -1049,8 +1049,13 @@ Person.prototype.startMotorsMoving = function(which){
 Person.prototype.checkCollision = function() {
 	this.jumpedBack = false; //met any sort of resistance (even if I managed to damage the block)
 	this.blocked = false; //met resistance where I didn't even damage the block (for resetting?) 
+	
+	//all the blocks changed in this loop
 	var destroyBlocks = new Array();
 	var modified = new Array();
+	var collected = new Array();
+
+	
 	this.stairsCollide = null;
 	var stillStairs = false;
 	this.blockedByLandscape = false;
@@ -1090,7 +1095,7 @@ Person.prototype.checkCollision = function() {
 								//console.log(otherBlock.myX);
 
 							}
-							this.handleCollision(myBlock,otherBlock,modified,destroyBlocks,null);
+							this.handleCollision(myBlock,otherBlock,modified,destroyBlocks,collected,null);
 						}
 					}
 					else{
@@ -1157,6 +1162,7 @@ Person.prototype.checkCollision = function() {
 
 			
 		}
+	
 		for(var i =0; i < owners.length; i += 1){//damage enemy/landscape
 			//don't call shrink now because when colliding 
 			//I'm one step further forward than I think I am
@@ -1165,7 +1171,8 @@ Person.prototype.checkCollision = function() {
 			owners[i].respondToDamage();
 			owners[i].damaged = true;
 		}
-		if(this.collecting.length > 0)
+		this.collecting = collected; //save collected blocks (previously just temporary in case blocked)
+		if(this.collecting.length > 0) //add collected blocks to me
 			this.collectAll();
 	}
 	
@@ -1185,7 +1192,7 @@ Person.prototype.checkCollision = function() {
 
 
 
-Person.prototype.handleCollision = function(myBlock, otherBlock,  modified, destroyed, mot){
+Person.prototype.handleCollision = function(myBlock, otherBlock,  modified, destroyed, collected, mot){
 	var forwardStrength = myBlock.forwardStrength;
 	var sideStrength = myBlock.sideStrength;
 	
@@ -1211,23 +1218,15 @@ Person.prototype.handleCollision = function(myBlock, otherBlock,  modified, dest
 	if(otherPointedAtMe && movX == -otherBlock.pointX && movY == -otherBlock.pointY && mot != undefined && mot.type == "spring") 
 		otherPointedAtMe = false;
 	
-	var otherDestroyed = otherBlock.destroyedBy(myBlock, modified, destroyed, mePointedAtOther && !otherPointedAtMe,0,mot);
-
-	var thisDestroyed = myBlock.destroyedBy(otherBlock, modified, destroyed, otherPointedAtMe && !mePointedAtOther,0,mot);								
+	
+	var otherDestroyed = otherBlock.destroyedBy(myBlock, modified, destroyed, collected, mePointedAtOther,otherPointedAtMe,0,mot);
+	var thisDestroyed = otherDestroyed == "collected" ? false : myBlock.destroyedBy(otherBlock, modified, destroyed, collected, otherPointedAtMe,mePointedAtOther,0,mot);								
 	
 	var thisormot = this;
 	if(mot != undefined && mot != null)
 		thisormot = mot;
-	else{//collectables are only collected if not motor
-		//if its a collectable check to see if it will collide with anything when it starts to move with me
-		if(otherBlock.collectable){
-			var collectableCollidesWith = gameGrid[otherBlock.myX + this.movX][otherBlock.myY + this.movY];
-			if(collectableCollidesWith != 1)
-				this.jumpedBack = true;
-		}
-	}
 		
-	if(!otherDestroyed && !thisDestroyed) //blocked
+	if(!otherDestroyed && !thisDestroyed && otherDestroyed != "collected") //blocked
 		thisormot.jumpedBack = true;
 	
 	if(thisormot.jumpedBack && !otherBlock.isDamaged() && !myBlock.isDamaged()){//if I was blocked so any damage I may have done was in error so need to undo
@@ -1683,10 +1682,6 @@ Person.prototype.recreateGroup = function(offsetX, offsetY) {
 
 };
 
-Person.prototype.collect = function(block){
-	this.collecting.push(block);
-};
-
 //all collectable blocks - because I may have simultaneously collided with multiple
 Person.prototype.collectAll = function(){
 	//remove from collectables
@@ -1696,6 +1691,7 @@ Person.prototype.collectAll = function(){
 		var block = this.collecting[i];
 		var x = block.myX;
 		var y = block.myY;
+		gameGrid[x][y].destroy(this,true);
 		for(var c = 0; c < collectables.length; c += 1){
 			if(collectables[c][0] == x && collectables[c][1] == y)
 				collectables.splice(c,1);
