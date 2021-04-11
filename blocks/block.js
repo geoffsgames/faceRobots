@@ -74,6 +74,8 @@ Block.prototype.getWall = function(){
 	
 	if(this.collectable)
 		element = document.getElementById("wallMid");
+	else if(this.harmful)
+		element = document.getElementById("wallBad");
 	else if(this.owner != null && this.owner.isEnemy)
 		element = document.getElementById("wallDark");
 	else
@@ -198,6 +200,19 @@ Block.prototype.calculatePoints = function(){
 		this.pointY = -1;
 	else if(pointDir == 3)
 		this.pointY = 1;
+	
+	
+	this.secondPointX = 0;
+	this.secondPointY = 0;
+	if(this.owner.maxX - this.owner.myX < 3 && this.pointY != 0 && !this.owner.occupied(this.myX + 1, this.myY))
+		this.secondPointX = 1;
+	else if(this.owner.myX - this.owner.minX < 3 && this.pointY != 0 && !this.owner.occupied(this.myX - 1, this.myY))
+		this.secondPointX = -1;
+	else if(this.owner.myY - this.owner.minY < 3 && this.pointX != 0 && !this.owner.occupied(this.myX, this.myY + 1))
+		this.secondPointY = 1;
+	else if(this.owner.myY - this.owner.minY < 3 && this.pointX != 0 && !this.owner.occupied(this.myX, this.myY - 1))
+		this.secondPointY = 1;
+	
 	this.getPoints(); //visually set angle
 
 };
@@ -305,6 +320,11 @@ Block.prototype.makeImage = function(type,offsetX,offsetY,pointAngle,pointOffset
 
 //if attacked by other block "catching me up"
 Block.prototype.directionMatches = function(movX, movY) {
+	if(this.pointX == undefined)
+		this.pointX = 0;
+	if(this.pointY == undefined)
+		this.pointY = 0;
+	
 	return (movX == this.pointX && movY == this.pointY);
 };
 
@@ -331,22 +351,29 @@ Block.prototype.adjustForMotor = function(block,strength){
 };
 
 //finds out if I'm destroyed by other and if so records it
-Block.prototype.destroyedBy = function(other, modified, destroyed, forwards,alreadyHit,mot) {
-	this.oldAngle = this.image.angle;
-	if(this.collectable){ //if collectable will always destroy
+Block.prototype.destroyedBy = function(other, modified, destroyed, collected, otherforwards,thisforwards,alreadyHit,mot) {
+	var forwards = otherforwards && !thisforwards; //if I'm being struck head on by a knife
+	
+	//collectable - colect 
+	if(this.collectable && other.isBase && !thisforwards){
 		if(mot != undefined && mot != null)
 			return false;
-		destroyed.push(this);
+		
+		if (gameGrid[this.myX + other.owner.movX][this.myY + other.owner.movY] != 1){ //if collecting this block would cause an overlap (block is pushed against wall)
+			//don't collect and respond as it it was a collision
+			this.jumpedBack = true;
+			return false;
+		}
+		collected.push(this);
 		if(this.usePoints){
 			this.pointX =	other.owner.movX;
 			this.pointY = 	other.owner.movY;
 			this.pointSet = true;
 		}
-		return true;
-	}
-	else if(other.collectable)//if collecting collectable will not damage me
-		return false;
+		return "collected";
+	}	
 	
+	this.oldAngle = this.image.angle;
 
 	var impact;
 	
@@ -450,9 +477,6 @@ Block.prototype.destroy = function(other, explode) {
 		//the motor that I support
 		if(this.baseOfMotor != null)
 			this.baseOfMotor.clearAway(explode);
-		if(this.collectable){
-			other.collect(this);
-		}
 		
 		if(this.owner != null && this.type != "heart"){
 			//remove all attached pieces on side away from heart
@@ -691,6 +715,15 @@ Block.prototype.rotatePoint = function(clockwise) {
 	else if(this.pointY != 0){//right to down
 		this.pointX =  -this.pointY * clockwise;
 		this.pointY = 0;
+	}
+	
+	if(this.secondPointX != 0){
+		this.secondPointY =  this.secondPointX * clockwise;
+		this.secondPointX = 0;
+	}
+	else if(this.secondPointY != 0){//right to down
+		this.secondPointX =  -this.secondPointY * clockwise;
+		this.secondPointY = 0;
 	}
 
 };
