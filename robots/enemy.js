@@ -47,6 +47,59 @@ Enemy.prototype.setup = function(myX, myY, facing) {
 	this.setupAI();
 };
 
+Enemy.prototype.setupAI = function(){
+	//AI/////////////////////////////////////////////
+	this.AIcountDown =  0; //makes a decision when reaches 0
+	this.countdownDecr = 1; //amount this.AIcountDown decrements by so makes decision more frequently when close to player
+	this.stopRunningProb = 0.1; //if rand < this will resume chasing after running
+	//keeps a record if stuck in one place too long - pos[] is previous positions
+	this.pos = []
+	this.stuckScore = 0
+	
+	//*************AI PARAMETERS = ROBOTS PERSONALITY***********//
+	//TODO - currently hard coded but will ultimately depend on different robots having different personalities (bravery and stupidity). 
+	//Genetic Algorithms/Fuzzy logic may also play a part in finding the best balance
+	
+	//blocked = if I keep going way I'm going I'll collide with player with neither of us getting injured
+	//default response = side step
+	//alternative response = back step
+	//these variables help us choose between the two
+	//also the closer I am the more likely I am to back step
+	this.stepSideProbabilityRun = Math.seededRandomDouble(0.2, 0.7); //higher = scared. More likely to run rather than sidestep
+	this.stepSideProbabilityBlockedDecr = Math.seededRandomDouble(0.1, 0.2);//every time I'm blocked increase probability of rotating next time
+	this.stepSideProbabilityBlockedOrig = Math.seededRandomDouble(0.5, 1);//lower = more likely to rotate and then back step
+	this.rotateProbabilityBlockedIncr = Math.seededRandomDouble(0.01, 0.1);//lower = more likely to back step
+	this.rotateProbabilityBlockedOrig = Math.seededRandomDouble(0.01, 0.1);//lower = more likely to back step
+	this.insistCount = 0;
+	
+	this.chaseProb = Math.seededRandomDouble(0.9, 1); //probability I will chase player
+	this.awarenessDis = Math.seededRandom(10, 20); //how close I have to be to enemy for him to know about me
+	this.alertness = Math.seededRandomDouble(0.5, 2);//determines how big intervals between making a decision are
+	
+	this.motorProb = 1;
+	
+	//FOR LANDSCAPE
+	this.retreatingProb = 0.1; //goes down if retreated a lot lately
+	this.origRetreatingProb = 0.1; //goes down if retreated a lot lately
+	
+	
+	//***************End of AI Parameters********************//
+	
+	
+	this.stepSideProbabilityBlocked = this.stepSideProbabilityBlockedOrig;//current value
+	this.rotateProbabilityBlocked = this.rotateProbabilityBlockedOrig;//current value
+
+	
+	this.retreatingFromLandscapeX = -1;
+	
+	this.dontStartMotors = false;
+	this.contactX = null;
+	
+	//the direction I am going *ignoring sidesteps* - the direction I should normally rotate to face
+	//TODO dummy starting vals for now
+	this.mainMovX = -1;
+	this.mainMovY = 0;
+}
 Enemy.prototype.isWeapon = function(block){
 	return block.isWeapon;
 }
@@ -1116,62 +1169,6 @@ Enemy.prototype.guessScrambledCode = function(){
 	
 	return(code)
 }
-
-Enemy.prototype.setupAI = function(){
-	//AI/////////////////////////////////////////////
-	this.AIcountDown =  0; //makes a decision when reaches 0
-	this.countdownDecr = 1; //amount this.AIcountDown decrements by so makes decision more frequently when close to player
-	this.stopRunningProb = 0.1; //if rand < this will resume chasing after running
-	//keeps a record if stuck in one place too long - pos[] is previous positions
-	this.pos = []
-	this.stuckScore = 0
-	
-	//*************AI PARAMETERS = ROBOTS PERSONALITY***********//
-	//TODO - currently hard coded but will ultimately depend on different robots having different personalities (bravery and stupidity). 
-	//Genetic Algorithms/Fuzzy logic may also play a part in finding the best balance
-	
-	//blocked = if I keep going way I'm going I'll collide with player with neither of us getting injured
-	//default response = side step
-	//alternative response = back step
-	//these variables help us choose between the two
-	//also the closer I am the more likely I am to back step
-	this.stepSideProbabilityRun = Math.seededRandomDouble(0.2, 0.7); //higher = scared. More likely to run rather than sidestep
-	this.stepSideProbabilityBlockedDecr = Math.seededRandomDouble(0.1, 0.2);//every time I'm blocked increase probability of rotating next time
-	this.stepSideProbabilityBlockedOrig = Math.seededRandomDouble(0.5, 1);//lower = more likely to rotate and then back step
-	this.rotateProbabilityBlockedIncr = Math.seededRandomDouble(0.1, 0.2);//lower = more likely to back step
-	this.rotateProbabilityBlockedOrig = Math.seededRandomDouble(0.5, 1);//lower = more likely to back step
-	this.insistCount = 0;
-	
-	this.chaseProb = Math.seededRandomDouble(0.9, 1); //probability I will chase player
-	this.awarenessDis = Math.seededRandom(10, 20); //how close I have to be to enemy for him to know about me
-	this.alertness = Math.seededRandomDouble(0.5, 2);//determines how big intervals between making a decision are
-	
-	this.motorProb = 1;
-	
-	//FOR LANDSCAPE
-	this.retreatingProb = 0.1; //goes down if retreated a lot lately
-	this.origRetreatingProb = 0.1; //goes down if retreated a lot lately
-	
-	
-	//***************End of AI Parameters********************//
-	
-	
-	this.stepSideProbabilityBlocked = this.stepSideProbabilityBlockedOrig;//current value
-	this.rotateProbabilityBlocked = this.rotateProbabilityBlockedOrig;//current value
-
-	
-	this.retreatingFromLandscapeX = -1;
-	
-	this.dontStartMotors = false;
-	this.contactX = null;
-	
-	//the direction I am going *ignoring sidesteps* - the direction I should normally rotate to face
-	//TODO dummy starting vals for now
-	this.mainMovX = -1;
-	this.mainMovY = 0;
-}
-
-
 
 //does most of the work
 Enemy.prototype.pickDirection = function(){
