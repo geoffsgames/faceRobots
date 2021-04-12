@@ -253,7 +253,7 @@ function addPlayer(){
 		stoppedPressingMotor = false;
 		player.motorWillStart = 0;
 	}
-	
+	/**
 	for(var i =0 ; i < 40; i += 1){
 		player.addBlockToInventory("wall");
 		
@@ -263,7 +263,7 @@ function addPlayer(){
 		player.addBlockToInventory("fan");
 
 
-	}
+	}*/
 	
 	player.group.bringToFront();
 }
