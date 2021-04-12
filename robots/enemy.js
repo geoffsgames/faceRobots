@@ -1470,13 +1470,14 @@ Enemy.prototype.predictCollision = function(other){
 
 				
 				for(var x = minX; x <= maxX; x += 1){
+						if(this.grid[x - meOffX] != undefined && other.grid[x - othOffX] != undefined){
 							for(var y = minY; y <= maxY; y += 1){
 
 									var mySq = this.grid[x - meOffX][y - meOffY];
 									var otherSq = other.grid[x - othOffX][y - othOffY];
-									if(otherSq != null){
+									if(otherSq != undefined && otherSq != null){
 										collided = true;
-										if(mySq != null){
+										if(mySq != undefined && mySq != null){
 											if(mySq.sideStrength > otherSq.sideStrength){
 												willHurtThem = true;
 												this.chaseX = x;
@@ -1490,6 +1491,7 @@ Enemy.prototype.predictCollision = function(other){
 				
 									}
 							}
+						}
 				}
 				
 				if(collided && !blocked && !willHurtMe && !willHurtThem && count < 5){
