@@ -1,15 +1,15 @@
 "use strict";
-var smallThiefProb = 0.5;
-var noFanProb = 0.1;
+var smallThiefProb = 0.2; //probably thief will have width of 1 square
+//probs for number of fans back of thief
+var noFanProb = 0.1; 
 var threeFanProb = 0.5;
 
-var handyThief = false;
+var handyThief = false; //unused for now
 
 Thief.prototype = new Enemy();        
 Thief.prototype.constructor=Thief;
 
-
-var testingDamage = false;
+var testingDamage = false;//makes thief stop whenever near player for testing things like what happens when I am killed me/kill/damage thief
 
 Thief.prototype.getOtherRobot = function() {
 	return player;
@@ -54,13 +54,14 @@ Thief.prototype.setup = function(myX, myY, facing){
 
 Thief.prototype.die = function(explode){
 	console.log("thief died");
+	if(explode || this.leftGrid()){ //if I've died properly or left grid (not just restarting game) fade out last enemy heart
+		intervalToNextEnemy = getEnemyInterval();
+		oldEnemy.animateFadeOut();
+	}
 	enemy = oldEnemy;
 	this.isHurt = false;
 	Person.prototype.die.call(this,explode);
 	this.readyToMove = false;
-	intervalToNextEnemy = getEnemyInterval();
-	console.log(intervalToNextEnemy);
-	oldEnemy.animateFadeOut();
 	player.faster = true;
 	player.willResetInterval = true;
 

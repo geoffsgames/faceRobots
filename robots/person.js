@@ -260,8 +260,8 @@ Person.prototype.setupGrid = function(size, myX,myY) {
 		});
 	
 	this.visuallyFacing = this.facing;
-	
-	
+	if(this.isEnemy)
+		console.trace();
 	canvas.add(this.group);
 	this.group.selectable = false;
 };
@@ -353,6 +353,8 @@ Person.prototype.gridUpdated = function(){
 Person.prototype.ensureVisibility = function(){
 	var vis = this.group.left > 0 && this.group.top > 0 && this.group.left + this.actualWidth < canvas.width && this.group.top + this.actualHeight < canvas.height;
 	if(vis && !this.lastVis){
+		if(this.isEnemy)
+			console.trace();
 		canvas.remove(this.group);
 		canvas.add(this.group);
 		canvas.requestRenderAll();
@@ -758,6 +760,8 @@ Person.prototype.restart = function(){
 	
 	this.group.left = (this.myX * gridWidth) + ((this.gridSize * gridWidth) / 2);
 	this.group.top = (this.myY * gridHeight) + ((this.gridSize * gridHeight) / 2);
+	if(this.isEnemy)
+		console.trace();
 	canvas.add(this.group); //because new canvas will have removed
 	scrollToPlayer();
 	canvas.renderAll();
@@ -855,9 +859,12 @@ Person.prototype.growGrid = function(newX, newY){
 	return [newX,newY];
 };
 
+//newX, newY position within owner
+//offsetX, offsetY for how the fabric groups are constructed TODO switch to addWithUpdate
+//pointX, pointY for direction knives etc pointing (not used right now - calculated with knife)
 Person.prototype.addPiece = function(newX, newY, blocktype, fromTextGrid, recreatingGroup, pointX, pointY) {
-	var newXY = this.growGrid(newX,newY);
-	newX = newXY[0];
+	var newXY = this.growGrid(newX,newY); //possibly grow grid to accommodate (if needed newX will be off limits e.g. -1, or same as gridSize)
+	newX = newXY[0]; //if grid grown block will gain new coordinations within grid
 	newY = newXY[1];
 	if(this.willRecreate)
 		this.recreateGroup(0,0);
@@ -1652,6 +1659,8 @@ Person.prototype.recreateGroup = function(offsetX, offsetY) {
 	this.visuallyFacing = this.facing;
 
 	this.group.selectable = false;
+	if(this.isEnemy)
+		console.trace();
 	canvas.add(this.group);
 
 	if(this.stoppedBlocks != null && this.stoppedBlocks != undefined){

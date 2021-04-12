@@ -130,8 +130,11 @@ Enemy.prototype.die = function(explode){
 		handyThief = false;
 	}
 	else{
-		intervalToNextEnemy = getEnemyInterval();
-		this.animateFadeOut();
+		//heart fade out animation
+		if(explode){ //only happens if genuinely died, not if player just left the arena
+			intervalToNextEnemy = getEnemyInterval();
+			this.animateFadeOut();
+		}
 	}
 };
 
@@ -383,8 +386,8 @@ Enemy.prototype.amIStuck = function(){
 
 Enemy.prototype.intelligence = function(){
 	//just for testing - for when want to test thief's appearance after regular enemy (and other purposes) so make reg enemy inert
-	//if(!this.isThief) 
-		//return;
+	if(!this.isThief) 
+		return;
 	
 	if(intermediate || this.partsMoving || !this.readyToMove || this.movepartsSpeed > 1)
 		return;
