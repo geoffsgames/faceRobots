@@ -615,7 +615,7 @@ Player.prototype.activateEditMode = function(){
 	}
 	heart.image.bringToFront();
 	this.addAllMarkers();
-	
+	this.recheckedGaps = false;
 };
 
 Player.prototype.addAllMarkers = function(){
@@ -1221,3 +1221,32 @@ Player.prototype.stairCollisions = function(minX, minY, maxX, maxY){
 	}
 
 }
+
+//if removing this block will leave a gap (this block is a bridge)
+Player.prototype.areGaps = function(x,y){
+	var areGaps = Person.prototype.areGaps.call(this, x, y);
+	
+	//shouldn't be necessary but for some reason totalNumBlocks sometimes decides to go wrong
+	//so I have to add in this recheck
+	if(areGaps && this.isEditing() && !this.recheckedGaps){
+		//get totalNumBlocks
+		var oldTot = this.totalNumBlocks;
+		this.totalNumBlocks = 0;
+		for(var x = 0; x < this.gridSize; x++){
+			if(this.grid[x] != undefined){
+				for(var y = 0; y < this.gridSize; y++){
+					if(this.grid[x][y] != undefined && this.grid[x][y] != null)
+						this.totalNumBlocks++;
+				}
+			}
+		}
+		if(this.totalNumBlocks != oldTot){ //try again with new block number
+			areGaps = Person.prototype.areGaps.call(this, x, y);
+			console.error("something went wrong with areGaps(...) - totNumBlocks inconsistent"); //this is a buggy situation - totNumBlocks should update automatically - might have to fix later
+		}
+		this.recheckedGaps = true;
+	}
+	
+	return areGaps;
+};
+
