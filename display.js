@@ -270,10 +270,6 @@ function changeState(code,doubleclick){
     	player.changeSelectedMotor(1);
     else if(code == 40 && selectedKeyCodes == newKeyCodes) //new motor keycodes. down arrow decrements selected motor
     	player.changeSelectedMotor(-1);
-    else if(code==82){//r
-		alert("Restarting!"); //(haven't implemented restart yet - hit refresh)");
-    	startWholeGame();
-    }
     else if(code==80){//p
     	cmdWindow.hidden = !cmdWindow.hidden;
     	paused = !paused;
@@ -309,6 +305,14 @@ function initInventory(){
 	};
 	
 	canvas.add(message);
+}
+
+//visually empties inventory
+function emptyInventory(){
+		for(var i = 0; i < player.inventoryText.length; i+= 1){
+			canvas.remove(player.inventoryImages[i]);
+			canvas.remove(player.inventoryText[i]);
+		};
 }
 
 window.onkeyup = function(e) {

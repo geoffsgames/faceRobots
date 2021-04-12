@@ -1,125 +1,120 @@
 "use strict";
+
+//some of these may be made "const" but compatibility issues http://stackoverflow.com/questions/130396/are-there-constants-in-javascript
+
 var debugMode = false;
 var randsSeeded = false; //normally random numbers for building landscape are seeded but not AI or random events - this makes them also seeded for debugging
 var scrollingX = 0;
 var scrollingY = 0;
 var gameGrid = null;
 var numPiecesX, numPiecesY; //total blocks in the landscape
-var willAddEnemy = false;
-var selectedSpawn = null;
 
-Math.seed = Math.round(Math.random() * 10000); //147 - down portal, bottom grid
+//user controlled seed to start seed creation
+Math.seed = Math.round(Math.random() * 10000);
 var s = prompt("Entering world: " + Math.seed + " or enter number of alternative world: ");
 if(s != null && !isNaN(parseInt(s, 10)))
 	Math.seed = parseInt(s, 10);
-
 var origSeed = Math.seed;
 
-var startGlobalSeed = Math.seededRandomDouble();
-var globalSeed = startGlobalSeed;
-var startSeed = Math.seededRandom(1000000,2000000);
-
-var thiefProb = 0.5;
-//var handyThiefProb = 0.1;
-var handyThiefProb = 0;
-
-var willAddThief = false;
-var oldEnemy;
-
-var messageTimer = 0;
-
-var player;
-var enemy;
-
-var temp;
-var timeStamp = 0;
-
-//changed from "const" due to browser compatibility http://stackoverflow.com/questions/130396/are-there-constants-in-javascript
-var maxEnInv = 20;
-var minEnInv = 2;
-var justResumed = false;
-
-var land;
-
+////main seeds
+var startGlobalSeed = Math.seededRandomDouble();//for universe when I first start playing
+var globalSeed = startGlobalSeed;//for current universe (changes when go through portal)
+var startSeed = Math.seededRandom(1000000,2000000); //for current arena
 var curSeed = startSeed;
-const seedJumpX = 1000;
-const seedJumpY = 1;
+var seedJumpX = 1000; //seed increments/decrements every time go horiz/verti
+var seedJumpY = 1;
+
+var land;//current arena
 var leftGrid, rightGrid, topGrid, bottomGrid; //the next grids along
 var allLandscapes = [];
 
-var willRestart = null;
 
+
+////enemy
+var willAddEnemy = false;
+var selectedSpawn = null;
+var intervalToNextEnemy = getEnemyInterval();
+var enemy;
+//enemy fade in
+var frozeWaitingForEnemy = true;//enemy fade in taking too long - keeps synched so enemy always starts on same frame regardless of delays in animation
+var arrivalTime = 0; //game loop number where enemy first initialised to check finish of fade in sequence
+////thief
+var thiefProb = 0.5; //prob of appearing after enemy killed - but actual prob also based on number of blocks
+var handyThiefProb = 0; //unused for now
+var willAddThief = false; //only set to true when enemy killed and thief will be soon arriving
+var oldEnemy; //for thief - enemy that was on arena before thief turned up
+
+var messageTimer = 0; //messages only display short period of time
+
+var player;
+
+var timeStamp = 0; //unpdates every game loop
+
+var willRestart = null; //when I'm about to enter a new landscape this stores the land I'm about to enter
+
+////stairs
 var activatedStairs = null;
-
 var willGoDownStairs = false;
 var goingDownStairs = false;
 
+////collectables
 var collectables = [];
 var newCollectables = [];
 var potentialCollectables = [];
-var intervalToNextEnemy = getEnemyInterval();
 
-var blackWallZindex;
-
-var massScaler = 10;
-var massMin = 6;
-var massMax = 3;
-
-//Motors
+////Motors
 var testingMotors = false;
 var testingNoRotateDelay = false;
 
-//PVP
-var checkPVP = null;
-var waitRivalLag = false; //?? - Still used?
+////PVP
 var enteringRival = false; //don't respond to any input when entrance of rival animation happening
 var inPVP = false;
-var rivalCompleted = false; //rival completed a single turn so don't have to wait for
+var rivalCompleted = false; //rival completed a single gameloop so don't have to wait for them
 var counter4KeyCmds = 0; //records which iteration we're on so key commands attached to right one
 var keyMessage = null; //stores key commands received from rival
-var messageSent = false;
-var returnedKeyMessage = null;
-var waitReturnedKeyMessage = false;
-var keyDangerZone = false;
-var rivalAddDelBlocks = [];
-//some had to be copied for keyup events
+var messageSent = false; //I've sent a key event message to other
+var returnedKeyMessage = null; //message returned after I send a key event message
+var waitReturnedKeyMessage = false; //pause until have received other's reply to my message confirming it has implemented it
+var keyDangerZone = false; //in section of code will ignore key commands could cause synch issues even with all the other checks
+var rivalAddDelBlocks = []; //blocks rival has added in edit mode
+var socket = null;
+var checkPVP = null;
+//same variables but for keyup events
 var keyMessageUp = null; //stores key commands received from rival
 var messageSentUp = false;
 var returnedKeyMessageUp = null;
 var waitReturnedKeyMessageUp = false;
 
-start();
-addPlayer();
-oldTime = new Date();
-updateGame();
-enemy.extractFromOverlap(20,true);
-
-loading = false; //[DON'T CHANGE TO MAKE IT LOAD - go to loadSave.js] so doesn't load at the start of each level
-
-//errorLoop();//- temporary fix for crashes of unknown cause
-
-var animLoop = requestAnimationFrame(renderLoop);
+//loading/saving - not currently used
+var loading = false;
 
 var animating = true;
 
 var updatingPlayer;
 
-var frozeWaitingForEnemy = true;//enemy fade in taking too long - keeps synched so enemy always starts on same frame regardless of delays in animation
-var arrivalTime = 0;
 var oldTime2 = null;
-
-var socket = null;
 
 var lastKeyCounter = null;
 
 var paused = false;
 
+
+/////////////////////////start game
+start();
+addPlayer();
+oldTime = new Date();
+updateGame();
+enemy.extractFromOverlap(20,true);//attempts to prevent enemy starting while overlapping a wall
+var animLoop = requestAnimationFrame(renderLoop);
+
+
 message.set("text", "World " + origSeed);
 
 
 
-//confusingly - for restarting after death NOT for starting at the beginning
-function startWholeGame(){
+//for restarting after death
+function restartAfterDeath(){
+	console.log("restarting");
 	changedBlocks = undefined;
 	globalSeed = startGlobalSeed;
 	leftGrid = undefined;
@@ -128,11 +123,16 @@ function startWholeGame(){
 	bottomGrid = undefined;
 	allLandscapes = [];
 	curSeed = startSeed;
-	addPlayer();
 	start();
+	enemy = null;
+	emptyInventory(); //note that actual inventory will be cleared by creating a new player - this just clears it visually hense in display
+	addPlayer();
+	oldTime2 = null;
+	oldTime = new Date();
 	updateGame();
 }
 
+//how long after one enemy dies for next enemy to appear
 function getEnemyInterval(){
 	if(Math.seededRandomDouble() < 0.9)
 		return 1;
@@ -295,6 +295,7 @@ function addRival(){
 		player.motorWillStart = 0;
 	}
 	
+	/**
 	for(var i =0 ; i < 10; i += 1){
 		player.addBlockToInventory("wall");
 		
@@ -302,7 +303,7 @@ function addRival(){
 		player.addBlockToInventory("motor");
 		player.addBlockToInventory("spring");
 
-	}
+	}*/
 	
 	player.group.bringToFront();
 }
@@ -322,6 +323,7 @@ function scrollToEnemy(){
 			Math.round(Math.max(canvas._offset.top,(enemy.myY * gridHeight) - (clientHeight / 2))));
 }
 
+//scenery blocks drawn at wonky angles to look more interesting
 function addRandomDirScenery(x,y,type){
 	var pointX, pointY;
 	if(Math.maybeSeededRandom(0,0.5))//random horizontal or vertical
@@ -347,6 +349,7 @@ function drawStairs(){
 	}
 }
 
+//draw obstacle blocks on landscape
 function drawBlocks(){	
 	gameGrid.setup = true;
 	for(var x = 0; x < numPiecesX; x+= 1){//step across play area grid
@@ -391,6 +394,10 @@ function addScenerySquare(x, y, blocktype, pointX, pointY){
 	addGridSquare(x, y, blocktype, gameGrid, owner, null, 0 , 0,pointX,pointY);
 }
 
+//adds to "grid" which would be either gameGrid or player's grid
+//x, y position within owner
+//offsetX, offsetY for how the fabric groups are constructed TODO switch to addWithUpdate
+//pointX, pointY for direction knives etc pointing (not used right now - calculated with knife)
 function addGridSquare(x, y, blocktype, grid, ownerImage, owner, offsetX, offsetY,pointX,pointY) {	
 	if(blocktype == "knife")
 		grid[x][y] = new Knife(blocktype, grid, ownerImage, owner, x, y, offsetX, offsetY,pointX,pointY);
@@ -512,9 +519,9 @@ function updateGamePVP(){
 }
 
 function updateGame2(){
-	//console.trace();
 	if(!inPVP && oldTime2 != null){
-		var actualIntv = new Date() - oldTime2; //shouldn't happen as updateGame() in display should handle the delays completely - this is just a failsafe, with appropriate error message
+		//shouldn't happen as updateGame() in display should handle the delays completely - this is just a failsafe, with appropriate error message
+		var actualIntv = new Date() - oldTime2; 
 		if((interval * 0.7) > actualIntv){
 			console.error("something went wrong with timing");
 			waitForTimeout(interval - actualIntv);
@@ -522,12 +529,11 @@ function updateGame2(){
 		}
 	}
 	oldTime2 = new Date();
-	if(inPVP){
+	
+	//ensures commands from PVP players are executed same gameloop
+	if(inPVP)
 		counter4KeyCmds ++;
-		//console.log("incremented to " + counter4KeyCmds);
-		//message.set("fill", "yellow");
-		//message.set("text", "" + counter4KeyCmds);
-	}
+
 	//TESTING - just for testing lag
 	/**
 	if(willLag){
@@ -538,8 +544,9 @@ function updateGame2(){
 	//END TESTING
 	
 	
-	
-	if(!reallyWaitingForRotate){
+	//when interval is shortened (someone moving at speed) rotation takes multiple turns so doesn't appear superfast 
+	//while multi turn rotation animation underway obviously don't want anything else to happen
+	if(!reallyWaitingForRotate){  
 		if(willAddThief && !player.partsMoving && !intermediate){
 			addThief();
 			message.set("text","Thiefbot has appeared!");
@@ -560,7 +567,9 @@ function updateGame2(){
 			message.set("text","World " + origSeed);
 		}
 		oldInterval = interval;
-		frozeWaitingForEnemy = false;//enemy fade in taking too long;
+		
+		//enemy fade in taking too long;
+		frozeWaitingForEnemy = false;
 		if(debugMode && timeStamp == (fadeFrames - arrivalTime) && !enemy.readyToMove) 
 			frozeWaitingForEnemy = true;
 		
@@ -606,9 +615,10 @@ function updateGame2(){
 			addCollectables();
 		}
 		if(player.dead && !reallyWaitingForRotate){
-			alert("You have lost! (click refresh as restart currently broken)"); //(haven't implemented restart yet - hit refresh)");
-			canvas.clear();
-			startWholeGame();
+			alert("You have lost!");
+			enemy.die(false);
+			willAddThief = false;
+			restartAfterDeath();
 		}
 		else{
 			if(!reallyWaitingForRotate){
@@ -648,7 +658,10 @@ function updateGame2(){
 			
 			player.justResumed = false;
 			enemy.justResumed = false;
+			
+			//changing direction commands or moving motors
 			if(inPVP && player.isInvader){ //switch order of player and enemy in PVP to ensure it's the same on both machines
+				//both players respond to any commands
 				enemy.tryToChangeDir();
 				player.tryToChangeDir(); //includes leave edit mode
 			}
@@ -659,6 +672,8 @@ function updateGame2(){
 				else
 					enemy.intelligence();
 			}
+			
+			//change interval in response to moving motors/change of direction
 			if(inPVP && player.isInvader){ //switch order of player and enemy in PVP to ensure it's the same on both machines
 				enemy.tryToSpeedUp();
 				player.tryToSpeedUp();
@@ -669,6 +684,8 @@ function updateGame2(){
 			}
 			if(inPVP)
 				 addDelRivalBlocksImpl(); //if rival is building add/delete blocks
+			
+			//main update loop (actually moving/animation/collision detection)
 			if(inPVP && player.isInvader){ //switch order of player and enemy in PVP to ensure it's the same on both machines
 				enemy.update();
 				player.update();
@@ -681,9 +698,7 @@ function updateGame2(){
 	}
 }
 
-
-
-
+/**
 function countBlocks(){
 	tot = 0
 	for(var x = 0; x < gameGrid.length; x += 1){
@@ -693,7 +708,7 @@ function countBlocks(){
 		}
 	}
 	return(tot);
-}
+}*/
 	
 function addThief(){
 	console.log("adding thief");
@@ -834,7 +849,7 @@ function clearThiefsPassage(movX, movY, thiefX, thiefY, width, minX, minY){
 		addThief()//then try creating thief all over again
 }
 
-
+//grid of next arena is generated when player gets near edge of this arena
 function generateNextGrid(grid, seedJump){
 		if(grid == undefined || grid == null){
 			var newSeed = curSeed + seedJump;
@@ -891,8 +906,13 @@ function addEnemy(){
 	enemy.setupWeapons();
 	
 	if(enemy.movX == 0 && enemy.movY == 0){
-		land.enemyImages[which].opacity = 1;
+		//enemy entrance animation - starts small and faint and overlapping spawn site and enlarges, grows opaque and moves to actual location
+		
+		//spawnsite
+		land.enemyImages[which].opacity = 1; 
 		selectedSpawn = land.enemyImages[which];
+		
+		//enemy
 		enemy.group.left = (land.enemyXs[which] + 2) * gridWidth;
 		enemy.group.top = (land.enemyYs[which] + 2) * gridHeight;
 		enemy.group.scaleX = gridWidth / enemy.actualWidth;
@@ -905,6 +925,8 @@ function addEnemy(){
 	enemy.group.bringToFront();
 	
 }
+
+//add collectables to game grid after flying off animation
 function addCollectables(){
 	//newCollectables contain the collectables that have landed but not been added to the grid. Add them now
 	while(newCollectables.length > 0){
@@ -947,12 +969,7 @@ function endScroll(){
 	player.scrollInventory(true);
 }
 
-
-function randomFromRange(min, max){
-	console.error("randomFromRange should not happen!")
-	alert("ERROR: randomFromRange should not happen!");
-}
-
+//for moving between arenas
 function clearOldNeighbours(exclude){
 	if(leftGrid != undefined && leftGrid != exclude)
 		leftGrid.grid = undefined;
@@ -994,11 +1011,7 @@ function clearLandscape(){
 
 }
 
-//for on the fly (non seeded) randoms
-function randomFromRange(start, end){
-	alert("arrgh");
-}
-
+//spinning animate to go down portal/stairs 
 function goDownStairs(){
 	clearLandscape();
 	land.grid = null;
@@ -1023,6 +1036,7 @@ function goDownStairs(){
 	player.emergeFromStairs(land.stairs[activatedStairs.destStairIndex]);
 };
 
+//speed up due to boosters also dependent on size of robot
 function reportMass(mass,fans,speed){
 	message.set("text",fans + " boosters / mass of " + mass + " = speed: " + speed);
 	message.set('fill', 'blue');
