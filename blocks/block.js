@@ -355,7 +355,7 @@ Block.prototype.destroyedBy = function(other, modified, destroyed, collected, ot
 	var forwards = otherforwards && !thisforwards; //if I'm being struck head on by a knife
 	
 	//collectable - colect 
-	if(this.collectable && other.isBase && !thisforwards){
+	if(this.collectable && ((other.isBase && (this.type != "knife" || !thisforwards)) || other.owner.isThief)){
 		if(mot != undefined && mot != null)
 			return false;
 		
