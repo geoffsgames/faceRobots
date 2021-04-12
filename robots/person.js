@@ -60,24 +60,25 @@ Person.prototype.findWeapons = function() {
 		}
 		
 		//secondary points are unblocked knives near a particular side of the robot but not actually pointing that way
-		str = str / 2;
-		if(weap.secondPointX == 1){
-			if(this.dangerZones.right == undefined || str > this.dangerZones.right.strength)
-				this.dangerZones.right = {strength:str, along:weap.myY};
+		if(this.fasterSpeeds == [0,0,0,0]){ //not worth considering side strengths if I have fans
+			str = str / 5;
+			if(weap.secondPointX == 1){
+				if(this.dangerZones.right == undefined || str > this.dangerZones.right.strength)
+					this.dangerZones.right = {strength:str, along:weap.myY};
+			}
+			else if(weap.secondPointX == -1){
+				if(this.dangerZones.left == undefined || str > this.dangerZones.left.strength)
+					this.dangerZones.left = {strength:str, along:weap.myY};
+			}
+			else if(weap.secondPointY == 1){
+				if(this.dangerZones.bottom == undefined || str > this.dangerZones.bottom.strength)
+					this.dangerZones.bottom = {strength:str, along:weap.myX};
+			}
+			else if(weap.secondPointY == -1){
+				if(this.dangerZones.top == undefined || str > this.dangerZones.top.strength)
+					this.dangerZones.top = {strength:str, along:weap.myX};
+			}
 		}
-		else if(weap.secondPointX == -1){
-			if(this.dangerZones.left == undefined || str > this.dangerZones.left.strength)
-				this.dangerZones.left = {strength:str, along:weap.myY};
-		}
-		else if(weap.secondPointY == 1){
-			if(this.dangerZones.bottom == undefined || str > this.dangerZones.bottom.strength)
-				this.dangerZones.bottom = {strength:str, along:weap.myX};
-		}
-		else if(weap.secondPointY == -1){
-			if(this.dangerZones.top == undefined || str > this.dangerZones.top.strength)
-				this.dangerZones.top = {strength:str, along:weap.myX};
-		}
-
 		weap.finalStrength = weap.weaponStrength; //reset weapon strength for next time
 	}
 	
@@ -89,7 +90,15 @@ Person.prototype.findWeapons = function() {
 		this.dangerZones.bottom = {strength:0.01, along:(this.gridSize / 2)}
 	if(this.dangerZones.right == undefined)
 		this.dangerZones.right = {strength:0.01, along:(this.gridSize / 2)}
+	
+	///////////////add in fans
+	//fs = top, right, bottom, left
+	this.dangerZones.top.strength *= (this.fasterSpeeds[0] + 1);
+	this.dangerZones.right.strength *= (this.fasterSpeeds[1] + 1);
+	this.dangerZones.bottom.strength *= (this.fasterSpeeds[2] + 1);
+	this.dangerZones.left.strength *= (this.fasterSpeeds[3] + 1);
 
+	
 };
 
 
@@ -1115,6 +1124,7 @@ Person.prototype.checkCollision = function() {
 	if(this.jumpedBack){
 		
 		if(this.jumpedBack){
+			
 			this.jumpBack(false);
 			this.stuck = true;
 		}
@@ -1601,8 +1611,8 @@ Person.prototype.rotate = function() {
 	this.grid = newgrid;
 	this.textGrid = newTextGrid;
 
-	this.rotateMotors(this.rotation);
-	this.rotateDangerZones(this.rotation);
+	this.rotateMotors(rotation);
+	this.rotateDangerZones(rotation);
 };
 
 Person.prototype.rotateDangerZones = function(rotation){
@@ -2039,3 +2049,16 @@ Person.prototype.unscramble = function(scrambler){
 	this.scrambler = null;
 }
 
+Person.prototype.setupWeapons = function(){
+	this.resetWeapons();
+	for(var i =0; i < this.motors.length; i+= 1){
+		this.motors[i].calculateMovement();
+	}
+	this.findWeapons(); //A.I. uses this to work out which of it's sides are strongest
+	//alert(JSON.stringify(player.dangerZones));
+	
+	this.fasterSpeeds = [0,0,0,0];
+	for(let fan of this.fans){
+		fan.updateFanSpeeds(1);
+	}
+}

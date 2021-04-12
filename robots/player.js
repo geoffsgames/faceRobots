@@ -762,19 +762,7 @@ Player.prototype.leaveEditing = function(){
 	this.updateRivals();
 }
 
-Person.prototype.setupWeapons = function(){
-	this.resetWeapons();
-	for(var i =0; i < this.motors.length; i+= 1){
-		this.motors[i].calculateMovement();
-	}
-	this.findWeapons(); //A.I. uses this to work out which of it's sides are strongest
-	//alert(JSON.stringify(player.dangerZones));
-	
-	this.fasterSpeeds = [0,0,0,0];
-	for(let fan of this.fans){
-		fan.updateFanSpeeds(1);
-	}
-}
+
 
 Player.prototype.setMovement = function(x, y) {
 	if(x != 0 && (this.myY + this.minY < 0 || this.myY + this.maxY >= numPiecesY)) //moving sideways while hanging off top or bottom of grid not allowed as messes up into/out of patterns
@@ -824,7 +812,7 @@ Player.prototype.willSetMovement = function(movX, movY,creep){
 		this.justLeftEditMode = true;
 	this.willMoveX = movX;
 	this.willMoveY = movY;
-	this.creep = creep;
+	//this.creep = creep;
 };
 
 

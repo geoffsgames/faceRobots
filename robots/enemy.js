@@ -64,8 +64,8 @@ Enemy.prototype.setupAI = function(){
 	this.stepSideProbabilityRun = Math.seededRandomDouble(0.2, 0.7); //higher = scared. More likely to run rather than sidestep
 	this.stepSideProbabilityBlockedDecr = Math.seededRandomDouble(0.1, 0.2);//every time I'm blocked increase probability of rotating next time
 	this.stepSideProbabilityBlockedOrig = Math.seededRandomDouble(0.5, 1);//lower = more likely to rotate and then back step
-	this.rotateProbabilityBlockedIncr = Math.seededRandomDouble(0.01, 0.1);//lower = more likely to back step
-	this.rotateProbabilityBlockedOrig = Math.seededRandomDouble(0.01, 0.1);//lower = more likely to back step
+	this.rotateProbabilityBlockedIncr = Math.seededRandomDouble(0.01, 0.2);//lower = more likely to back step
+	this.rotateProbabilityBlockedOrig = Math.seededRandomDouble(0.01, 0.2);//lower = more likely to back step
 	this.insistCount = 0;
 	
 	this.chaseProb = Math.seededRandomDouble(0.9, 1); //probability I will chase player
@@ -1060,6 +1060,7 @@ Enemy.prototype.completeFade = function(){
 Enemy.prototype.respondToDamage = function(){
 	if(!this.readyToMove)
 		return;
+	Person.prototype.respondToDamage.call(this);
 	this.stuckScore += 20;
 	this.resetFace("badfaceHurt");
 	//canvas.renderAll();

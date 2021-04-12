@@ -1,7 +1,7 @@
 "use strict";
-var smallThiefProb = 0; //0.5;
+var smallThiefProb = 0.5;
 var noFanProb = 0.1;
-var threeFanProb = 0.1;
+var threeFanProb = 0.5;
 
 var handyThief = false;
 
@@ -9,7 +9,7 @@ Thief.prototype = new Enemy();
 Thief.prototype.constructor=Thief;
 
 
-var thiefTest = true
+var testingDamage = false;
 
 Thief.prototype.getOtherRobot = function() {
 	return player;
@@ -27,16 +27,16 @@ Thief.prototype.setup = function(myX, myY, facing){
 	this.makeGrid();
 
 	//A.I. Variables
-	this.preferenceForSpecials = Math.seededRandom(1, 5);
-	this.preferenceForKnives = Math.min(1,this.preferenceForSpecials - 1);
-	this.missProb = Math.seededRandom(4,15);//probability of missing a collectable when iterating through them
+	this.preferenceForSpecials = Math.round(Math.maybeSeededRandom(5, 15));
+	this.preferenceForKnives = Math.min(5,this.preferenceForSpecials - 1);
+	this.missProb = Math.round(Math.maybeSeededRandom(4,15));//probability of missing a collectable when iterating through them
 	this.faceAlertness = 1; //0.9
-	this.chaseProb = Math.seededRandomDouble(0, 0.3);
+	this.chaseProb = Math.maybeSeededRandom(0, 0.3);
 	this.stepSideProbabilityRun = 0.1; //much lower probability of stepping aside - will probably run instead
 	this.stepSideProbabilityBlockedDecr = 0.1;//every time I'm blocked increase probability of back stepping next time
 	this.stepSideProbabilityBlockedOrig = 0.5;//lower = more likely to back step
 	this.stepSideProbabilityBlocked = this.stepSideProbabilityBlockedOrig;//current value
-	this.awarenessDis = Math.seededRandom(2, 5);
+	this.awarenessDis = Math.round(Math.maybeSeededRandom(2, 5));
 	
 	this.goingHome = false;
 	this.readyToMove = true;
@@ -66,16 +66,6 @@ Thief.prototype.die = function(explode){
 
 };
 
-
-Thief.prototype.setToFacing = function(){
-	//doesn't recalculate target center, 
-	//doesn't recalculate desired direction as thief should ALWAYS be facing direction moving because of fans 
-	//TODO same should apply to other enemies with fans
-	
-	Enemy.prototype.setToFacing.call(this, this.target.myX, this.target.myY, this.movX, this.movY); 
-	
-
-};
 
 Thief.prototype.leaveGrid = function(){
 	if(this.passageCleared)
@@ -109,6 +99,13 @@ Thief.prototype.checkEnteredFully = function(){
 };
 
 Thief.prototype.intelligence = function(){
+	if(testingDamage){
+		if(Math.abs(this.myX - player.myX) + Math.abs(this.myY - player.myY) < 10){
+			this.movX = 0;
+			this.movY = 0;
+			return;
+		}
+	}
 	if(intermediate || this.partsMoving || !this.readyToMove || !this.checkEnteredFully())
 		return;
 	if(this.blockedByLandscape){
@@ -129,13 +126,13 @@ Thief.prototype.intelligence = function(){
 			//respond to player
 			var disToPlayer = this.reactToPlayer();
 			if(disToPlayer == -1) //not responding to player
-				this.AIcountDown = this.disToTarget * (this.alertness / (Math.seededRandomDouble(2, 4)));
+				this.AIcountDown = this.disToTarget * (this.alertness / (Math.maybeSeededRandom(2, 4)));
 			else
 				this.AIcountDown = disToPlayer;
 			
 			
 			if(this.movX != oldMovX || this.movY != oldMovY){
-				if(Math.seededRandomDouble() < this.faceAlertness)
+				if(Math.maybeSeededRandom(0,1) < this.faceAlertness)
 					this.setToFacing();
 				this.changedDir = true;
 			}
@@ -148,6 +145,7 @@ Thief.prototype.collectAll = function(){
 		var block = this.collecting[i];
 		var x = block.myX;
 		var y = block.myY;
+		gameGrid[x][y].destroy(this,true);
 		for(var c = 0; c < collectables.length; c += 1){
 			if(collectables[c][0] == x && collectables[c][1] == y)
 				collectables.splice(c,1);
@@ -166,7 +164,7 @@ Thief.prototype.pickDirection = function(){
 																	//so override going home
 		var dis = Math.abs(this.target.centerX - centerX) + Math.abs(this.target.centerY - centerY);
 		var prob = Math.min(1,(30 - dis) / 30);
-		if(Math.seededRandomDouble() < prob){
+		if(Math.maybeSeededRandom(0,1) < prob){
 			this.target = new Target(this.startX, this.startY, 1,1);
 			this.goingHomeToStart = true;
 		}
@@ -241,10 +239,10 @@ Thief.prototype.pickDirection = function(){
 
 Thief.prototype.makeGrid = function(){
 	this.width = 1;
-	if(Math.seededRandomDouble() < smallThiefProb){
-		var addFan = Math.seededRandomDouble() > noFanProb;
+	if(Math.maybeSeededRandom(0,1) < smallThiefProb){
+		var addFan = Math.maybeSeededRandom(0,1) > noFanProb;
 		
-		var trunkLength = Math.seededRandom(1, 3);
+		var trunkLength = Math.round(Math.maybeSeededRandom(1, 3));
 		var totalLength = trunkLength + 1;
 		if(addFan)
 			totalLength += 1;
@@ -252,7 +250,7 @@ Thief.prototype.makeGrid = function(){
 		
 		this.addPiece(centerX,0,"knife");
 		this.totalNumBlocks = trunkLength + 1;
-		var facePos = Math.seededRandom(1, trunkLength);
+		var facePos = Math.round(Math.maybeSeededRandom(1, trunkLength));
 		for(var i = 0; i < trunkLength; i+= 1){
 			if(i + 1 == facePos)
 				this.addPiece(centerX,i + 1,"heart");
@@ -267,17 +265,17 @@ Thief.prototype.makeGrid = function(){
 	else{//bigger robot
 		//2, 3 or 4 fans have equal probability. 1 has a lower probability
 		var numFans = 0;
-		if(Math.seededRandomDouble() < noFanProb)
+		if(Math.maybeSeededRandom(0,1) < noFanProb)
 			numFans = 1;
-		else if(Math.seededRandomDouble() < threeFanProb)
+		else if(Math.maybeSeededRandom(0,1) < threeFanProb)
 			numFans = 3;
 		else
 			numFans = 2;
 		
 		if(numFans == 3)
-			this.width = Math.seededRandom(3, 4);
+			this.width = Math.round(Math.maybeSeededRandom(3, 4));
 		else
-			this.width = Math.seededRandom(2, 4);
+			this.width = Math.round(Math.maybeSeededRandom(2, 4));
 		
 		for(var x =0; x < this.width; x+= 1)
 			this.addPiece(x,0,"knife");
