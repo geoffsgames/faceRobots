@@ -39,7 +39,10 @@ var enemy;
 var frozeWaitingForEnemy = true;//enemy fade in taking too long - keeps synched so enemy always starts on same frame regardless of delays in animation
 var arrivalTime = 0; //game loop number where enemy first initialised to check finish of fade in sequence
 ////thief
-var thiefProb = 0.5; //prob of appearing after enemy killed - but actual prob also based on number of blocks
+var thiefProb = 0.4; //thiefProb * number of special blocks on arena is probability thief will appear...
+var maxThiefProb = 0.9; //... up to this maximum 
+var minThiefProb = 0.01; //... and always at least minimum
+//thief will never aware if no collectables
 var handyThiefProb = 0; //unused for now
 var willAddThief = false; //only set to true when enemy killed and thief will be soon arriving
 var oldEnemy; //for thief - enemy that was on arena before thief turned up
@@ -61,6 +64,7 @@ var goingDownStairs = false;
 var collectables = [];
 var newCollectables = [];
 var potentialCollectables = [];
+var numSpecialCols = 0; //weapons and specials
 
 ////Motors
 var testingMotors = false;
@@ -710,10 +714,69 @@ function countBlocks(){
 	return(tot);
 }*/
 	
+function compareCol(a, b){
+	if(a.val > b.val)//prioritise weapons/specials
+		return -1;
+	else if(a.val < b.val)
+		return 1;
+	else{
+	    if(a.dis < b.dis) //next consider distance
+	            return -1;
+	    else if(a.dis > b.dis)
+	            return 1;
+	    else
+	            return (Math.round(Math.maybeSeededRandom(0,1)) * 2) - 1;
+	}
+
+}
+
+//produce a list of collectables sorted from most attractive to thief (special, close to a wall so accessible) to least (plain block, far from wall)
+function getImportanceFromCols(cols, colImports){
+	for(let col of cols){
+		var val = 0;
+		if(col.weap)
+			val++;
+		else if(col.spec)
+			val++;
+		var rightDis = numPiecesX - col.x;
+		var bottomDis = numPiecesY - col.y;
+		var leftDis = col.x;
+		var topDis = col.y;
+		
+		//create colImportance entry for accessing the collectable from left or right (whichever closest)
+		var disX, side;
+		if(rightDis < leftDis){
+			side = 2;
+			disX = rightDis;
+		}
+		else if(leftDis < rightDis){
+			side = 0;
+			disX = leftDis;
+		}
+		else
+			side = Math.round(Math.maybeSeededRandom(0,1)) * 2;
+		colImports.push({dis:disX, across:col.y, side, val});
+		
+		//create colImportance entry for accessing the collectable from top or bottom (whichever closest)
+		var disY;
+		if(topDis < bottomDis){
+			side = 1;
+			disY = topDis;
+		}
+		else if(bottomDis < topDis){
+			side = 3;
+			disY = bottomDis;
+		}
+		else
+			side = (Math.round(Math.maybeSeededRandom(0,1)) * 2) + 1;
+		colImports.push({dis:disY, across:col.x, side, val})
+	}
+}
+
 function addThief(){
 	console.log("adding thief");
 	oldEnemy = enemy;
-	var side =0; //left up right down
+	var side, across; //left up right down
 	var tooFar = true;
 	var startX = 0;
 	var startY = 0;
@@ -722,11 +785,23 @@ function addThief(){
 	var i =0;
 	var movX = 0;
 	var movY = 0;
+	
+	//for choosing an entry point close to, respectively collectables already stopped on grid, collectables flying and collectables stopped on grid but waiting to be added to main list
+	var colImportances = [];
+	getImportanceFromCols(collectables,colImportances);
+	getImportanceFromCols(potentialCollectables,colImportances);
+	getImportanceFromCols(newCollectables,colImportances);
+	colImportances = colImportances.sort(compareCol,colImportances);
+
+	
 	while(tooFar && i < attempts){
 		movX = 0;
 		movY = 0;
-		side = Math.round(Math.maybeSeededRandom(0, 3));
-		i += 1;
+		var colImport = colImportances[i % (colImportances.length - 1)];		
+		side = colImport.side;
+		across = colImport.across;
+		
+		i ++;
 		
 		//when creating thief knife at top
 		if(side == 0){//left
@@ -734,21 +809,21 @@ function addThief(){
 			movX = 1;
 			dir = 1;
 			startX = 0;
-			startY = Math.round(Math.maybeSeededRandom(1,numPiecesY - 5));
+			startY = across;
 		}else if(side == 1){//top
 			movY = 1;
 			dir = 2;
-			startX = Math.round(Math.maybeSeededRandom(1,numPiecesX - 5));
+			startX = across;
 			startY = 0;
 		}else if(side == 2){//right
 			movX = -1;
 			dir = 3;
 			startX = numPiecesX;
-			startY = Math.round(Math.maybeSeededRandom(1,numPiecesY - 5));
+			startY = across;
 		}else{//down
 			movY = -1;
 			dir = 0;
-			startX = Math.round(Math.maybeSeededRandom(1,numPiecesX - 5));
+			startX = across;
 			startY = numPiecesY;
 		};
 		if(gameGrid[startX + (movX * 3)][startY + (movY * 3)] == 1)//facing space
@@ -934,23 +1009,23 @@ function addCollectables(){
 
 		//remove each from the set of collectables currently flying through the air
 		var foundPotential = false;
-		for(var i =0; i < potentialCollectables.length && !foundPotential; i+= 1){
-			if(potentialCollectables[i][0] == col[0] && potentialCollectables[i][1] == col[1]){
+		for(var i =0; i < potentialCollectables.length && !foundPotential; i++){
+			if(potentialCollectables[i].x == col.x && potentialCollectables[i].y == col.y){
 				foundPotential = true;
 				potentialCollectables.splice(i,1);
 			}
 		}
 		
-		var newPos = outFromUnderRobot(col[0],col[1]);
+		var newPos = outFromUnderRobot(col.x,col.y);
 		if(newPos != null){
-			col[0] = newPos.newX;
-			col[1] = newPos.newY;
+			col.x = newPos.newX;
+			col.y = newPos.newY;
 			//add each to the grid
-			if(gameGrid[col[0]][col[1]] == 1){
+			if(gameGrid[col.x][col.y] == 1){
 				collectables.push(col);
-				addRandomDirScenery(col[0], col[1], col[2]);
-				gameGrid[col[0]][col[1]].collectable = true;
-				gameGrid[col[0]][col[1]].redraw(true); //for collectable colour
+				addRandomDirScenery(col.x, col.y, col.type);
+				gameGrid[col.x][col.y].collectable = true;
+				gameGrid[col.x][col.y].redraw(true); //for collectable colour
 			}
 		}
 		
@@ -989,7 +1064,7 @@ function clearOldNeighbours(exclude){
 function clearLandscape(){
 	//collectables
 	for(var i = 0; i < collectables.length; i+= 1){
-		gameGrid[collectables[i][0]] [collectables[i][1]] = 1;
+		gameGrid[collectables[i].x] [collectables[i].y] = 1;
 	}
 	
 	//clear characters
@@ -1006,6 +1081,7 @@ function clearLandscape(){
 	}
 
 	collectables = [];	
+	numSpecialCols = 0;
 	potentialCollectables = [];
 	newCollectables = [];
 
