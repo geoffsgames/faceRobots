@@ -1,10 +1,12 @@
 "use strict";
 
+//limits on distances a block will fly away
 var flyAwayMin = 5;
 var flyAwayOptimal = 10;
 var flyAwayMax = 20;
-var flyawaySpeed = 500;
+var flyCrowdingControl = 3; //controls increase in flyAwayMax as board gets more crowded
 
+var flyawaySpeed = 500; //time fly away animation lasts
 
 //ownerImage = group (if part of character) or canvas (if part of landscape or collectable block)
 var Block = function (type, ownerGrid, ownerImage, owner, myX, myY, offsetX, offsetY, pointX, pointY) { 
@@ -32,7 +34,7 @@ Block.prototype.setup = function(type, ownerGrid, ownerImage, owner, myX, myY, o
 	//for keeping the appearance of damage (the wonkiness) consistent when  block recreated
 	this.damageAngle = 0;
 	
-	this.maxFlyDistance = 30;
+	this.maxFlyDistance = 40;
 	// >1 in more valuable blocks to reduce the chance of them leaving the grid and being lost
 	this.flyAwayRetries = 1;
 	if(pointX != undefined){
@@ -473,6 +475,14 @@ Block.prototype.isDamaged = function() {
 Block.prototype.destroy = function(other, explode) {
 	if(this.ownerGrid[this.myX][this.myY] == this){ //hasn't already been removed
 		this.clearAway(explode);
+		if(this.collectable){
+			for(var c = 0; c < collectables.length; c += 1){
+				if(collectables[c].x == this.myX && collectables[c].y == this.myY){
+					collectables.splice(c,1);
+					break;
+				}
+			}		
+		}
 
 		//the motor that I support
 		if(this.baseOfMotor != null)
@@ -568,14 +578,23 @@ Block.prototype.flyAway = function() {
 	var newX;
 	var newY;
 	
+	var maxFlyDisX = Math.max(6,this.maxFlyDistance * (collectables.length / flyCrowdingControl)); //stops arena filling up with pieces
+	var maxFlyDisY = maxFlyDisX;
+	if(this.isSpecial){ //try to stop specials flying off grid
+		maxFlyDisX = Math.min(maxFlyDisX,numPiecesX/2);
+		maxFlyDisY = Math.min(maxFlyDisY,numPiecesY/2);
+	}
+	
+	console.log(maxFlyDisX);
+	
 	//has to be at least 5 spaces from origin
 	if(Math.maybeSeededRandom(0,1) > 0.5){
-		newX = curX + (Math.floor(Math.seededRandomDouble(0,Math.min((numPiecesX/2),this.maxFlyDistance) )) * (Math.round(Math.maybeSeededRandom(0,2)) - 1));
-		newY = curY + (Math.floor(Math.seededRandomDouble(5,Math.min((numPiecesY/2),this.maxFlyDistance) )) * (Math.round(Math.maybeSeededRandom(0,2)) - 1));
+		newX = curX + (Math.floor(Math.seededRandomDouble(0,maxFlyDisX)) * (Math.round(Math.maybeSeededRandom(0,2)) - 1));
+		newY = curY + (Math.floor(Math.seededRandomDouble(5,maxFlyDisY)) * (Math.round(Math.maybeSeededRandom(0,2)) - 1));
 	}
 	else{
-		newX = curX + (Math.floor(Math.seededRandomDouble(5,Math.min((numPiecesX/2),this.maxFlyDistance))) * (Math.round(Math.maybeSeededRandom(0,2)) - 1));
-		newY = curY + (Math.floor(Math.seededRandomDouble(0,Math.min((numPiecesY/2),this.maxFlyDistance) )) * (Math.round(Math.maybeSeededRandom(0,2)) - 1));
+		newX = curX + (Math.floor(Math.seededRandomDouble(5,maxFlyDisX)) * (Math.round(Math.maybeSeededRandom(0,2)) - 1));
+		newY = curY + (Math.floor(Math.seededRandomDouble(0,maxFlyDisY)) * (Math.round(Math.maybeSeededRandom(0,2)) - 1));
 	}
 	
 	var inside = newX < numPiecesX - 1 && newY < numPiecesY - 1 && newX > 0 && newY > 0;
@@ -603,26 +622,31 @@ Block.prototype.flyAway = function() {
 			) //try a given number of times to land the block in screen. More powerful blocks less likely to leave screen.
 				{
 					if(Math.maybeSeededRandom(0,1) > 0.5){
-						newX = curX + (Math.floor(Math.seededRandomDouble(0,Math.min((numPiecesX/2),this.maxFlyDistance) )) * (Math.round(Math.maybeSeededRandom(0,1)) * 2 - 1));
-						newY = curY + (Math.floor(Math.seededRandomDouble(5,Math.min((numPiecesY/2),this.maxFlyDistance) )) * (Math.round(Math.maybeSeededRandom(0,1)) * 2 - 1));
+						newX = curX + (Math.floor(Math.seededRandomDouble(0,maxFlyDisX)) * (Math.round(Math.maybeSeededRandom(0,2)) - 1));
+						newY = curY + (Math.floor(Math.seededRandomDouble(5,maxFlyDisY)) * (Math.round(Math.maybeSeededRandom(0,2)) - 1));
 					}
 					else{
-						newX = curX + (Math.floor(Math.seededRandomDouble(5,Math.min((numPiecesX/2),this.maxFlyDistance))) * (Math.round(Math.maybeSeededRandom(0,1)) * 2 - 1));
-						newY = curY + (Math.floor(Math.seededRandomDouble(0,Math.min((numPiecesY/2),this.maxFlyDistance) )) * (Math.round(Math.maybeSeededRandom(0,1)) * 2 - 1));
+						newX = curX + (Math.floor(Math.seededRandomDouble(5,maxFlyDisX)) * (Math.round(Math.maybeSeededRandom(0,2)) - 1));
+						newY = curY + (Math.floor(Math.seededRandomDouble(0,maxFlyDisY)) * (Math.round(Math.maybeSeededRandom(0,2)) - 1));
 					}
 					inside = newX < numPiecesX - 1 && newY < numPiecesY - 1 && newX > 0 && newY > 0;
 					retries += 1;
 	}
 	
 	var landed = false;
-	if(inside) //succeeded in fitting it in
+	this.newDets = null;
+	if(inside){ //succeeded in fitting it in
 		var newPos = outFromUnderRobot(newX,newY);
 		if(newPos != null){
 			landed = true;
 			newX = newPos.newX;
 			newY = newPos.newY;
 		}
-
+		this.newDets = {x:newX,y:newY,type:this.type,weap:this.isWeapon,spec:this.isSpecial};
+		potentialCollectables.push(this.newDets);
+		if(this.isWeapon || this.isCollectable)
+			numSpecialCols++;
+	}
 	
 	this.flyAwayCounter = 0;
 	
@@ -635,13 +659,11 @@ Block.prototype.flyAway = function() {
 	img.left = (this.myX + this.owner.myX) * gridWidth;
 	img.top = (this.myY + this.owner.myY) * gridHeight;
 	
-	potentialCollectables.push([newX,newY]);
+	
 	
 	img.animate('left', (newX * gridWidth), {
-		  myType: this.type,
+		  details: this.newDets,
 		  myImg: img,
-		  endX: newX,
-		  endY: newY,
 		  onChange: canvas.requestRenderAll.bind(canvas),
 		  landed: landed,
 		  myGameGrid: gameGrid, //to ensure doesn't add if I've just restarted the game
@@ -653,7 +675,7 @@ Block.prototype.flyAway = function() {
     	  		if(this.landed){        	  			
     	  			//because adding directly into collectables here doesn't work for reasons unknown
     	  			//will add at the start of an update
-    	  			newCollectables.push([this.endX, this.endY, this.myType]);     	  			
+    	  			newCollectables.push(this.details);     	  			
        	  		}
       	  	}
           }
@@ -680,8 +702,8 @@ Block.prototype.flyAway = function() {
 function nextToAlreadyCollect(x, y){
 	for(var i =0; i < potentialCollectables.length; i += 1){
 		var col = potentialCollectables[i];
-		var disX = Math.abs(col[0] - x);
-		var disY = Math.abs(col[1] - y);
+		var disX = Math.abs(col.x - x);
+		var disY = Math.abs(col.y - y);
 		if(Math.min(disX,disY) == 0 &&  Math.max(disX,disY) <= 1)
 			return true;
 	}
