@@ -119,13 +119,13 @@ Enemy.prototype.die = function(explode){
 	this.running = false;	
 	Person.prototype.die.call(this, explode);
 	this.readyToMove = false;
-	//land.enemiesLeft -= 1;
-	//if(land.enemiesLeft > 0)
-	if(player.hasWeaponInInventory() && Math.maybeSeededRandom(0,1) < handyThiefProb){
+	console.log(Math.max(minThiefProb,Math.min(maxThiefProb,(numSpecialCols * thiefProb))));
+	
+	if(player.hasWeaponInInventory() && Math.maybeSeededRandom(0,1) < handyThiefProb){//unused for now
 		willAddThief = true;
 		handyThief = true;
-	}
-	else if(collectables.length > 0 && Math.maybeSeededRandom(0,1) < Math.min(0.8,(collectables.length * thiefProb))){
+	}//add thief next - if thiefProb = 0.25 then 4 knives close to guarantees thief
+	else if(potentialCollectables.length + collectables.length > 0 && Math.maybeSeededRandom(0,1) < Math.max(minThiefProb,Math.min(maxThiefProb,(numSpecialCols * thiefProb)))){
 		willAddThief = true;
 		handyThief = false;
 	}

@@ -37,6 +37,7 @@ Thief.prototype.setup = function(myX, myY, facing){
 	this.stepSideProbabilityBlockedOrig = 0.5;//lower = more likely to back step
 	this.stepSideProbabilityBlocked = this.stepSideProbabilityBlockedOrig;//current value
 	this.awarenessDis = Math.round(Math.maybeSeededRandom(2, 5));
+	this.goHomeAfterSpecialsProb = 1; //probability that will leave at any given time when all the specials have been collected
 	
 	this.goingHome = false;
 	this.readyToMove = true;
@@ -148,9 +149,11 @@ Thief.prototype.collectAll = function(){
 		var y = block.myY;
 		gameGrid[x][y].destroy(this,true);
 		for(var c = 0; c < collectables.length; c += 1){
-			if(collectables[c][0] == x && collectables[c][1] == y)
+			if(collectables[c].x == x && collectables[c].y == y)
 				collectables.splice(c,1);
 		}
+		if(block.isWeapon || block.isSpecial)
+			numSpecialCols --;
 	}
 	this.target = null;
 	this.AIcountDown = -1;
@@ -175,32 +178,34 @@ Thief.prototype.pickDirection = function(){
 		var minCollect = null;
 		
 		if(collectables.length > 0){
-			for(var i =0; i < collectables.length; i += 1){
-				var colX = collectables[i][0];
-				var colY = collectables[i][1];
-				var col = gameGrid[colX][colY];
-				if(col == 1){ //if collectable has disappeared from grid - this isn't supposed to happen but not a big prob - check later
-					console.log("collectable mysteriously vanished"); 
-					collectables.splice(i,1);
-				}
-				else{
-					var dis = Math.abs(colX - centerX) + Math.abs(colY - centerY);
-					if(col.special)
-						dis = dis / this.preferenceForSpecials;
-					else if(col.type == "knife")
-						dis = dis / this.preferenceForKnives;
-	
-					if(dis < minDis){
-						minDis = dis;
-						minCollect = col;
+			if(numSpecialCols > 0 || Math.maybeSeededRandom(0,1) > this.goHomeAfterSpecialsProb){ //high chance will go home if taken all the specials
+				for(var i =0; i < collectables.length; i += 1){
+					var colX = collectables[i].x;
+					var colY = collectables[i].y;
+					var col = gameGrid[colX][colY];
+					if(col == 1){ //if collectable has disappeared from grid - this isn't supposed to happen but not a big prob - check later
+						console.log("collectable mysteriously vanished"); 
+						collectables.splice(i,1);
+					}
+					else{
+						var dis = Math.abs(colX - centerX) + Math.abs(colY - centerY);
+						if(col.isSpecial)
+							dis = dis / this.preferenceForSpecials;
+						else if(col.type == "knife")
+							dis = dis / this.preferenceForKnives;
+		
+						if(dis < minDis){
+							minDis = dis;
+							minCollect = col;
+						}
 					}
 				}
-			}
-			if(minCollect != null){
-				this.collectMinDis = minDis;
-				this.target = minCollect;
-				this.target.centerX = minCollect.myX;
-				this.target.centerY = minCollect.myY;
+				if(minCollect != null){
+					this.collectMinDis = minDis;
+					this.target = minCollect;
+					this.target.centerX = minCollect.myX;
+					this.target.centerY = minCollect.myY;
+				}
 			}
 		}
 		if(this.target == null){//go home - not an else as may have changed if all collectables found to have disappeared

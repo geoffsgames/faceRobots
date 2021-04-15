@@ -260,8 +260,8 @@ Person.prototype.setupGrid = function(size, myX,myY) {
 		});
 	
 	this.visuallyFacing = this.facing;
-	if(this.isEnemy)
-		console.trace();
+	//if(this.isEnemy)
+		//console.trace();
 	canvas.add(this.group);
 	this.group.selectable = false;
 };
@@ -349,12 +349,12 @@ Person.prototype.gridUpdated = function(){
 	
 }
 
-
+//when player enters new arena and is moving fast some times doesn't render until removed and readded
 Person.prototype.ensureVisibility = function(){
 	var vis = this.group.left > 0 && this.group.top > 0 && this.group.left + this.actualWidth < canvas.width && this.group.top + this.actualHeight < canvas.height;
 	if(vis && !this.lastVis){
-		if(this.isEnemy)
-			console.trace();
+		//if(this.isEnemy)
+			//console.trace();
 		canvas.remove(this.group);
 		canvas.add(this.group);
 		canvas.requestRenderAll();
@@ -760,9 +760,9 @@ Person.prototype.restart = function(){
 	
 	this.group.left = (this.myX * gridWidth) + ((this.gridSize * gridWidth) / 2);
 	this.group.top = (this.myY * gridHeight) + ((this.gridSize * gridHeight) / 2);
-	if(this.isEnemy)
-		console.trace();
-	canvas.add(this.group); //because new canvas will have removed
+	//if(this.isEnemy)
+		//console.trace();
+	canvas.add(this.group); //because new canvas will not have added this yet
 	scrollToPlayer();
 	canvas.renderAll();
 };
@@ -1659,8 +1659,8 @@ Person.prototype.recreateGroup = function(offsetX, offsetY) {
 	this.visuallyFacing = this.facing;
 
 	this.group.selectable = false;
-	if(this.isEnemy)
-		console.trace();
+	//if(this.isEnemy)
+		//console.trace();
 	canvas.add(this.group);
 
 	if(this.stoppedBlocks != null && this.stoppedBlocks != undefined){
@@ -1712,13 +1712,17 @@ Person.prototype.collectAll = function(){
 		var y = block.myY;
 		gameGrid[x][y].destroy(this,true);
 		for(var c = 0; c < collectables.length; c += 1){
-			if(collectables[c][0] == x && collectables[c][1] == y)
+			if(collectables[c].x == x && collectables[c].y == y){
 				collectables.splice(c,1);
+				break;
+			}
 		}
-		if(enemy.target == block)
+		if(block.isWeapon || block.isSpecial)
+			numSpecialCols --;
+		if(enemy.target == block) //in case thief was aiming for this block stop it doing so
 			enemy.target = null;
 		
-		if(block.special && this == player){
+		if(block.isSpecial && this == player){
 			message.set("text","You have just collected a " + block.type);
 			message.set('fill', 'green');
 		}
