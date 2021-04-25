@@ -351,19 +351,22 @@ Person.prototype.gridUpdated = function(){
 
 //when player enters new arena and is moving fast some times doesn't render until removed and readded
 Person.prototype.ensureVisibility = function(){
+	if(this.fastSpeed_fixed == 1) //only need to do this when it's moving fast
+		return;
+	if(intermediate && !this.faster)
+		return;
 	var vis = this.group.left > 0 && this.group.top > 0 && this.group.left + this.actualWidth < canvas.width && this.group.top + this.actualHeight < canvas.height;
 	if(vis && !this.lastVis){
-		//if(this.isEnemy)
-			//console.trace();
 		canvas.remove(this.group);
 		canvas.add(this.group);
 		canvas.requestRenderAll();
+		if(!intermediate || this.faster){
+			this.group.left = (this.myX * gridWidth) + ((this.gridSize * gridWidth) / 2);
+			this.group.top = (this.myY * gridHeight) + ((this.gridSize * gridHeight) / 2);
+		}	
 	}
 	this.lastVis = vis;
-	if(!intermediate || this.faster){
-		this.group.left = (this.myX * gridWidth) + ((this.gridSize * gridWidth) / 2);
-		this.group.top = (this.myY * gridHeight) + ((this.gridSize * gridHeight) / 2);
-	}	
+
 }
 
 Person.prototype.update = function() {

@@ -222,7 +222,7 @@ Enemy.prototype.leftGrid = function(){
 Enemy.prototype.checkMotors = function(mot){
 
 	
-	if(!mot.isWorking())
+	if(!mot.isWorking() || mot.weapon == undefined)
 		return false;
 	
 	var motX = mot.weapon.myX + this.myX;
