@@ -1,7 +1,7 @@
 "use strict";
 //moves forward and then backward along a flat surface as far as possible
 
-Motor.prototype = new Block();        // Here's where the inheritance occurs 
+Motor.prototype = new Block();       
 Motor.prototype.constructor=Motor;
 
 
@@ -15,7 +15,7 @@ Motor.prototype.setup = function(type, ownerGrid, ownerImage,  owner, myX, myY, 
 	
 	
 	Block.prototype.setup.call(this, type, ownerGrid, ownerImage,  owner, myX, myY, offsetX, offsetY, pointX, pointY);
-	this.special = true;
+	this.isSpecial = true;
 	this.isBase = false;
 	this.flyAwayRetries = 5;
 	this.maxFlyDistance = 15;
@@ -805,7 +805,7 @@ Motor.prototype.isASquare = function(x,y, careAboutBases){
 		return false;
 	if(this.owner.grid[x][y] == undefined || this.owner.grid[x][y] == null)
 		return false;
-	if((!careAboutBases || this.owner.grid[x][y].isBase) && (this.owner.grid[x][y].motor == undefined || this.owner.grid[x][y].motor == null ||  !this.owner.grid[x][y].motor.moving))
+	if((!careAboutBases || this.owner.grid[x][y].isBase || this.owner.grid[x][y].type == "motor") && (this.owner.grid[x][y].motor == undefined || this.owner.grid[x][y].motor == null ||  !this.owner.grid[x][y].motor.moving))
 		return true;
 };
 
