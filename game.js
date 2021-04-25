@@ -257,6 +257,7 @@ function addPlayer(){
 		stoppedPressingMotor = false;
 		player.motorWillStart = 0;
 	}
+	
 	/**
 	for(var i =0 ; i < 40; i += 1){
 		player.addBlockToInventory("wall");
@@ -523,7 +524,7 @@ function updateGamePVP(){
 }
 
 function updateGame2(){
-	if(!inPVP && oldTime2 != null){
+	if(interval > 50 && !inPVP && oldTime2 != null){
 		//shouldn't happen as updateGame() in display should handle the delays completely - this is just a failsafe, with appropriate error message
 		var actualIntv = new Date() - oldTime2; 
 		if((interval * 0.7) > actualIntv){

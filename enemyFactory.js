@@ -14,7 +14,10 @@ var maxEnemyGridCrystal = 7;
 //motor
 var minEnemyMotorGrid = 10;
 var maxEnemyMotorGrid = 15;
-//TODO - smaller motor enemies, but will need to be designed in a completely different way
+//a motor's width is how far it sticks out in the direction adjacent to it's direction of motion (including the motor itself)
+//minimum will always be 2 (one block above the motor)
+//minMotWidth = 2
+var maxMotWidth = 5; 
 
 var probMotorFullLength = 0.5;
 var enemyKnifeProb = 0.2;
@@ -234,349 +237,254 @@ function designEnemy(initialLandscape, addSprings, special){
 	return enemyGrid;
 }
 
-
-
-
-
-function designMotor(grid, baseX, baseY, movX, movY, gridSize, sideNum, edgeList){
+//design enemy with motors
+function designEnemyMotor(){
+	//choose size of "core" of robot (i.e. bit without motors) that motors slide up and down
+	var coreX = Math.seededRandom(2,numSpeeds);
+	var coreY = Math.seededRandom(2,numSpeeds);
 	
-	//boolean
-	var fullLength = Math.seededRandomDouble() < probMotorFullLength;
+	var topY = 0;
+	var leftX = 0;
+	var rightX = 0;
+	var bottomY = 0;
 	
-	var motorLength = Math.seededRandom(2,numSpeeds);
-	if(fullLength)
-		motorLength = numSpeeds + 1;
+	var outermostBlocks = []; //actually layer *outside* outermost blocks for adding knives
 	
-	var leftwardsUpwards = Math.seededRandomDouble() > 0.5; //meaning depends on orientation of motor: pointing leftwards if motor at top or bottom, pointing upwards if motor at left or right
+	//try to attach motor on each side - I may have 1 to 4 motors
+	if(Math.seededRandom(0,1) == 1)
+		topY = Math.seededRandom(2,maxMotWidth);
+	if(Math.seededRandom(0,1) == 1)
+		leftX = Math.seededRandom(2,maxMotWidth);
+	if(Math.seededRandom(0,1) == 1)
+		rightX = Math.seededRandom(2,maxMotWidth);
+	if(Math.seededRandom(0,1) == 1)
+		bottomY = Math.seededRandom(2,maxMotWidth);
 	
-	var pointX = 0;
-	var pointY = 0;	
-	
-	if(baseX == -1){ //top or bottom moving l/r so the x coord is variable
-		//pointing left
-		baseX = motorLength - 1 + 3; //+2 and -2 below to remind me - leave a gap because guy coming up adjacent side might need to indepth his base by 2
-		pointX = -1;
-		if(!leftwardsUpwards){//pointing right
-			baseX = gridSize - motorLength - 1 - 3;
-			pointX = 1;
-		}
-		
-		//ensure doesn't go off (or within 3) of edge of grid
-		if(leftwardsUpwards && baseX >= gridSize - 3){
-			motorLength -= ((baseX - (gridSize - 3)) + 1)
-			baseX = gridSize -3
-		}
-		else if(!leftwardsUpwards && baseX < 3){
-			motorLength -= (3 - baseX)
-			baseX = 3
-		}
-	}
-	else if(baseY == -1){ //left or right moving t/b so the y coord is variable
-		baseY = motorLength - 1 + 3;
-		pointY = -1;
-		if(!leftwardsUpwards){
-			baseY = gridSize - motorLength - 1 - 3;
-			pointY = 1;
-		}
-		
-		//ensure doesn't go off (or within 3) of edge of grid
-		if(leftwardsUpwards && baseY >= gridSize - 3){
-			motorLength -= ((baseY - (gridSize - 3)) + 1)
-			baseY = gridSize -3
-		}
-		else if(!leftwardsUpwards && baseY < 3){
-			motorLength -= (3 - baseY)
-			baseY = 3
-		}
-
+	//if haven't attached a motor to any side
+	if(topY == 0 && leftX == 0 && rightX == 0 && bottomY == 0){
+		var side = Math.seededRandom(1,4);
+		if(side == 1)
+			topY = Math.seededRandom(2,maxMotWidth);
+		else if(side == 2)
+			leftX = Math.seededRandom(2,maxMotWidth);
+		else if(side == 3)
+			rightX = Math.seededRandom(2,maxMotWidth);
+		else
+			bottomY = Math.seededRandom(2,maxMotWidth);
 	}
 	
-	var neighbours = new Set();
-	neighbours.add(sideNum);
-
-
-
-	//the motor
-	grid[baseX + movX][baseY + movY] = new TempBlock("motor",baseX + movX,baseY + movY);
-	grid[baseX + movX][baseY + movY].side = sideNum;
+	//overall size of the grid = max size in either direction
+	var width = coreX + rightX + leftX;
+	var height = coreY + topY + bottomY;
+	var size = Math.max(width, height);
 	
-	var armStartX = baseX + (movX * 2);
-	var armStartY = baseY + (movY * 2);
+	var enemyGrid =[];
+	for(var i =0; i < size; i+= 1){
+		enemyGrid.push(new Array(size));
+	};
 	
-	//the moving arm
-	var lengthArm = Math.seededRandom(2,motorLength);
-	for(var i =0; i < lengthArm; i+= 1){
-		var x = armStartX + (i * pointX);
-		var y = armStartY + (i * pointY);
-		if(i == lengthArm - 1)
-			grid[x][y] = new TempBlock("knife",x,y);
-		else{
-			grid[x][y] = new TempBlock("wall",x,y);
-			edgeList[edgeList.length] = [x, y];
-		}
-	}
-	
-	//the runway
-	for(var i =0; i < motorLength; i+= 1){
-		var x = baseX + (i * pointX);
-		var y = baseY + (i * pointY)
+	if(topY > 0)//grid, moveX, moveY,motorX,motorY,minLength,maxLength,thickness
+		designMotor(enemyGrid, 0, -1,-1,topY - 1,leftX,width - rightX,topY,outermostBlocks); //add motor to top
+	if(bottomY > 0)
+		designMotor(enemyGrid, 0, 1,-1,height - bottomY,leftX,width - rightX,bottomY,outermostBlocks);	//add motor to bottom
+	if(leftX > 0)
+		designMotor(enemyGrid, -1, 0,leftX - 1,-1,topY, height - bottomY,leftX,outermostBlocks); //add motor to left
+	if(rightX > 0)
+		designMotor(enemyGrid, 1, 0,width - rightX,-1,topY, height - bottomY,rightX,outermostBlocks); //add motor to right
 		
-		//found connection to another side
-		if(grid[x][y] != null && grid[x][y].side != undefined){
-			neighbours.add(grid[x][y].side);
-		}
-		else{
-			if(grid[x][y] != null && grid[x][y].side != undefined){
-				neighbours.add(grid[x][y].side);
-			}
-			grid[x][y] = new TempBlock("wall",x,y);
+	//fill in grid for the core (bit between the motors)
+	var gridSquares = []
+	var i =0;
+	for(var x =0; x < coreX; x += 1){
+		for(var y =0; y < coreY; y += 1){
+			enemyGrid[x + leftX][y + topY] = new TempBlock("wall",x + leftX,y + topY);
+			gridSquares[i] = [x + leftX,y + topY]
+			i += 1;
 			
-			grid[x][y].side = sideNum;
+			//add places to add knives outside of perimeter where there isn't a motor blocking it
+			if(topY == 0 && y == 0)
+				outermostBlocks.push({x:(x + leftX), y:-1});
+			if(bottomY == 0 && y == coreY - 1)
+				outermostBlocks.push({x:(x + leftX), y:(coreY + topY)});
+			if(leftX == 0 && x == 0)
+				outermostBlocks.push({x:-1, y:(y+ topY)});
+			if(rightX == 0 && x == coreX - 1)
+				outermostBlocks.push({x:(coreX + leftX), y:(y+ topY)});
 		}
 	}
 	
-	//check 1 beyond for connections
-	var x = baseX + (motorLength * pointX);
-	var y = baseY + (motorLength * pointY);
-	if(grid[x][y] != null && grid[x][y].side != undefined){
-		neighbours.add(grid[x][y].side);
-	}
-	x = baseX + (-1 * pointX);
-	y = baseY + (-1 * pointY);
-	if(grid[x][y] != null && grid[x][y].side != undefined){
-		neighbours.add(grid[x][y].side);
+	//add heart
+	var ind = Math.seededRandom(0,gridSquares.length - 1);
+	var square = gridSquares.splice(ind,1)[0];
+	
+	var heartX = square[0];
+	var heartY = square[1];
+	
+	//number of blocks surrounding heart
+	var central = isWall(enemyGrid,heartX - 1,heartY) + isWall(enemyGrid,heartX - 1,heartY - 1) + isWall(enemyGrid,heartX,heartY - 1) + isWall(enemyGrid,heartX + 1,heartY + 1) + isWall(enemyGrid,heartX + 1,heartY)  + isWall(enemyGrid,heartX,heartY + 1) + isWall(enemyGrid,heartX - 1,heartY + 1) + isWall(enemyGrid,heartX + 1,heartY - 1);
+
+	//make multiple attempts to put heart in centre to make chance of central heart more likely
+	while(Math.seededRandom() < (central / 8) && gridSquares.length > 0){
+		
+		//choose squares at random or choose only square that we haven't tried yet
+		square = []
+		if(gridSquares.length == 1)
+			square = gridSquares[0];
+		else{
+			ind = Math.seededRandom(0,gridSquares.length - 1);
+			square = gridSquares.splice(ind,1)[0];
+		}
+		
+		heartX = square[0];
+		heartY = square[1];
+		central = isWall(enemyGrid,heartX - 1,heartY) + isWall(enemyGrid,heartX - 1,heartY - 1) + isWall(enemyGrid,heartX,heartY - 1) + isWall(enemyGrid,heartX + 1,heartY + 1) + isWall(enemyGrid,heartX + 1,heartY)  + isWall(enemyGrid,heartX,heartY + 1) + isWall(enemyGrid,heartX - 1,heartY + 1) + isWall(enemyGrid,heartX + 1,heartY - 1);
 	}
 	
-	return neighbours;
+	enemyGrid[heartX][heartY] = new TempBlock("heart",heartX,heartY);
+	
 
+	//////////////////add extra knives
+	////expand grid to fit them in
+	size += 2;
+	var newGrid =[];
+	for(var x =0; x < size; x++){
+		newGrid.push(new Array(size));
+		if(x > 0 && x < size - 1){
+			for(y = 1; y < size - 1; y++){
+				newGrid[x][y] = enemyGrid[x-1][y-1];
+			}
+		}
+	};
+	enemyGrid = newGrid;
+	//
+	var numKnives = Math.seededRandom(0,5);
+	for(i = 0; i < numKnives && outermostBlocks.length > 0; i++){
+		var ind = Math.random(0,outermostBlocks.length - 1);
+		var block = outermostBlocks.splice(ind,1)[0];
+		enemyGrid[block.x + 1][block.y + 1] = new TempBlock("knife",block.x + 1,block.y + 1);
+	}
+	//////
+	
+	enemySize = size;
+	
+	return enemyGrid;
 }
 
+//moveX, moveY = direction moved as spread outwards (thickness wise) across rows of arm. NOT ultimate direction of travel.
+//motorX, motorY = 
+function designMotor(grid, moveX, moveY,motorX,motorY,minLength,maxLength,thickness,outermostBlocks){
+	var pointX = 0;
+	var pointY = 0;
+	var potentialKnives = [];
+	//pointX, pointY is direction arm actually points
+	
+	if(motorX == -1){ //if motor on top or bottom side
+		if(Math.seededRandom()){
+			pointX = 1;
+			motorX = minLength;
+		}
+		else{
+			motorX = maxLength - 1;
+			pointX = -1;
+		}
+				
+	}
+	else if(motorY == -1){ //if motor on right or left side
+		if(Math.seededRandom()){ 
+			motorY = minLength; //top
+			pointY = 1;			//pointing down
+		}
+		else{						
+			motorY = maxLength - 1; //bottom
+			pointY = -1;			//pointing up
+		}	
+	}
+	var x = motorX;
+	var y = motorY;
+	grid[x][y] = new TempBlock("motor",x,y);
+	
+	var length = 0;
+	var numRows = Math.min(3,thickness - 1)
+	
+	
+	var maxL = maxLength - minLength - 1;
+	var endLast = 0;
+	var startLast = 0;
+	var oldSt = 0;
+	var oldEnd = 0;
+	var st = 0;
+	var end = 0;
+	var maxEnd = 0;
+	
+	//x,y starts where the motor is
+	for(var r = 0; r < numRows; r ++){
+		x += moveX;//move outwards (thickness wise)
+		y += moveY;
+		
+		var length = Math.seededRandom(1,maxL);
+		
+
+		
+		//moving outwards first layer always starts from motor. Subsequent layers may start part way down previous layer
+		if(r > 0){
+			
+			//new tier of arm is some subset of whole arms length
+			st = Math.seededRandom(0,maxL-1); 
+			end = Math.seededRandom(st+1, maxL);
+			
+			//if arm doesn't overlap with last tier make it do so
+			if(st < oldSt && end <= oldSt)
+				end = oldSt + 1;
+			else if(st >= oldEnd && end > oldEnd)
+				st = oldEnd - 1;
+			length = end - st;
+			
+			oldSt = st;
+			oldEnd = end;
+			if(end > maxEnd)
+				maxEnd = end;
+			
+			if(pointX != 0)
+				x = pointX == 1 ? motorX + st: motorX - st;
+			else
+				y = pointY == 1 ? motorY + st: motorY - st;
+			
+		}
+		else{
+			oldSt = 0;
+			oldEnd = length;
+			end = length;
+		}
+				
+		//move downwards along the arm
+		for(var i =0 ; i < length; i+= 1){
+			grid[x][y] = new TempBlock("wall",x,y);
+			if(r == numRows-1){ //point just outside blocks on outermost tier saved for adding extra knives to
+				outermostBlocks.push({x:(x + moveX),y:(y + moveY)});
+			}
+
+			x += pointX;
+			y += pointY;
+		}
+		grid[x][y] = new TempBlock("knife",x,y);
+		potentialKnives.push({x,y,end});
+	}
+	
+	//remove some knives further back
+	for(let k of potentialKnives){
+		if(Math.seededRandom() < Math.seededRandom((maxEnd - k.end)/maxEnd))
+			grid[k.x][k.y] = null;
+	}
+	
+	
+
+}
 function union(setA, setB) {
     let _union = new Set(setA)
     for (let elem of setB) {
         _union.add(elem)
     }
     return _union
-}
-
-function designEnemyMotor(){
-	
-	var gridSize = Math.seededRandom(minEnemyMotorGrid, maxEnemyMotorGrid);
-	var enemyGrid =[];
-	for(var i =0; i < gridSize; i+= 1){
-		enemyGrid.push(new Array(gridSize));
-	};
-
-	
-	var numMotors = Math.seededRandom(1, 4);
-	var sides = [1,2,3,4]; 
-	var sidesCovered = [];
-	var neighbours = [new Set(), new Set(), new Set(), new Set()];
-	
-	var edgeList = Array();
-
-	var side;
-	for(var i =0; i < numMotors; i+= 1){
-		var sideInd = Math.seededRandom(0,sides.length - 1);
-		if (sides.length == 1)
-			side = sides[0];
-		else
-			side = sides.splice(sideInd,1)
-		var dir = Math.seededRandom(1,2);
-		if(side == 1){//top
-			//baseX, baseY, movX, movY
-			neighbours[0] = designMotor(enemyGrid, -1, 3, 0, -1, gridSize, 0, edgeList);
-			sidesCovered[sidesCovered.length] = 0;
-		}
-		else if(side == 3){//bottom
-			neighbours[1] = designMotor(enemyGrid, -1, gridSize - 4, 0, 1, gridSize, 1, edgeList);
-			sidesCovered[sidesCovered.length] = 1;
-		}
-		else if(side == 4){//left
-			neighbours[2] = designMotor(enemyGrid, 3, -1, -1, 0, gridSize, 2, edgeList);
-			sidesCovered[sidesCovered.length] = 2;
-
-		}
-		else{//right
-			neighbours[3] = designMotor(enemyGrid, gridSize - 4, -1, 1, 0, gridSize, 3, edgeList);
-			sidesCovered[sidesCovered.length] = 3;
-
-		}
-
-	};
-
-	
-
-	//combine the records of which arms are connected so that each entry in neighbours contains EVERY neighbour
-	var change = true;
-	while(change){
-		change = false;
-		for(var n = 0; n < neighbours.length; n += 1){
-			for (let n2 of neighbours[n]){
-				var size1 = neighbours[n2].size;
-				neighbours[n2] = union(neighbours[n],neighbours[n2]);
-				if(neighbours[n2].size > size1)
-					change = true;
-			}
-		}
-	}
-
-	sides = sidesCovered; 
-	
-	var sqList = Array();
-	
-//	enemyGrid[0][0] = new TempBlock("heart",0,0);
-
-	var sideInd = 4;
-	var heart = {starter: true};
-	
-	do{ //while not all connected
-		if(sides.length == 1){
-			side = sides[0];
-			sides = sidesCovered;
-		}
-		else{
-			var sideInd = Math.seededRandom(0,sides.length - 1);
-			side = sides.splice(sideInd,1);
-		}
-		
-		var sqX = 3
-		var sqY = 3
-		var sqAttachSide = side;
-		var sqLongside = Math.seededRandom(3, gridSize - 6)
-		var sqShortside = Math.seededRandom(1,4);
-		
-		if(sqAttachSide == 1){ //top side
-			sqX = Math.seededRandom(3, gridSize - sqShortside - 3);
-			//sqY stay 2
-		}
-		else if(sqAttachSide == 2){ //bottom
-			sqX = Math.seededRandom(3, gridSize - sqShortside - 3);
-			sqY = gridSize - sqLongside - 3;
-		}
-		else if(sqAttachSide == 3){
-			sqY = Math.seededRandom(3, gridSize - sqShortside - 3);
-		}
-		else{
-			sqY = Math.seededRandom(3, gridSize - sqShortside - 3);
-			sqX = gridSize - sqLongside - 3;
-		}
-		var sizeX = sqLongside;
-		var sizeY = sqShortside;
-		if(sqAttachSide < 3){
-			sizeX = sqShortside;
-			sizeY = sqLongside;
-		}
-		var neigh2 = addSquareArea(enemyGrid, sqX,sqY,sizeX,sizeY, neighbours, sqList, edgeList, heart);
-		for (let n of neigh2){
-			neighbours[n] = union(neighbours[n],neigh2);
-			neigh2 = union(neigh2,neighbours[n]);
-		}
-
-		sideInd += 1;
-	}while((neigh2.size < numMotors)|| Math.seededRandomDouble(0,1) < 0.1)
-	
-		
-		/** OLD METHOD
-	//add in the face/heart
-	var faceX =  0;
-	var faceY = 0;
-	var dirX = (Math.seededRandom(0,1) * 2) - 1;
-	var dirY = (Math.seededRandom(0,1) * 2) - 1;
-	var placedHeart = false;
-	while(!placedHeart){
-		if(sqList.length == 1){
-			placedHeart = true;
-			var sqPos = sqList[0];
-			var sqX = sqPos[0];
-			var sqY = sqPos[1];
-			enemyGrid[sqX][sqY] = new TempBlock("heart",sqX,sqY);
-		}
-		else{
-			var sqPos = sqList.splice(Math.seededRandom(0,sqList.length - 1),1)[0];
-			var sqX = sqPos[0];
-			var sqY = sqPos[1];
-			var enclosedScore = 0;
-			
-			for(var i = -3; i < 3; i+= 1){
-				if(i == 0) //skip 0 as that's my block
-					i += 1;
-				enclosedScore += isWall(enemyGrid,sqX, sqY + i);
-				enclosedScore += isWall(enemyGrid,sqX + i, sqY);
-				enclosedScore += isWall(enemyGrid,sqX + i, sqY + i);
-				enclosedScore += isWall(enemyGrid,sqX - i, sqY + i);
-	
-			}
-			//max score for enclosedScore = 6 * 4 = 24
-			
-			var centreScore = Math.min(Math.min(sqX,(gridSize - sqX)),Math.min((gridSize - sqY),sqY));
-			if(centreScore > 2 || Math.seededRandom() < 0.2){ //odds of putting at edge very low
-				placedHeart = Math.seededRandomDouble() < enclosedScore / 24;
-				if(placedHeart)
-					enemyGrid[sqX][sqY] = new TempBlock("heart",sqX,sqY);
-			}
-		
-		}	
-		
-	}
-	*/
-	
-	//add on any extra knives
-	while(edgeList.length > 1){
-		var sqPos = edgeList.splice(Math.seededRandom(0,edgeList.length - 1),1)[0];
-		var sqX = sqPos[0];
-		var sqY = sqPos[1];
-
-
-		
-		//topside - see if uncovered and can potentially add a knife
-		var foundBlock = false;
-		var i =1;
-		while(sqY - i  >= 0 && !foundBlock){
-			if (enemyGrid[sqX][sqY - i] != undefined && enemyGrid[sqX][sqY - i] != null)
-				foundBlock = true;
-			i = i + 1;
-		}
-		if(!foundBlock && Math.seededRandomDouble() < enemyKnifeProb) //uncovered
-			enemyGrid[sqX][sqY - 1] = new TempBlock("knife",sqX,sqY - 1);
-		
-		//bottomside - see if uncovered and can potentially add a knife
-		foundBlock = false;
-		i = 1;
-		while(sqY + i < gridSize && !foundBlock){
-			if (enemyGrid[sqX][sqY + i] != undefined && enemyGrid[sqX][sqY + i] != null)
-				foundBlock = true;
-			i = i + 1
-		}
-		if(!foundBlock && Math.seededRandomDouble() < enemyKnifeProb) //uncovered
-			enemyGrid[sqX][sqY + 1] = new TempBlock("knife",sqX,sqY + 1);
-		
-		
-		
-		//leftside - see if uncovered and can potentially add a knife
-		foundBlock = false;
-		i =1;
-		while(sqX - i  >= 0 && !foundBlock){
-			if (enemyGrid[sqX - i][sqY] != undefined && enemyGrid[sqX - i][sqY] != null)
-				foundBlock = true;
-			i = i + 1;
-		}
-		if(!foundBlock && Math.seededRandomDouble() < enemyKnifeProb) //uncovered
-			enemyGrid[sqX - 1][sqY] = new TempBlock("knife",sqX - 1,sqY);
-		
-		//rightside - see if uncovered and can potentially add a knife
-		foundBlock = false;
-		i = 1;
-		while(sqX + i < gridSize && !foundBlock){
-			if (enemyGrid[sqX + i][sqY] != undefined && enemyGrid[sqX + i][sqY] != null)
-				foundBlock = true;
-			i = i + 1
-		}
-		if(!foundBlock && Math.seededRandomDouble() < enemyKnifeProb) //uncovered
-			enemyGrid[sqX + 1][sqY] = new TempBlock("knife",sqX + 1,sqY);
-	}
-
-	return enemyGrid;
 }
 
 function isWall(grid,x,y){
@@ -735,3 +643,5 @@ function addSquareArea(grid, stX,stY,sizeX,sizeY,neighbours,squareList, edgeList
 	
 	return newNeigh;
 }
+
+
