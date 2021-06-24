@@ -1,5 +1,5 @@
 # facerobots-game
-Author: Geoffrey Neumann 1916 - 1921
+Author: Geoffrey Neumann 2016 - 2021
 
 * Face Robots (working title) is a build your own robot browser game.
 * Playable, with instructions at: https://face-robots.herokuapp.com/
